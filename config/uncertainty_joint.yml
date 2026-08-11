@@ -1,0 +1,120 @@
+# Joint uncertainty configuration for the Third South African NBD Study,
+# Version 1 (1997-2019).
+#
+# The default 100 draws support collaborator review. Increase n_draws for a
+# final Monte Carlo run without changing the statistical model.
+run:
+  profile: analysis
+  output_name: nbd3_v1_joint
+  n_draws: 100
+  base_seed: 20260810
+  scenarios:
+    - joint
+  overwrite: false
+  stop_on_validation_failure: true
+  conservation_tolerance: 1.0e-7
+  reconstruction_relative_tolerance: 2.0e-7
+  reconstruction_absolute_tolerance: 1.0e-6
+
+components:
+  completeness:
+    enabled: true
+    # Positive pre-freeze S2 values are collapsed to one death-weighted
+    # aggregate multiplier per province. The nine provinces are then treated
+    # as clusters in an exact ordinary bootstrap of the national weighted mean.
+    # Each draw applies one shared factor to all African natural-cause deaths,
+    # retaining the deterministic relative pattern between provinces. This
+    # estimates uncertainty in the national completeness level rather than
+    # reassigning the full observed between-province heterogeneity as error.
+    source_scalar: S2
+    target_population_group: 1
+    target_envelope: natural
+    distribution: cluster_bootstrap_national_mean
+    draw_level: national_shared
+
+  injury:
+    enabled: true
+    # Each survey composition is sampled with a Dirichlet distribution whose
+    # total concentration is the available count/Kish-equivalent information
+    # size. The same linear ALR interpolation and triangular moving average are
+    # rerun for every draw. No extra between-survey variance is introduced.
+    model_file: 03_injury_fraction_model.rds
+    sampling_distribution: dirichlet_effective_n
+    inter_survey_path: deterministic_linear_plus_smoother
+
+  hiv:
+    enabled: true
+    # Coefficients are drawn jointly from the variance-covariance matrix of each
+    # fitted Stage 05 model after the completeness draw. ANC prevalence remains
+    # fixed because no variance input is supplied.
+    coefficient_covariance: true
+    covariance_file: 05_hiv_model_covariance.rds
+    prevalence_uncertainty: fixed
+
+  redistribution:
+    enabled: true
+    # For every expert rule with more than one approved target, one non-empty
+    # target subset is selected uniformly. The unchanged deterministic
+    # proportional redistribution algorithm is then applied to that subset.
+    target_subset_distribution: uniform_nonempty
+    target_scope: rule
+
+reporting:
+  # Retain the full Stage 06 analysis-cause vector so HIV donor causes and
+  # redistribution recipients carry their joint uncertainty into the final
+  # ZA cause estimates shown in the report.
+  top_n_causes: 214
+  include_all_provinces: true
+  # Retain one national draw table by population group (African, White,
+  # Asian/Indian and Coloured) so the final population-group panels receive
+  # the same joint uncertainty as the provincial panels.
+  include_population_groups: true
+  sexes:
+    - 3
+  age_groups:
+    under_1:
+      - 1
+      - 2
+    under_5:
+      - 1
+      - 2
+      - 3
+    age_5_plus:
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 17
+      - 18
+      - 19
+      - 20
+    all_ages:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 17
+      - 18
+      - 19
+      - 20

@@ -1,0 +1,196 @@
+series_id,display_name,domain,hierarchy,cause_type,za_codes,denominator_za_codes,measure,unit,legacy_compare_names,legacy_rate_names,include_explorer,include_comparison,sort_order,notes
+za_1,Tuberculosis,natural,detailed,natural,1,,,,,Tuberculosis,TRUE,FALSE,1,Direct ZA cause from the final NBD3 database.
+za_2,HIV/AIDS,natural,detailed,natural,2,,,,,HIV/AIDS,TRUE,FALSE,2,Direct ZA cause from the final NBD3 database.
+za_3,STIs excluding HIV,natural,detailed,natural,3,,,,,,TRUE,FALSE,3,Direct ZA cause from the final NBD3 database.
+za_4,Diarrhoeal diseases,natural,detailed,natural,4,,,,,Diarrhoeal,TRUE,FALSE,4,Direct ZA cause from the final NBD3 database.
+za_5,Vaccine preventable childhood,natural,detailed,natural,5,,,,,,TRUE,FALSE,5,Direct ZA cause from the final NBD3 database.
+za_6,Meningitis/encephalitis,natural,detailed,natural,6,,,,,,TRUE,FALSE,6,Direct ZA cause from the final NBD3 database.
+za_7,Hepatitis,natural,detailed,natural,7,,,,,,TRUE,FALSE,7,Direct ZA cause from the final NBD3 database.
+za_8,Septicaemia,natural,detailed,natural,8,,,,,,TRUE,FALSE,8,Direct ZA cause from the final NBD3 database.
+za_9,Malaria,natural,detailed,natural,9,,,,,,TRUE,FALSE,9,Direct ZA cause from the final NBD3 database.
+za_10,Intestinal parasites and vector,natural,detailed,natural,10,,,,,,TRUE,FALSE,10,Direct ZA cause from the final NBD3 database.
+za_11,Other infectious diseases,natural,detailed,natural,11,,,,,,TRUE,FALSE,11,Direct ZA cause from the final NBD3 database.
+za_12,Lower respiratory infections,natural,detailed,natural,12,,,,,Pneumonia,TRUE,FALSE,12,Direct ZA cause from the final NBD3 database.
+za_13,Upper respiratory infections,natural,detailed,natural,13,,,,,,TRUE,FALSE,13,Direct ZA cause from the final NBD3 database.
+za_14,Otitis media,natural,detailed,natural,14,,,,,,TRUE,FALSE,14,Direct ZA cause from the final NBD3 database.
+za_15,Maternal haemorrhage,natural,detailed,natural,15,,,,,,TRUE,FALSE,15,Direct ZA cause from the final NBD3 database.
+za_16,Maternal sepsis,natural,detailed,natural,16,,,,,,TRUE,FALSE,16,Direct ZA cause from the final NBD3 database.
+za_17,Hypertension in pregnancy,natural,detailed,natural,17,,,,,,TRUE,FALSE,17,Direct ZA cause from the final NBD3 database.
+za_18,Obstructed labour,natural,detailed,natural,18,,,,,,TRUE,FALSE,18,Direct ZA cause from the final NBD3 database.
+za_19,Abortion,natural,detailed,natural,19,,,,,,TRUE,FALSE,19,Direct ZA cause from the final NBD3 database.
+za_20,Indirect maternal,natural,detailed,natural,20,,,,,,TRUE,FALSE,20,Direct ZA cause from the final NBD3 database.
+za_21,Other maternal,natural,detailed,natural,21,,,,,,TRUE,FALSE,21,Direct ZA cause from the final NBD3 database.
+za_22,Preterm birth complications,natural,detailed,natural,22,,,,,,TRUE,FALSE,22,Direct ZA cause from the final NBD3 database.
+za_23,Birth asphyxia,natural,detailed,natural,23,,,,,,TRUE,FALSE,23,Direct ZA cause from the final NBD3 database.
+za_24,Sepsis/other newborn infectious,natural,detailed,natural,24,,,,,,TRUE,FALSE,24,Direct ZA cause from the final NBD3 database.
+za_25,Other perinatal conditions,natural,detailed,natural,25,,,,,,TRUE,FALSE,25,Direct ZA cause from the final NBD3 database.
+za_26,Protein-energy malnutrition,natural,detailed,natural,26,,,,,,TRUE,FALSE,26,Direct ZA cause from the final NBD3 database.
+za_27,Vitamin A deficiency,natural,detailed,natural,27,,,,,,TRUE,FALSE,27,Direct ZA cause from the final NBD3 database.
+za_28,Iron deficiency anaemia,natural,detailed,natural,28,,,,,,TRUE,FALSE,28,Direct ZA cause from the final NBD3 database.
+za_29,Other nutritional disorders,natural,detailed,natural,29,,,,,,TRUE,FALSE,29,Direct ZA cause from the final NBD3 database.
+za_30,Mouth,natural,detailed,natural,30,,,,,,TRUE,FALSE,30,Direct ZA cause from the final NBD3 database.
+za_31,Naso-oropharynx,natural,detailed,natural,31,,,,,,TRUE,FALSE,31,Direct ZA cause from the final NBD3 database.
+za_32,Oesophagus,natural,detailed,natural,32,,,,,Oesophagus,TRUE,FALSE,32,Direct ZA cause from the final NBD3 database.
+za_33,Stomach,natural,detailed,natural,33,,,,,,TRUE,FALSE,33,Direct ZA cause from the final NBD3 database.
+za_34,Colo-rectal,natural,detailed,natural,34,,,,,Colo-rectal,TRUE,FALSE,34,Direct ZA cause from the final NBD3 database.
+za_35,Liver,natural,detailed,natural,35,,,,,,TRUE,FALSE,35,Direct ZA cause from the final NBD3 database.
+za_36,Gallbladder and biliary tract,natural,detailed,natural,36,,,,,,TRUE,FALSE,36,Direct ZA cause from the final NBD3 database.
+za_37,Pancreas,natural,detailed,natural,37,,,,,,TRUE,FALSE,37,Direct ZA cause from the final NBD3 database.
+za_38,Larynx,natural,detailed,natural,38,,,,,,TRUE,FALSE,38,Direct ZA cause from the final NBD3 database.
+za_39,Trachea/bronchi/lung,natural,detailed,natural,39,,,,,Trachea/bronchi/lung,TRUE,FALSE,39,Direct ZA cause from the final NBD3 database.
+za_40,Melanoma,natural,detailed,natural,40,,,,,,TRUE,FALSE,40,Direct ZA cause from the final NBD3 database.
+za_41,Other skin cancer,natural,detailed,natural,41,,,,,,TRUE,FALSE,41,Direct ZA cause from the final NBD3 database.
+za_42,Breast,natural,detailed,natural,42,,,,,Breast,TRUE,FALSE,42,Direct ZA cause from the final NBD3 database.
+za_43,Cervix,natural,detailed,natural,43,,,,,Cervix,TRUE,FALSE,43,Direct ZA cause from the final NBD3 database.
+za_44,Corpus uteri,natural,detailed,natural,44,,,,,,TRUE,FALSE,44,Direct ZA cause from the final NBD3 database.
+za_45,Ovary,natural,detailed,natural,45,,,,,,TRUE,FALSE,45,Direct ZA cause from the final NBD3 database.
+za_46,Prostate,natural,detailed,natural,46,,,,,Prostate,TRUE,FALSE,46,Direct ZA cause from the final NBD3 database.
+za_47,Testis cancer,natural,detailed,natural,47,,,,,,TRUE,FALSE,47,Direct ZA cause from the final NBD3 database.
+za_48,Bladder,natural,detailed,natural,48,,,,,,TRUE,FALSE,48,Direct ZA cause from the final NBD3 database.
+za_49,Kidney,natural,detailed,natural,49,,,,,,TRUE,FALSE,49,Direct ZA cause from the final NBD3 database.
+za_50,Brain,natural,detailed,natural,50,,,,,,TRUE,FALSE,50,Direct ZA cause from the final NBD3 database.
+za_51,Thyroid,natural,detailed,natural,51,,,,,,TRUE,FALSE,51,Direct ZA cause from the final NBD3 database.
+za_52,Hodgkin's lymphoma,natural,detailed,natural,52,,,,,,TRUE,FALSE,52,Direct ZA cause from the final NBD3 database.
+za_53,Non-Hodgkins lymphoma,natural,detailed,natural,53,,,,,,TRUE,FALSE,53,Direct ZA cause from the final NBD3 database.
+za_54,Multiple myeloma,natural,detailed,natural,54,,,,,,TRUE,FALSE,54,Direct ZA cause from the final NBD3 database.
+za_55,Leukaemia,natural,detailed,natural,55,,,,,,TRUE,FALSE,55,Direct ZA cause from the final NBD3 database.
+za_56,Other malignant neoplasms,natural,detailed,natural,56,,,,,Other cancer,TRUE,FALSE,56,Direct ZA cause from the final NBD3 database.
+za_57,Other neoplasms,natural,detailed,natural,57,,,,,,TRUE,FALSE,57,Direct ZA cause from the final NBD3 database.
+za_58,Diabetes mellitus,natural,detailed,natural,58,,,,,,TRUE,FALSE,58,Direct ZA cause from the final NBD3 database.
+za_59,"Endocrine nutritional,blood, immune",natural,detailed,natural,59,,,,,,TRUE,FALSE,59,Direct ZA cause from the final NBD3 database.
+za_60,Unipolar depression,natural,detailed,natural,60,,,,,,TRUE,FALSE,60,Direct ZA cause from the final NBD3 database.
+za_61,Bipolar affective,natural,detailed,natural,61,,,,,,TRUE,FALSE,61,Direct ZA cause from the final NBD3 database.
+za_62,Schizophrenia,natural,detailed,natural,62,,,,,,TRUE,FALSE,62,Direct ZA cause from the final NBD3 database.
+za_63,Alcohol dependence,natural,detailed,natural,63,,,,,,TRUE,FALSE,63,Direct ZA cause from the final NBD3 database.
+za_64,Drug use,natural,detailed,natural,64,,,,,,TRUE,FALSE,64,Direct ZA cause from the final NBD3 database.
+za_65,Anxiety disorders,natural,detailed,natural,65,,,,,,TRUE,FALSE,65,Direct ZA cause from the final NBD3 database.
+za_66,Eating disorders,natural,detailed,natural,66,,,,,,TRUE,FALSE,66,Direct ZA cause from the final NBD3 database.
+za_67,Development disorders,natural,detailed,natural,67,,,,,,TRUE,FALSE,67,Direct ZA cause from the final NBD3 database.
+za_68,Childhood behaviour disorders,natural,detailed,natural,68,,,,,,TRUE,FALSE,68,Direct ZA cause from the final NBD3 database.
+za_69,Mental retardation not included as sequelae elsewhere,natural,detailed,natural,69,,,,,,TRUE,FALSE,69,Direct ZA cause from the final NBD3 database.
+za_70,Other mental and behavioural disorders,natural,detailed,natural,70,,,,,,TRUE,FALSE,70,Direct ZA cause from the final NBD3 database.
+za_71,Alzheimer's,natural,detailed,natural,71,,,,,,TRUE,FALSE,71,Direct ZA cause from the final NBD3 database.
+za_72,Parkinsons disease,natural,detailed,natural,72,,,,,,TRUE,FALSE,72,Direct ZA cause from the final NBD3 database.
+za_73,Multiple sclerosis,natural,detailed,natural,73,,,,,,TRUE,FALSE,73,Direct ZA cause from the final NBD3 database.
+za_74,Epilepsy,natural,detailed,natural,74,,,,,,TRUE,FALSE,74,Direct ZA cause from the final NBD3 database.
+za_75,Migraine,natural,detailed,natural,75,,,,,,TRUE,FALSE,75,Direct ZA cause from the final NBD3 database.
+za_76,Non-migraine headache,natural,detailed,natural,76,,,,,,TRUE,FALSE,76,Direct ZA cause from the final NBD3 database.
+za_77,Other neurological conditions,natural,detailed,natural,77,,,,,,TRUE,FALSE,77,Direct ZA cause from the final NBD3 database.
+za_78,Glaucoma,natural,detailed,natural,78,,,,,,TRUE,FALSE,78,Direct ZA cause from the final NBD3 database.
+za_79,Cataracts,natural,detailed,natural,79,,,,,,TRUE,FALSE,79,Direct ZA cause from the final NBD3 database.
+za_80,"Hearing loss, adult onset",natural,detailed,natural,80,,,,,,TRUE,FALSE,80,Direct ZA cause from the final NBD3 database.
+za_81,Other vision loss,natural,detailed,natural,81,,,,,,TRUE,FALSE,81,Direct ZA cause from the final NBD3 database.
+za_82,Other sense organ disorders,natural,detailed,natural,82,,,,,,TRUE,FALSE,82,Direct ZA cause from the final NBD3 database.
+za_83,Rheumatic heart disease,natural,detailed,natural,83,,,,,,TRUE,FALSE,83,Direct ZA cause from the final NBD3 database.
+za_84,Hypertensive heart disease,natural,detailed,natural,84,,,,,Hypertensive heart disease,TRUE,FALSE,84,Direct ZA cause from the final NBD3 database.
+za_85,Ischaemic heart disease,natural,detailed,natural,85,,,,,Ischaemic heart disease,TRUE,FALSE,85,Direct ZA cause from the final NBD3 database.
+za_86,"Pericarditis, endocarditis and myocarditis",natural,detailed,natural,86,,,,,,TRUE,FALSE,86,Direct ZA cause from the final NBD3 database.
+za_87,Cardiomyopathy,natural,detailed,natural,87,,,,,,TRUE,FALSE,87,Direct ZA cause from the final NBD3 database.
+za_88,Cerebrovascular disease,natural,detailed,natural,88,,,,,Cerebrovascular disease,TRUE,FALSE,88,Direct ZA cause from the final NBD3 database.
+za_89,Conduction disorders and other dysrythmias,natural,detailed,natural,89,,,,,,TRUE,FALSE,89,Direct ZA cause from the final NBD3 database.
+za_90,Aortic aneurism,natural,detailed,natural,90,,,,,,TRUE,FALSE,90,Direct ZA cause from the final NBD3 database.
+za_91,Peripheral vascular disorders,natural,detailed,natural,91,,,,,,TRUE,FALSE,91,Direct ZA cause from the final NBD3 database.
+za_92,Other circulatory diseases,natural,detailed,natural,92,,,,,,TRUE,FALSE,92,Direct ZA cause from the final NBD3 database.
+za_93,COPD,natural,detailed,natural,93,,,,,,TRUE,FALSE,93,Direct ZA cause from the final NBD3 database.
+za_94,Pneumoconiosis,natural,detailed,natural,94,,,,,,TRUE,FALSE,94,Direct ZA cause from the final NBD3 database.
+za_95,Asthma,natural,detailed,natural,95,,,,,Asthma,TRUE,FALSE,95,Direct ZA cause from the final NBD3 database.
+za_96,Other interstitial lung disease,natural,detailed,natural,96,,,,,,TRUE,FALSE,96,Direct ZA cause from the final NBD3 database.
+za_97,Other respiratory,natural,detailed,natural,97,,,,,Other respiratory,TRUE,FALSE,97,Direct ZA cause from the final NBD3 database.
+za_98,Peptic ulcer disease,natural,detailed,natural,98,,,,,,TRUE,FALSE,98,Direct ZA cause from the final NBD3 database.
+za_99,Appendicitis,natural,detailed,natural,99,,,,,,TRUE,FALSE,99,Direct ZA cause from the final NBD3 database.
+za_100,"Intestinal obstruction, strangulated hernia",natural,detailed,natural,100,,,,,,TRUE,FALSE,100,Direct ZA cause from the final NBD3 database.
+za_101,Non-infective inflammatory bowel disease,natural,detailed,natural,101,,,,,,TRUE,FALSE,101,Direct ZA cause from the final NBD3 database.
+za_102,Cirrhosis and liver disease,natural,detailed,natural,102,,,,,,TRUE,FALSE,102,Direct ZA cause from the final NBD3 database.
+za_103,Gall bladder and bile duct disease,natural,detailed,natural,103,,,,,,TRUE,FALSE,103,Direct ZA cause from the final NBD3 database.
+za_104,Pancreatitis,natural,detailed,natural,104,,,,,,TRUE,FALSE,104,Direct ZA cause from the final NBD3 database.
+za_105,Other digestive diseases,natural,detailed,natural,105,,,,,,TRUE,FALSE,105,Direct ZA cause from the final NBD3 database.
+za_106,Renal disease,natural,detailed,natural,106,,,,,,TRUE,FALSE,106,Direct ZA cause from the final NBD3 database.
+za_107,Benign prostatic hypertrophy,natural,detailed,natural,107,,,,,,TRUE,FALSE,107,Direct ZA cause from the final NBD3 database.
+za_108,Other urinary and gynaecological diseases,natural,detailed,natural,108,,,,,,TRUE,FALSE,108,Direct ZA cause from the final NBD3 database.
+za_109,Skin diseases,natural,detailed,natural,109,,,,,,TRUE,FALSE,109,Direct ZA cause from the final NBD3 database.
+za_110,Rheumatoid arthritis,natural,detailed,natural,110,,,,,,TRUE,FALSE,110,Direct ZA cause from the final NBD3 database.
+za_111,Osteoarthritis,natural,detailed,natural,111,,,,,,TRUE,FALSE,111,Direct ZA cause from the final NBD3 database.
+za_112,Back and neck pain,natural,detailed,natural,112,,,,,,TRUE,FALSE,112,Direct ZA cause from the final NBD3 database.
+za_113,Other musculo-skeletal,natural,detailed,natural,113,,,,,,TRUE,FALSE,113,Direct ZA cause from the final NBD3 database.
+za_114,Neural tube defects,natural,detailed,natural,114,,,,,,TRUE,FALSE,114,Direct ZA cause from the final NBD3 database.
+za_115,Cleft lip/palate,natural,detailed,natural,115,,,,,,TRUE,FALSE,115,Direct ZA cause from the final NBD3 database.
+za_116,Congenital heart anomalies,natural,detailed,natural,116,,,,,,TRUE,FALSE,116,Direct ZA cause from the final NBD3 database.
+za_117,Congenital disorders of GIT,natural,detailed,natural,117,,,,,,TRUE,FALSE,117,Direct ZA cause from the final NBD3 database.
+za_118,Urogenital malformations,natural,detailed,natural,118,,,,,,TRUE,FALSE,118,Direct ZA cause from the final NBD3 database.
+za_119,Fetal alcohol syndrome,natural,detailed,natural,119,,,,,,TRUE,FALSE,119,Direct ZA cause from the final NBD3 database.
+za_120,Down syndrome,natural,detailed,natural,120,,,,,,TRUE,FALSE,120,Direct ZA cause from the final NBD3 database.
+za_121,Other chromosomal abnormalities,natural,detailed,natural,121,,,,,,TRUE,FALSE,121,Direct ZA cause from the final NBD3 database.
+za_122,Other congenital abnormalities,natural,detailed,natural,122,,,,,,TRUE,FALSE,122,Direct ZA cause from the final NBD3 database.
+za_123,Dental caries,natural,detailed,natural,123,,,,,,TRUE,FALSE,123,Direct ZA cause from the final NBD3 database.
+za_124,Periodontal disease,natural,detailed,natural,124,,,,,,TRUE,FALSE,124,Direct ZA cause from the final NBD3 database.
+za_125,Other oral diseases,natural,detailed,natural,125,,,,,,TRUE,FALSE,125,Direct ZA cause from the final NBD3 database.
+za_126,Road injuries,injury,detailed,injury,126,,,,,Road injuries,TRUE,FALSE,126,Direct ZA cause from the final NBD3 database.
+za_127,Other transport injuries,injury,detailed,injury,127,,,,,Other transport,TRUE,FALSE,127,Direct ZA cause from the final NBD3 database.
+za_128,Poisonings (including herbal),injury,detailed,injury,128,,,,,Poisonings (incl herbal),TRUE,FALSE,128,Direct ZA cause from the final NBD3 database.
+za_129,Falls,injury,detailed,injury,129,,,,,Falls,TRUE,FALSE,129,Direct ZA cause from the final NBD3 database.
+za_130,"Fires, hot substances",injury,detailed,injury,130,,,,,"Fires, heat, hot substances",TRUE,FALSE,130,Direct ZA cause from the final NBD3 database.
+za_131,Drowning,injury,detailed,injury,131,,,,,Drowning,TRUE,FALSE,131,Direct ZA cause from the final NBD3 database.
+za_132,"Hanging, strangulation",injury,detailed,injury,132,,,,,"Hanging, strangulation",TRUE,FALSE,132,Direct ZA cause from the final NBD3 database.
+za_133,Mechanical forces,injury,detailed,injury,133,,,,,Mechanical forces,TRUE,FALSE,133,Direct ZA cause from the final NBD3 database.
+za_134,Exposure to natural forces,injury,detailed,injury,134,,,,,,TRUE,FALSE,134,Direct ZA cause from the final NBD3 database.
+za_135,Adverse effects medical/surgical,injury,detailed,injury,135,,,,,Adverse effects of medical & surgical,TRUE,FALSE,135,Direct ZA cause from the final NBD3 database.
+za_136,Animal contact,injury,detailed,injury,136,,,,,Animal contact,TRUE,FALSE,136,Direct ZA cause from the final NBD3 database.
+za_137,Other unintentional injuries,injury,detailed,injury,137,,,,,Other unintentional,TRUE,FALSE,137,Direct ZA cause from the final NBD3 database.
+za_138,Self-inflicted injuries,injury,detailed,injury,138,,,,,Self-inflicted injuries,TRUE,FALSE,138,Direct ZA cause from the final NBD3 database.
+za_139,Interpersonal violence,injury,detailed,injury,139,,,,,Interpersonal violence,TRUE,FALSE,139,Direct ZA cause from the final NBD3 database.
+za_140,Legal intervention (structural zero),injury,detailed,injury,140,,,,,,TRUE,FALSE,140,Structural zero retained for final database compatibility.
+za_145,Infectious and parasitic diseases,natural,group,natural,145,,,,,,TRUE,FALSE,145,Direct ZA cause from the final NBD3 database.
+za_146,Respiratory infections,natural,group,natural,146,,,,,,TRUE,FALSE,146,Direct ZA cause from the final NBD3 database.
+za_147,Maternal conditions,natural,group,natural,147,,,,,,TRUE,FALSE,147,Direct ZA cause from the final NBD3 database.
+za_148,Perinatal conditions,natural,group,natural,148,,,,,,TRUE,FALSE,148,Direct ZA cause from the final NBD3 database.
+za_149,Nutritional deficiencies,natural,group,natural,149,,,,,,TRUE,FALSE,149,Direct ZA cause from the final NBD3 database.
+za_150,HIV/AIDS and TB,natural,group,natural,150,,,,,,TRUE,FALSE,150,Direct ZA cause from the final NBD3 database.
+za_151,Malignant neoplasms,natural,group,natural,151,,,,,,TRUE,FALSE,151,Direct ZA cause from the final NBD3 database.
+za_152,Benign neoplasms,natural,group,natural,152,,,,,,TRUE,FALSE,152,Direct ZA cause from the final NBD3 database.
+za_153,Diabetes mellitus,natural,group,natural,153,,,,,,TRUE,FALSE,153,Direct ZA cause from the final NBD3 database.
+za_154,Endocrine and metabolic,natural,group,natural,154,,,,,,TRUE,FALSE,154,Direct ZA cause from the final NBD3 database.
+za_155,Mental disorders,natural,group,natural,155,,,,,,TRUE,FALSE,155,Direct ZA cause from the final NBD3 database.
+za_156,Nervous system disorders,natural,group,natural,156,,,,,,TRUE,FALSE,156,Direct ZA cause from the final NBD3 database.
+za_157,Sense organs,natural,group,natural,157,,,,,,TRUE,FALSE,157,Direct ZA cause from the final NBD3 database.
+za_158,Cardiovascular disease,natural,group,natural,158,,,,,,TRUE,FALSE,158,Direct ZA cause from the final NBD3 database.
+za_159,Respiratory disease,natural,group,natural,159,,,,,,TRUE,FALSE,159,Direct ZA cause from the final NBD3 database.
+za_160,Digestive diseases,natural,group,natural,160,,,,,,TRUE,FALSE,160,Direct ZA cause from the final NBD3 database.
+za_161,Genito-urinary diseases,natural,group,natural,161,,,,,,TRUE,FALSE,161,Direct ZA cause from the final NBD3 database.
+za_162,Skin diseases,natural,group,natural,162,,,,,,TRUE,FALSE,162,Direct ZA cause from the final NBD3 database.
+za_163,Musculo-skeletal diseases,natural,group,natural,163,,,,,,TRUE,FALSE,163,Direct ZA cause from the final NBD3 database.
+za_164,Congenital abnormalities,natural,group,natural,164,,,,,,TRUE,FALSE,164,Direct ZA cause from the final NBD3 database.
+za_165,Oral diseases,natural,group,natural,165,,,,,,TRUE,FALSE,165,Direct ZA cause from the final NBD3 database.
+za_166,Unintentional Injuries,injury,group,injury,166,,,,,,TRUE,FALSE,166,Direct ZA cause from the final NBD3 database.
+za_167,Intentional Injuries,injury,group,injury,167,,,,,,TRUE,FALSE,167,Direct ZA cause from the final NBD3 database.
+za_168,Comm/Mat/Peri/Nutr,natural,broad,natural,168,,,,,Comm/Mat/Peri/Nutri,TRUE,FALSE,168,Direct ZA cause from the final NBD3 database.
+za_169,HIV/AIDS and TB,natural,broad,natural,169,,,,,HIV/AIDS and TB,TRUE,FALSE,169,Direct ZA cause from the final NBD3 database.
+za_170,Non-communicable,natural,broad,natural,170,,,,,Non-communicable,TRUE,FALSE,170,Direct ZA cause from the final NBD3 database.
+za_171,Injuries,injury,broad,injury,171,,,,,Injuries,TRUE,FALSE,171,Direct ZA cause from the final NBD3 database.
+za_172,Total,all_cause,broad,all,172,,,,,Total deaths,TRUE,FALSE,172,Direct ZA cause from the final NBD3 database.
+za_173,Inf/para,natural,reporting,natural,173,,,,,,TRUE,FALSE,173,Direct ZA cause from the final NBD3 database.
+za_174,Other Type 1,natural,reporting,natural,174,,,,,,TRUE,FALSE,174,Direct ZA cause from the final NBD3 database.
+za_175,HIV/AIDS and TB,natural,reporting,natural,175,,,,,,TRUE,FALSE,175,Direct ZA cause from the final NBD3 database.
+za_176,Cancers,natural,reporting,natural,176,,,,,Cancer,TRUE,FALSE,176,Direct ZA cause from the final NBD3 database.
+za_177,Diabetes,natural,reporting,natural,177,,,,,,TRUE,FALSE,177,Direct ZA cause from the final NBD3 database.
+za_178,Cardiovascular,natural,reporting,natural,178,,,,,,TRUE,FALSE,178,Direct ZA cause from the final NBD3 database.
+za_179,Other Type 2,natural,reporting,natural,179,,,,,,TRUE,FALSE,179,Direct ZA cause from the final NBD3 database.
+za_180,Unintentional injuries,injury,reporting,injury,180,,,,,,TRUE,FALSE,180,Direct ZA cause from the final NBD3 database.
+za_181,Intentional injuries,injury,reporting,injury,181,,,,,,TRUE,FALSE,181,Direct ZA cause from the final NBD3 database.
+legacy_major_infectious,Major infectious diseases,natural,custom,natural,145,,,,,Major infectious diseases,TRUE,FALSE,2001,Custom sum used to reproduce a legacy VizTool cause series.
+legacy_cardio_diabetes,Cardiovascular and diabetes,natural,custom,natural,177;178,,,,,Cardiovascular and diabetes,TRUE,FALSE,2002,Custom sum used to reproduce a legacy VizTool cause series.
+legacy_respiratory,Respiratory,natural,custom,natural,146;159,,,,,Respiratory,TRUE,FALSE,2003,Custom sum used to reproduce a legacy VizTool cause series.
+legacy_diabetes_endocrine,Diabetes mellitus/other endocrine,natural,custom,natural,153;154,,,,,Diabetes mellitus/other endocrine,TRUE,FALSE,2004,Custom sum used to reproduce a legacy VizTool cause series.
+legacy_other_cardiovascular,Other cardiovascular,natural,custom,natural,83;86;87;89;90;91;92,,,,,Other cardiovascular,TRUE,FALSE,2005,Custom sum used to reproduce a legacy VizTool cause series.
+hiv_all_causes_deaths,All causes,hiv,comparison,all,172,,deaths,deaths,All causes Number,,FALSE,TRUE,3001,Configured legacy-compatible model-comparison series.
+hiv_deaths,HIV/AIDS,hiv,comparison,natural,2,,deaths,deaths,HIV/AIDS Number,,FALSE,TRUE,3002,Configured legacy-compatible model-comparison series.
+hiv_fraction,HIV/AIDS fraction,hiv,comparison,natural,2,172,fraction,proportion,HIV/AIDS Fraction,,FALSE,TRUE,3003,Configured legacy-compatible model-comparison series.
+injuries_deaths,Injuries,injury,comparison,injury,171,,deaths,deaths,Injuries Number,,FALSE,TRUE,3101,Configured legacy-compatible model-comparison series.
+injuries_fraction,Injuries fraction,injury,comparison,injury,171,172,fraction,proportion,Injuries Percent;Injuries Fraction,,FALSE,TRUE,3102,Configured legacy-compatible model-comparison series.
+transport_deaths,Transport injuries,injury,comparison,injury,126;127,,deaths,deaths,Transport injuries Number,,FALSE,TRUE,3103,Configured legacy-compatible model-comparison series.
+transport_fraction,Transport injuries fraction,injury,comparison,injury,126;127,172,fraction,proportion,Transport injuries Percent;Transport injuries Fraction,,FALSE,TRUE,3104,Configured legacy-compatible model-comparison series.
+unintentional_deaths,Other unintentional injuries excluding transport,injury,comparison,injury,128;129;130;131;132;133;134;135;136;137,,deaths,deaths,Unintentional injuries Number,,FALSE,TRUE,3105,Legacy comparison category excluding road and other transport injuries.
+unintentional_fraction,Other unintentional injuries excluding transport fraction,injury,comparison,injury,128;129;130;131;132;133;134;135;136;137,172,fraction,proportion,Unintentional injuries Percent;Unintentional injuries,,FALSE,TRUE,3106,Legacy comparison category excluding road and other transport injuries.
+interpersonal_deaths,Interpersonal violence,injury,comparison,injury,139,,deaths,deaths,Interpersonal violence Number,,FALSE,TRUE,3107,Configured legacy-compatible model-comparison series.
+interpersonal_fraction,Interpersonal violence fraction,injury,comparison,injury,139,172,fraction,proportion,Interpersonal violence Percent;Interpersonal violence Fraction,,FALSE,TRUE,3108,Configured legacy-compatible model-comparison series.
+self_harm_deaths,Self-harm,injury,comparison,injury,138,,deaths,deaths,Self-harm Number,,FALSE,TRUE,3109,Configured legacy-compatible model-comparison series.
+self_harm_fraction,Self-harm fraction,injury,comparison,injury,138,172,fraction,proportion,Self-harm Percent;Self-harm Fraction,,FALSE,TRUE,3110,Configured legacy-compatible model-comparison series.

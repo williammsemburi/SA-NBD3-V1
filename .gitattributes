@@ -1,0 +1,14 @@
+* text=auto
+*.R text eol=lf
+*.Rmd text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.csv text eol=lf
+*.css text eol=lf
+*.dta binary
+*.xlsx binary
+*.xls binary
+*.parquet binary
+*.rds binary
+*.Rda binary

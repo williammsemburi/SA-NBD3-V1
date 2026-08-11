@@ -1,0 +1,217 @@
+analysis_code,analysis_label,source_file,source_line
+0,HIV pseudonyms,Analysis codes.do,1
+1,Tuberculosis,Analysis codes.do,2
+2,HIV/AIDS,Analysis codes.do,3
+3,STDs excluding HIV,Analysis codes.do,4
+4,Diarrhoeal disease,Analysis codes.do,5
+5,Vaccine preventable childhood,Analysis codes.do,6
+6,Malaria,Analysis codes.do,7
+7,"Intestinal parasites, other parasitic and vector diseases",Analysis codes.do,8
+8,Meningitis,Analysis codes.do,9
+9,Hepatitis,Analysis codes.do,10
+10,Other infectious diseases,Analysis codes.do,11
+11,Lower respiratory infections,Analysis codes.do,12
+12,Upper respiratory infections,Analysis codes.do,13
+13,Otitis media,Analysis codes.do,14
+14,Maternal haemorrhage,Analysis codes.do,15
+15,Maternal sepsis,Analysis codes.do,16
+16,Hypertension in pregnancy,Analysis codes.do,17
+17,Obstructed labour,Analysis codes.do,18
+18,Abortion,Analysis codes.do,19
+19,Other maternal,Analysis codes.do,20
+20,Preterm birth complications,Analysis codes.do,21
+21,Birth asphyxia,Analysis codes.do,22
+22,Sepsis and other infectious conditions of the newborn,Analysis codes.do,23
+23,Other perinatal conditions,Analysis codes.do,24
+24,Protein-energy malnutrition,Analysis codes.do,25
+25,Vitamin A deficiency,Analysis codes.do,26
+26,Iron deficiency anaemia,Analysis codes.do,27
+27,Other nutritional disorders,Analysis codes.do,28
+28,Mouth and oropharynx,Analysis codes.do,29
+29,Nasopharynx cancer and other pharynx cancer,Analysis codes.do,30
+30,Oesophagus,Analysis codes.do,31
+31,Stomach,Analysis codes.do,32
+32,Colo-rectal,Analysis codes.do,33
+33,Liver,Analysis codes.do,34
+34,Gallbladder and biliary tract,Analysis codes.do,35
+35,Pancreas,Analysis codes.do,36
+36,Larynx,Analysis codes.do,37
+37,Trachea/bronchi/lung,Analysis codes.do,38
+38,Melanoma,Analysis codes.do,39
+39,Other skin cancer,Analysis codes.do,40
+40,Breast,Analysis codes.do,41
+41,Cervix,Analysis codes.do,42
+42,Corpus uteri,Analysis codes.do,43
+43,Ovary,Analysis codes.do,44
+44,Prostate,Analysis codes.do,45
+45,Testis cancer,Analysis codes.do,46
+46,Bladder,Analysis codes.do,47
+47,Kidney,Analysis codes.do,48
+48,Brain,Analysis codes.do,49
+49,Thyroid,Analysis codes.do,50
+50,Hodgkin's lymphoma,Analysis codes.do,51
+51,Non-Hodgkins lymphoma,Analysis codes.do,52
+52,Multiple myeloma,Analysis codes.do,53
+53,Leukaemia,Analysis codes.do,54
+54,Other malignant neoplasms,Analysis codes.do,55
+55,Other neoplasms,Analysis codes.do,56
+56,Diabetes mellitus,Analysis codes.do,57
+57,"Endocrine nutritional,blood and immune disorders",Analysis codes.do,58
+58,Unipolar,Analysis codes.do,59
+59,Bipolar,Analysis codes.do,60
+60,Schizophrenia,Analysis codes.do,61
+61,Alcohol dependence,Analysis codes.do,62
+62,Drug use,Analysis codes.do,63
+63,Anxiety disorders,Analysis codes.do,64
+64,Eating disorders,Analysis codes.do,65
+65,Development disorders,Analysis codes.do,66
+66,Childhood behaviour disorders,Analysis codes.do,67
+67,Mental retardation not included as sequelae elsewhere,Analysis codes.do,68
+68,Other mental and behavioural disorders,Analysis codes.do,69
+69,Alzheimer and other degenerative diseases of nervous system,Analysis codes.do,70
+70,Parkisons disease,Analysis codes.do,71
+71,Multiple sclerosis,Analysis codes.do,72
+72,Epilepsy,Analysis codes.do,73
+73,Migraine,Analysis codes.do,74
+74,Non-migraine headache,Analysis codes.do,75
+75,Other neurological conditions,Analysis codes.do,76
+76,Glaucoma,Analysis codes.do,77
+77,Cataracts,Analysis codes.do,78
+78,Hearing loss not due to other diseases or injuries,Analysis codes.do,79
+79,Other vision loss,Analysis codes.do,80
+80,Other sense organ disorders,Analysis codes.do,81
+81,Rheumatic heart disease,Analysis codes.do,82
+82,Hypertensive heart disease,Analysis codes.do,83
+83,Ischaemic heart disease,Analysis codes.do,84
+84,"Pericarditis, endocarditis and myocarditis",Analysis codes.do,85
+85,Cardiomyopathy,Analysis codes.do,86
+86,Cerebrovascular disease,Analysis codes.do,87
+87,Conduction disorders and other dysrythmias,Analysis codes.do,88
+88,Aortic aneurism,Analysis codes.do,89
+89,Peripheral vascular disorders,Analysis codes.do,90
+90,Other circulatory diseases,Analysis codes.do,91
+91,Copd,Analysis codes.do,92
+92,Pneumoconiosis,Analysis codes.do,93
+93,Asthma,Analysis codes.do,94
+94,Other interstitial lung disease,Analysis codes.do,95
+95,Other respiratory,Analysis codes.do,96
+96,Peptic ulcer,Analysis codes.do,97
+97,Appendicitis,Analysis codes.do,98
+98,Intestinal obstruction and strangulated hernia,Analysis codes.do,99
+99,Noninfective inflammatory bowel disease,Analysis codes.do,100
+100,Cirrhosis and liver disease,Analysis codes.do,101
+101,Gall bladder and bile duct disease,Analysis codes.do,102
+102,Pancreatitis,Analysis codes.do,103
+103,Other digestive,Analysis codes.do,104
+104,Renal disease,Analysis codes.do,105
+105,Benign prostatic hypertrophy,Analysis codes.do,106
+106,Other urinary and gynaecological diseases,Analysis codes.do,107
+107,Skin diseases,Analysis codes.do,108
+108,Rheumatoid arthriis,Analysis codes.do,109
+109,Osteoarthritis,Analysis codes.do,110
+110,Back and neck pain,Analysis codes.do,111
+111,Other muculo-skeletal,Analysis codes.do,112
+112,Neural tube defects,Analysis codes.do,113
+113,Cleft lip/palate,Analysis codes.do,114
+114,Congenital heart anomalies,Analysis codes.do,115
+115,Congenital disorders of GIT,Analysis codes.do,116
+116,Urogenital malformations,Analysis codes.do,117
+117,Fetal alcohol syndrome,Analysis codes.do,118
+118,Down syndrome and other chromosomal anomalies,Analysis codes.do,119
+119,Other chromosomal abnormalities,Analysis codes.do,120
+120,Other congenital abnormalities,Analysis codes.do,121
+121,Dental caries,Analysis codes.do,122
+122,Periodontal disease,Analysis codes.do,123
+123,Other oral diseases,Analysis codes.do,124
+124,Road injuries,Analysis codes.do,125
+125,Rail injury,Analysis codes.do,126
+126,Other transport accidents,Analysis codes.do,127
+127,Poisonings (including herbal),Analysis codes.do,128
+128,Falls,Analysis codes.do,129
+129,"Fires, heat and hot substances",Analysis codes.do,130
+130,Drowning,Analysis codes.do,131
+131,Other threats to breathing,Analysis codes.do,132
+132,Mechanical forces: machinery,Analysis codes.do,133
+133,Mechanical forces; firearm,Analysis codes.do,134
+134,Mechanical forces: sharp object,Analysis codes.do,135
+135,Exposure to natural forces,Analysis codes.do,136
+136,Adverse effects of medical and surgical treatment,Analysis codes.do,137
+137,Mining accidents,Analysis codes.do,138
+138,Animal contact,Analysis codes.do,139
+139,Other unintentional injuries,Analysis codes.do,140
+140,Self-inflicted injuries,Analysis codes.do,141
+141,Interpersonal violence with firearm,Analysis codes.do,142
+142,Interpersonal violence without firearm,Analysis codes.do,143
+143,Ill defined natural,Analysis codes.do,144
+144,Ill defined,Analysis codes.do,145
+145,Malignant neoplasm without specification of site,Analysis codes.do,146
+146,Ill defined descriptions of heart disease and unspecified disorders of circulatory system,Analysis codes.do,147
+147,Hypertension,Analysis codes.do,148
+148,"Mental disorder, not otherwise specified",Analysis codes.do,149
+149,Perinatal death unspecified cause,Analysis codes.do,150
+150,Fetal death of unspecified cause,Analysis codes.do,151
+151,Homicide unspecified means,Analysis codes.do,152
+152,Unspecified sexually transmitted disease,Analysis codes.do,153
+153,Unspecified intestinal parasitism,Analysis codes.do,154
+154,Unspecified parasitic disease,Analysis codes.do,155
+155,"Malignant neoplasm of other and ill-defined sites in the lip, oral cavity and pharynx",Analysis codes.do,156
+156,Malignant neoplasm of other and ill-defined digestive organs,Analysis codes.do,157
+157,Malignant neoplasm of other and ill-defined sites in the respiratory system and intrathoracic organs,Analysis codes.do,158
+158,Unspecified transport accident,Analysis codes.do,159
+159,Exposure to unspecified factor,Analysis codes.do,160
+160,Injuries with Undetermined intent,Analysis codes.do,161
+161,Septicaemia,Analysis codes.do,162
+162,Seqence of hyperalimentation,Analysis codes.do,163
+163,Volume depletion,Analysis codes.do,164
+164,"Other disorders of fluid, electrolyte and acid-base balance",Analysis codes.do,165
+165,Toxic encephalopathy,Analysis codes.do,166
+166,Pulmonary embolism,Analysis codes.do,167
+167,Atrioventricular and left bundle-branch block,Analysis codes.do,168
+168,Other conduction disorders,Analysis codes.do,169
+169,Arterial embolism and thrombosis,Analysis codes.do,170
+170,Portal vein thrombosis,Analysis codes.do,171
+171,Pneumonitis due to solids and liquids,Analysis codes.do,172
+172,Adult respiratory distress syndrome,Analysis codes.do,173
+173,Pulmonary oedema,Analysis codes.do,174
+174,Oesophageal varices,Analysis codes.do,175
+175,Pyothorax,Analysis codes.do,176
+176,"Pleural effusion, not elsewhere classified",Analysis codes.do,177
+177,Pneumothorax,Analysis codes.do,178
+178,Other pleural conditions,Analysis codes.do,179
+179,Peritonitis,Analysis codes.do,180
+180,Other disorders of peritoneum,Analysis codes.do,181
+181,Toxic liver disease,Analysis codes.do,182
+182,"Hepatic failure, not elsewhere classified",Analysis codes.do,183
+183,Other inflammatory liver diseases,Analysis codes.do,184
+184,Haematemesis and melaena/other diseases of GIT,Analysis codes.do,185
+185,Osteomyelitis,Analysis codes.do,186
+186,Acute renal failure,Analysis codes.do,187
+187,Chronic renal failure,Analysis codes.do,188
+188,Unspecified renal failure,Analysis codes.do,189
+189,"Gangrene, not elsewhere classified",Analysis codes.do,190
+190,Ascites,Analysis codes.do,191
+191,Sequelae of other and unspecified infectious and parasitic diseases,Analysis codes.do,192
+192,Sequelae of malnutrition and other nutritional deficiencies,Analysis codes.do,193
+193,Sequelae of inflammatory diseases of central nervous system,Analysis codes.do,194
+194,Cerebral palsy,Analysis codes.do,195
+195,Hemiplegia,Analysis codes.do,196
+196,Paraplegia and tetraplegia,Analysis codes.do,197
+197,Other paralytic syndromes,Analysis codes.do,198
+198,Sequelae of transport accidents,Analysis codes.do,199
+199,Sequelae of other accidents,Analysis codes.do,200
+200,"Sequelae of intentional self-harm, assault and events of undetermined intent",Analysis codes.do,201
+201,Sequelae of other external causes,Analysis codes.do,202
+202,Disseminated intravascular coagulation [defibrination syndrome],Analysis codes.do,203
+203,Cardiac arrest,Analysis codes.do,204
+204,Other cardiac arrhythmias,Analysis codes.do,205
+205,Heart failure,Analysis codes.do,206
+206,"Respiratory failure, not elsewhere classified",Analysis codes.do,207
+207,Secondary hypertension,Analysis codes.do,208
+208,Atherosclerosis,Analysis codes.do,209
+209,Other disorders of brain (encaphalitis),Analysis codes.do,210
+210,Extrapulmonary TB,Analysis codes.do,211
+211,Miliary TB,Analysis codes.do,212
+212,Encephalitis,Analysis codes.do,213
+213,Indirect maternal,Analysis codes.do,214
+214,Legal intervention and acts of war,Analysis codes.do,215
+215,HIV Pseudonyms,Analysis codes.do,216

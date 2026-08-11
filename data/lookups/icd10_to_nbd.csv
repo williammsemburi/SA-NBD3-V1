@@ -1,0 +1,1848 @@
+icd10,nbdcode,nbd_label,rule_type,source_file,source_line
+000,143,Ill defined natural,static,NBD215grProgram.do,191
+888,143,Ill defined natural,static,NBD215grProgram.do,191
+999,143,Ill defined natural,static,NBD215grProgram.do,191
+A00,4,Diarrhoeal disease,static,NBD215grProgram.do,8
+A01,4,Diarrhoeal disease,static,NBD215grProgram.do,8
+A02,4,Diarrhoeal disease,static,NBD215grProgram.do,8
+A03,4,Diarrhoeal disease,static,NBD215grProgram.do,8
+A04,4,Diarrhoeal disease,static,NBD215grProgram.do,8
+A05,4,Diarrhoeal disease,static,NBD215grProgram.do,8
+A06,4,Diarrhoeal disease,static,NBD215grProgram.do,8
+A07,4,Diarrhoeal disease,static,NBD215grProgram.do,8
+A08,4,Diarrhoeal disease,static,NBD215grProgram.do,8
+A09,4,Diarrhoeal disease,static,NBD215grProgram.do,8
+A15,1,Tuberculosis,static,NBD215grProgram.do,2
+A16,1,Tuberculosis,static,NBD215grProgram.do,2
+A17,210,Extrapulmonary TB,static,NBD215grProgram.do,258
+A18,210,Extrapulmonary TB,static,NBD215grProgram.do,258
+A19,211,Miliary TB,static,NBD215grProgram.do,259
+A20,10,Other infectious diseases,static,NBD215grProgram.do,25
+A21,10,Other infectious diseases,static,NBD215grProgram.do,25
+A22,10,Other infectious diseases,static,NBD215grProgram.do,25
+A23,10,Other infectious diseases,static,NBD215grProgram.do,25
+A24,10,Other infectious diseases,static,NBD215grProgram.do,25
+A25,10,Other infectious diseases,static,NBD215grProgram.do,25
+A26,10,Other infectious diseases,static,NBD215grProgram.do,25
+A27,10,Other infectious diseases,static,NBD215grProgram.do,25
+A28,10,Other infectious diseases,static,NBD215grProgram.do,25
+A30,10,Other infectious diseases,static,NBD215grProgram.do,25
+A31,10,Other infectious diseases,static,NBD215grProgram.do,25
+A32,10,Other infectious diseases,static,NBD215grProgram.do,25
+A33,5,Vaccine preventable childhood,static,NBD215grProgram.do,11
+A36,5,Vaccine preventable childhood,static,NBD215grProgram.do,10
+A37,5,Vaccine preventable childhood,static,NBD215grProgram.do,10
+A38,10,Other infectious diseases,static,NBD215grProgram.do,29
+A39,8,Meningitis,static,NBD215grProgram.do,19
+A40,161,Septicaemia,static,NBD215grProgram.do,211
+A41,161,Septicaemia,static,NBD215grProgram.do,211
+A42,10,Other infectious diseases,static,NBD215grProgram.do,25
+A43,10,Other infectious diseases,static,NBD215grProgram.do,25
+A44,10,Other infectious diseases,static,NBD215grProgram.do,25
+A45,10,Other infectious diseases,static,NBD215grProgram.do,25
+A46,10,Other infectious diseases,static,NBD215grProgram.do,25
+A47,10,Other infectious diseases,static,NBD215grProgram.do,25
+A48,10,Other infectious diseases,static,NBD215grProgram.do,25
+A49,10,Other infectious diseases,static,NBD215grProgram.do,25
+A50,3,STDs excluding HIV,static,NBD215grProgram.do,6
+A51,3,STDs excluding HIV,static,NBD215grProgram.do,6
+A52,3,STDs excluding HIV,static,NBD215grProgram.do,6
+A53,3,STDs excluding HIV,static,NBD215grProgram.do,6
+A54,3,STDs excluding HIV,static,NBD215grProgram.do,6
+A55,3,STDs excluding HIV,static,NBD215grProgram.do,6
+A56,3,STDs excluding HIV,static,NBD215grProgram.do,6
+A57,3,STDs excluding HIV,static,NBD215grProgram.do,6
+A58,3,STDs excluding HIV,static,NBD215grProgram.do,6
+A59,3,STDs excluding HIV,static,NBD215grProgram.do,6
+A60,3,STDs excluding HIV,static,NBD215grProgram.do,6
+A61,3,STDs excluding HIV,static,NBD215grProgram.do,6
+A62,3,STDs excluding HIV,static,NBD215grProgram.do,6
+A63,3,STDs excluding HIV,static,NBD215grProgram.do,6
+A64,152,Unspecified sexually transmitted disease,static,NBD215grProgram.do,202
+A65,10,Other infectious diseases,static,NBD215grProgram.do,25
+A66,10,Other infectious diseases,static,NBD215grProgram.do,25
+A67,10,Other infectious diseases,static,NBD215grProgram.do,25
+A68,10,Other infectious diseases,static,NBD215grProgram.do,25
+A69,10,Other infectious diseases,static,NBD215grProgram.do,25
+A70,10,Other infectious diseases,static,NBD215grProgram.do,25
+A71,10,Other infectious diseases,static,NBD215grProgram.do,25
+A72,10,Other infectious diseases,static,NBD215grProgram.do,25
+A73,10,Other infectious diseases,static,NBD215grProgram.do,25
+A74,10,Other infectious diseases,static,NBD215grProgram.do,25
+A75,10,Other infectious diseases,static,NBD215grProgram.do,25
+A76,10,Other infectious diseases,static,NBD215grProgram.do,25
+A77,10,Other infectious diseases,static,NBD215grProgram.do,25
+A78,10,Other infectious diseases,static,NBD215grProgram.do,25
+A79,10,Other infectious diseases,static,NBD215grProgram.do,25
+A80,5,Vaccine preventable childhood,static,NBD215grProgram.do,11
+A81,10,Other infectious diseases,static,NBD215grProgram.do,29
+A82,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+A83,212,Encephalitis,static,NBD215grProgram.do,260
+A84,212,Encephalitis,static,NBD215grProgram.do,260
+A85,212,Encephalitis,static,NBD215grProgram.do,260
+A86,212,Encephalitis,static,NBD215grProgram.do,260
+A87,8,Meningitis,static,NBD215grProgram.do,19
+A88,10,Other infectious diseases,static,NBD215grProgram.do,29
+A89,10,Other infectious diseases,static,NBD215grProgram.do,29
+A90,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+A91,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+A92,10,Other infectious diseases,static,NBD215grProgram.do,26
+A93,10,Other infectious diseases,static,NBD215grProgram.do,26
+A94,10,Other infectious diseases,static,NBD215grProgram.do,26
+A95,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+A96,10,Other infectious diseases,static,NBD215grProgram.do,26
+A97,10,Other infectious diseases,static,NBD215grProgram.do,26
+A98,10,Other infectious diseases,static,NBD215grProgram.do,26
+A99,10,Other infectious diseases,static,NBD215grProgram.do,26
+B00,10,Other infectious diseases,static,NBD215grProgram.do,29
+B01,5,Vaccine preventable childhood,static,NBD215grProgram.do,11
+B02,10,Other infectious diseases,static,NBD215grProgram.do,26
+B03,10,Other infectious diseases,static,NBD215grProgram.do,26
+B04,10,Other infectious diseases,static,NBD215grProgram.do,26
+B05,5,Vaccine preventable childhood,static,NBD215grProgram.do,11
+B06,5,Vaccine preventable childhood,static,NBD215grProgram.do,11
+B07,10,Other infectious diseases,static,NBD215grProgram.do,29
+B08,10,Other infectious diseases,static,NBD215grProgram.do,29
+B09,10,Other infectious diseases,static,NBD215grProgram.do,29
+B15,9,Hepatitis,static,NBD215grProgram.do,21
+B16,9,Hepatitis,static,NBD215grProgram.do,21
+B17,9,Hepatitis,static,NBD215grProgram.do,21
+B18,9,Hepatitis,static,NBD215grProgram.do,21
+B19,9,Hepatitis,static,NBD215grProgram.do,21
+B20,2,HIV/AIDS,static,NBD215grProgram.do,4
+B21,2,HIV/AIDS,static,NBD215grProgram.do,4
+B22,2,HIV/AIDS,static,NBD215grProgram.do,4
+B23,2,HIV/AIDS,static,NBD215grProgram.do,4
+B24,2,HIV/AIDS,static,NBD215grProgram.do,4
+B25,10,Other infectious diseases,static,NBD215grProgram.do,29
+B26,5,Vaccine preventable childhood,static,NBD215grProgram.do,11
+B27,10,Other infectious diseases,static,NBD215grProgram.do,27
+B28,10,Other infectious diseases,static,NBD215grProgram.do,27
+B29,10,Other infectious diseases,static,NBD215grProgram.do,27
+B30,10,Other infectious diseases,static,NBD215grProgram.do,27
+B31,10,Other infectious diseases,static,NBD215grProgram.do,27
+B32,10,Other infectious diseases,static,NBD215grProgram.do,27
+B33,215,HIV Pseudonyms,static,NBD215grProgram.do,263
+B34,10,Other infectious diseases,static,NBD215grProgram.do,29
+B35,107,Skin diseases,static,NBD215grProgram.do,152
+B36,107,Skin diseases,static,NBD215grProgram.do,152
+B37,10,Other infectious diseases,static,NBD215grProgram.do,27
+B38,10,Other infectious diseases,static,NBD215grProgram.do,27
+B39,10,Other infectious diseases,static,NBD215grProgram.do,27
+B40,10,Other infectious diseases,static,NBD215grProgram.do,27
+B41,10,Other infectious diseases,static,NBD215grProgram.do,27
+B42,10,Other infectious diseases,static,NBD215grProgram.do,27
+B43,10,Other infectious diseases,static,NBD215grProgram.do,27
+B44,10,Other infectious diseases,static,NBD215grProgram.do,27
+B45,215,HIV Pseudonyms,static,NBD215grProgram.do,263
+B46,10,Other infectious diseases,static,NBD215grProgram.do,27
+B47,10,Other infectious diseases,static,NBD215grProgram.do,27
+B48,10,Other infectious diseases,static,NBD215grProgram.do,27
+B49,10,Other infectious diseases,static,NBD215grProgram.do,27
+B50,6,Malaria,static,NBD215grProgram.do,15
+B51,6,Malaria,static,NBD215grProgram.do,15
+B52,6,Malaria,static,NBD215grProgram.do,15
+B53,6,Malaria,static,NBD215grProgram.do,15
+B54,6,Malaria,static,NBD215grProgram.do,15
+B55,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+B56,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+B57,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+B58,10,Other infectious diseases,static,NBD215grProgram.do,29
+B59,215,HIV Pseudonyms,static,NBD215grProgram.do,263
+B60,10,Other infectious diseases,static,NBD215grProgram.do,28
+B61,10,Other infectious diseases,static,NBD215grProgram.do,28
+B62,10,Other infectious diseases,static,NBD215grProgram.do,28
+B63,10,Other infectious diseases,static,NBD215grProgram.do,28
+B64,10,Other infectious diseases,static,NBD215grProgram.do,28
+B65,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+B66,10,Other infectious diseases,static,NBD215grProgram.do,29
+B67,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+B68,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+B69,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+B70,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+B71,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+B72,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+B73,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+B74,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+B75,10,Other infectious diseases,static,NBD215grProgram.do,30
+B76,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+B77,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+B78,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+B79,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+B80,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+B81,7,"Intestinal parasites, other parasitic and vector diseases",static,NBD215grProgram.do,17
+B82,153,Unspecified intestinal parasitism,static,NBD215grProgram.do,203
+B83,10,Other infectious diseases,static,NBD215grProgram.do,30
+B85,107,Skin diseases,static,NBD215grProgram.do,152
+B86,107,Skin diseases,static,NBD215grProgram.do,152
+B87,107,Skin diseases,static,NBD215grProgram.do,152
+B88,107,Skin diseases,static,NBD215grProgram.do,152
+B89,154,Unspecified parasitic disease,static,NBD215grProgram.do,204
+B90,1,Tuberculosis,static,NBD215grProgram.do,2
+B91,5,Vaccine preventable childhood,static,NBD215grProgram.do,11
+B92,10,Other infectious diseases,static,NBD215grProgram.do,30
+B94,191,Sequelae of other and unspecified infectious and parasitic diseases,static,NBD215grProgram.do,239
+B95,10,Other infectious diseases,static,NBD215grProgram.do,28
+B96,10,Other infectious diseases,static,NBD215grProgram.do,28
+B97,10,Other infectious diseases,static,NBD215grProgram.do,28
+B98,10,Other infectious diseases,static,NBD215grProgram.do,28
+B99,10,Other infectious diseases,static,NBD215grProgram.do,28
+C00,28,Mouth and oropharynx,static,NBD215grProgram.do,63
+C01,28,Mouth and oropharynx,static,NBD215grProgram.do,63
+C02,28,Mouth and oropharynx,static,NBD215grProgram.do,63
+C03,28,Mouth and oropharynx,static,NBD215grProgram.do,63
+C04,28,Mouth and oropharynx,static,NBD215grProgram.do,63
+C05,28,Mouth and oropharynx,static,NBD215grProgram.do,63
+C06,28,Mouth and oropharynx,static,NBD215grProgram.do,63
+C07,28,Mouth and oropharynx,static,NBD215grProgram.do,63
+C08,28,Mouth and oropharynx,static,NBD215grProgram.do,63
+C09,29,Nasopharynx cancer and other pharynx cancer,static,NBD215grProgram.do,64
+C10,29,Nasopharynx cancer and other pharynx cancer,static,NBD215grProgram.do,64
+C11,29,Nasopharynx cancer and other pharynx cancer,static,NBD215grProgram.do,64
+C12,29,Nasopharynx cancer and other pharynx cancer,static,NBD215grProgram.do,64
+C13,29,Nasopharynx cancer and other pharynx cancer,static,NBD215grProgram.do,64
+C14,155,"Malignant neoplasm of other and ill-defined sites in the lip, oral cavity and pharynx",static,NBD215grProgram.do,205
+C15,30,Oesophagus,static,NBD215grProgram.do,65
+C16,31,Stomach,static,NBD215grProgram.do,66
+C17,54,Other malignant neoplasms,static,NBD215grProgram.do,91
+C18,32,Colo-rectal,static,NBD215grProgram.do,67
+C19,32,Colo-rectal,static,NBD215grProgram.do,67
+C20,32,Colo-rectal,static,NBD215grProgram.do,67
+C21,32,Colo-rectal,static,NBD215grProgram.do,67
+C22,33,Liver,static,NBD215grProgram.do,68
+C23,34,Gallbladder and biliary tract,static,NBD215grProgram.do,69
+C24,34,Gallbladder and biliary tract,static,NBD215grProgram.do,69
+C25,35,Pancreas,static,NBD215grProgram.do,70
+C26,156,Malignant neoplasm of other and ill-defined digestive organs,static,NBD215grProgram.do,206
+C30,54,Other malignant neoplasms,static,NBD215grProgram.do,89
+C31,54,Other malignant neoplasms,static,NBD215grProgram.do,89
+C32,36,Larynx,static,NBD215grProgram.do,71
+C33,37,Trachea/bronchi/lung,static,NBD215grProgram.do,72
+C34,37,Trachea/bronchi/lung,static,NBD215grProgram.do,72
+C37,54,Other malignant neoplasms,static,NBD215grProgram.do,89
+C38,54,Other malignant neoplasms,static,NBD215grProgram.do,89
+C39,157,Malignant neoplasm of other and ill-defined sites in the respiratory system and intrathoracic organs,static,NBD215grProgram.do,207
+C40,54,Other malignant neoplasms,static,NBD215grProgram.do,89
+C41,54,Other malignant neoplasms,static,NBD215grProgram.do,89
+C43,38,Melanoma,static,NBD215grProgram.do,73
+C44,39,Other skin cancer,static,NBD215grProgram.do,74
+C45,54,Other malignant neoplasms,static,NBD215grProgram.do,91
+C46,215,HIV Pseudonyms,static,NBD215grProgram.do,263
+C47,54,Other malignant neoplasms,static,NBD215grProgram.do,89
+C48,54,Other malignant neoplasms,static,NBD215grProgram.do,89
+C49,54,Other malignant neoplasms,static,NBD215grProgram.do,89
+C50,40,Breast,static,NBD215grProgram.do,75
+C51,54,Other malignant neoplasms,static,NBD215grProgram.do,90
+C52,54,Other malignant neoplasms,static,NBD215grProgram.do,90
+C53,41,Cervix,static,NBD215grProgram.do,76
+C54,42,Corpus uteri,static,NBD215grProgram.do,77
+C55,42,Corpus uteri,static,NBD215grProgram.do,77
+C56,43,Ovary,static,NBD215grProgram.do,78
+C57,54,Other malignant neoplasms,static,NBD215grProgram.do,90
+C58,54,Other malignant neoplasms,static,NBD215grProgram.do,90
+C60,54,Other malignant neoplasms,static,NBD215grProgram.do,91
+C61,44,Prostate,static,NBD215grProgram.do,79
+C62,45,Testis cancer,static,NBD215grProgram.do,80
+C63,54,Other malignant neoplasms,static,NBD215grProgram.do,91
+C64,47,Kidney,static,NBD215grProgram.do,82
+C65,47,Kidney,static,NBD215grProgram.do,82
+C66,47,Kidney,static,NBD215grProgram.do,82
+C67,46,Bladder,static,NBD215grProgram.do,81
+C68,47,Kidney,static,NBD215grProgram.do,82
+C69,54,Other malignant neoplasms,static,NBD215grProgram.do,91
+C70,48,Brain,static,NBD215grProgram.do,83
+C71,48,Brain,static,NBD215grProgram.do,83
+C72,48,Brain,static,NBD215grProgram.do,83
+C73,49,Thyroid,static,NBD215grProgram.do,84
+C74,54,Other malignant neoplasms,static,NBD215grProgram.do,90
+C75,54,Other malignant neoplasms,static,NBD215grProgram.do,90
+C76,145,Malignant neoplasm without specification of site,static,NBD215grProgram.do,195
+C77,54,Other malignant neoplasms,static,NBD215grProgram.do,91
+C78,54,Other malignant neoplasms,static,NBD215grProgram.do,91
+C79,54,Other malignant neoplasms,static,NBD215grProgram.do,91
+C80,145,Malignant neoplasm without specification of site,static,NBD215grProgram.do,195
+C81,50,Hodgkin's lymphoma,static,NBD215grProgram.do,85
+C82,51,Non-Hodgkins lymphoma,static,NBD215grProgram.do,86
+C83,51,Non-Hodgkins lymphoma,static,NBD215grProgram.do,86
+C84,51,Non-Hodgkins lymphoma,static,NBD215grProgram.do,86
+C85,51,Non-Hodgkins lymphoma,static,NBD215grProgram.do,86
+C86,51,Non-Hodgkins lymphoma,static,NBD215grProgram.do,86
+C88,52,Multiple myeloma,static,NBD215grProgram.do,87
+C90,52,Multiple myeloma,static,NBD215grProgram.do,87
+C91,53,Leukaemia,static,NBD215grProgram.do,88
+C92,53,Leukaemia,static,NBD215grProgram.do,88
+C93,53,Leukaemia,static,NBD215grProgram.do,88
+C94,53,Leukaemia,static,NBD215grProgram.do,88
+C95,53,Leukaemia,static,NBD215grProgram.do,88
+C96,51,Non-Hodgkins lymphoma,static,NBD215grProgram.do,86
+C97,54,Other malignant neoplasms,static,NBD215grProgram.do,91
+D00,55,Other neoplasms,static,NBD215grProgram.do,92
+D01,55,Other neoplasms,static,NBD215grProgram.do,92
+D02,55,Other neoplasms,static,NBD215grProgram.do,92
+D03,55,Other neoplasms,static,NBD215grProgram.do,92
+D04,55,Other neoplasms,static,NBD215grProgram.do,92
+D05,55,Other neoplasms,static,NBD215grProgram.do,92
+D06,55,Other neoplasms,static,NBD215grProgram.do,92
+D07,55,Other neoplasms,static,NBD215grProgram.do,92
+D08,55,Other neoplasms,static,NBD215grProgram.do,92
+D09,55,Other neoplasms,static,NBD215grProgram.do,92
+D10,55,Other neoplasms,static,NBD215grProgram.do,92
+D11,55,Other neoplasms,static,NBD215grProgram.do,92
+D12,55,Other neoplasms,static,NBD215grProgram.do,92
+D13,55,Other neoplasms,static,NBD215grProgram.do,92
+D14,55,Other neoplasms,static,NBD215grProgram.do,92
+D15,55,Other neoplasms,static,NBD215grProgram.do,92
+D16,55,Other neoplasms,static,NBD215grProgram.do,92
+D17,55,Other neoplasms,static,NBD215grProgram.do,92
+D18,55,Other neoplasms,static,NBD215grProgram.do,92
+D19,55,Other neoplasms,static,NBD215grProgram.do,92
+D20,55,Other neoplasms,static,NBD215grProgram.do,92
+D21,55,Other neoplasms,static,NBD215grProgram.do,92
+D22,55,Other neoplasms,static,NBD215grProgram.do,92
+D23,55,Other neoplasms,static,NBD215grProgram.do,92
+D24,55,Other neoplasms,static,NBD215grProgram.do,92
+D25,55,Other neoplasms,static,NBD215grProgram.do,92
+D26,55,Other neoplasms,static,NBD215grProgram.do,92
+D27,55,Other neoplasms,static,NBD215grProgram.do,92
+D28,55,Other neoplasms,static,NBD215grProgram.do,92
+D29,55,Other neoplasms,static,NBD215grProgram.do,92
+D30,55,Other neoplasms,static,NBD215grProgram.do,92
+D31,55,Other neoplasms,static,NBD215grProgram.do,92
+D32,55,Other neoplasms,static,NBD215grProgram.do,92
+D33,55,Other neoplasms,static,NBD215grProgram.do,92
+D34,55,Other neoplasms,static,NBD215grProgram.do,92
+D35,55,Other neoplasms,static,NBD215grProgram.do,92
+D36,55,Other neoplasms,static,NBD215grProgram.do,92
+D37,55,Other neoplasms,static,NBD215grProgram.do,92
+D38,55,Other neoplasms,static,NBD215grProgram.do,92
+D39,55,Other neoplasms,static,NBD215grProgram.do,92
+D40,55,Other neoplasms,static,NBD215grProgram.do,92
+D41,55,Other neoplasms,static,NBD215grProgram.do,92
+D42,55,Other neoplasms,static,NBD215grProgram.do,92
+D43,55,Other neoplasms,static,NBD215grProgram.do,92
+D44,55,Other neoplasms,static,NBD215grProgram.do,92
+D45,55,Other neoplasms,static,NBD215grProgram.do,92
+D46,55,Other neoplasms,static,NBD215grProgram.do,92
+D47,55,Other neoplasms,static,NBD215grProgram.do,92
+D48,55,Other neoplasms,static,NBD215grProgram.do,92
+D50,26,Iron deficiency anaemia,static,NBD215grProgram.do,61
+D51,27,Other nutritional disorders,static,NBD215grProgram.do,62
+D52,27,Other nutritional disorders,static,NBD215grProgram.do,62
+D53,27,Other nutritional disorders,static,NBD215grProgram.do,62
+D55,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,94
+D56,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,94
+D57,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,94
+D58,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,94
+D59,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,94
+D60,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,94
+D61,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,94
+D62,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,94
+D64,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,94
+D65,202,Disseminated intravascular coagulation [defibrination syndrome],static,NBD215grProgram.do,250
+D66,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D67,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D68,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D69,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D70,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D71,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D72,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D73,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D74,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D75,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D76,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D77,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D78,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D79,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D80,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D81,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D82,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D83,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D84,215,HIV Pseudonyms,static,NBD215grProgram.do,263
+D86,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D87,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D88,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+D89,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E00,27,Other nutritional disorders,static,NBD215grProgram.do,62
+E01,27,Other nutritional disorders,static,NBD215grProgram.do,62
+E02,27,Other nutritional disorders,static,NBD215grProgram.do,62
+E03,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E04,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E05,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E06,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E07,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E10,56,Diabetes mellitus,static,NBD215grProgram.do,93
+E11,56,Diabetes mellitus,static,NBD215grProgram.do,93
+E12,56,Diabetes mellitus,static,NBD215grProgram.do,93
+E13,56,Diabetes mellitus,static,NBD215grProgram.do,93
+E14,56,Diabetes mellitus,static,NBD215grProgram.do,93
+E15,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E16,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E20,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E21,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E22,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E23,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E24,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E25,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E26,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E27,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E28,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E29,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E30,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E31,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E32,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,95
+E34,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,94
+E40,24,Protein-energy malnutrition,static,NBD215grProgram.do,59
+E41,24,Protein-energy malnutrition,static,NBD215grProgram.do,59
+E42,24,Protein-energy malnutrition,static,NBD215grProgram.do,59
+E43,24,Protein-energy malnutrition,static,NBD215grProgram.do,59
+E44,24,Protein-energy malnutrition,static,NBD215grProgram.do,59
+E45,24,Protein-energy malnutrition,static,NBD215grProgram.do,59
+E46,24,Protein-energy malnutrition,static,NBD215grProgram.do,59
+E50,25,Vitamin A deficiency,static,NBD215grProgram.do,60
+E51,27,Other nutritional disorders,static,NBD215grProgram.do,62
+E52,27,Other nutritional disorders,static,NBD215grProgram.do,62
+E53,27,Other nutritional disorders,static,NBD215grProgram.do,62
+E54,27,Other nutritional disorders,static,NBD215grProgram.do,62
+E55,27,Other nutritional disorders,static,NBD215grProgram.do,62
+E56,27,Other nutritional disorders,static,NBD215grProgram.do,62
+E57,27,Other nutritional disorders,static,NBD215grProgram.do,62
+E58,27,Other nutritional disorders,static,NBD215grProgram.do,62
+E59,27,Other nutritional disorders,static,NBD215grProgram.do,62
+E60,27,Other nutritional disorders,static,NBD215grProgram.do,62
+E61,27,Other nutritional disorders,static,NBD215grProgram.do,62
+E62,27,Other nutritional disorders,static,NBD215grProgram.do,62
+E63,27,Other nutritional disorders,static,NBD215grProgram.do,62
+E64,192,Sequelae of malnutrition and other nutritional deficiencies,static,NBD215grProgram.do,240
+E65,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,96
+E66,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,96
+E67,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,96
+E68,162,Seqence of hyperalimentation,static,NBD215grProgram.do,212
+E70,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,96
+E71,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,96
+E72,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,96
+E73,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,96
+E74,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,96
+E75,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,96
+E76,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,96
+E77,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,96
+E78,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,96
+E79,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,96
+E80,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,96
+E83,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,96
+E84,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,96
+E85,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,96
+E86,143,Ill defined natural,static,NBD215grProgram.do,192
+E87,143,Ill defined natural,static,NBD215grProgram.do,192
+E88,57,"Endocrine nutritional,blood and immune disorders",static,NBD215grProgram.do,94
+F00,69,Alzheimer and other degenerative diseases of nervous system,static,NBD215grProgram.do,109
+F01,69,Alzheimer and other degenerative diseases of nervous system,static,NBD215grProgram.do,109
+F03,69,Alzheimer and other degenerative diseases of nervous system,static,NBD215grProgram.do,109
+F04,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F05,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F06,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F07,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F09,68,Other mental and behavioural disorders,static,NBD215grProgram.do,108
+F10,61,Alcohol dependence,static,NBD215grProgram.do,100
+F11,62,Drug use,static,NBD215grProgram.do,101
+F12,62,Drug use,static,NBD215grProgram.do,101
+F13,62,Drug use,static,NBD215grProgram.do,101
+F14,62,Drug use,static,NBD215grProgram.do,101
+F15,62,Drug use,static,NBD215grProgram.do,101
+F16,62,Drug use,static,NBD215grProgram.do,101
+F17,68,Other mental and behavioural disorders,static,NBD215grProgram.do,108
+F18,62,Drug use,static,NBD215grProgram.do,101
+F19,62,Drug use,static,NBD215grProgram.do,101
+F20,60,Schizophrenia,static,NBD215grProgram.do,99
+F21,60,Schizophrenia,static,NBD215grProgram.do,99
+F22,60,Schizophrenia,static,NBD215grProgram.do,99
+F23,60,Schizophrenia,static,NBD215grProgram.do,99
+F24,60,Schizophrenia,static,NBD215grProgram.do,99
+F25,60,Schizophrenia,static,NBD215grProgram.do,99
+F26,60,Schizophrenia,static,NBD215grProgram.do,99
+F27,60,Schizophrenia,static,NBD215grProgram.do,99
+F28,60,Schizophrenia,static,NBD215grProgram.do,99
+F29,60,Schizophrenia,static,NBD215grProgram.do,99
+F30,59,Bipolar,static,NBD215grProgram.do,98
+F31,59,Bipolar,static,NBD215grProgram.do,98
+F32,58,Unipolar,static,NBD215grProgram.do,97
+F33,58,Unipolar,static,NBD215grProgram.do,97
+F34,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F35,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F36,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F37,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F38,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F39,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F40,63,Anxiety disorders,static,NBD215grProgram.do,102
+F41,63,Anxiety disorders,static,NBD215grProgram.do,102
+F42,63,Anxiety disorders,static,NBD215grProgram.do,102
+F43,63,Anxiety disorders,static,NBD215grProgram.do,102
+F44,63,Anxiety disorders,static,NBD215grProgram.do,102
+F45,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F46,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F47,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F48,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F50,64,Eating disorders,static,NBD215grProgram.do,103
+F51,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F52,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F53,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F54,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F55,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F56,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F57,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F58,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F59,68,Other mental and behavioural disorders,static,NBD215grProgram.do,107
+F60,68,Other mental and behavioural disorders,static,NBD215grProgram.do,108
+F61,68,Other mental and behavioural disorders,static,NBD215grProgram.do,108
+F62,68,Other mental and behavioural disorders,static,NBD215grProgram.do,108
+F63,68,Other mental and behavioural disorders,static,NBD215grProgram.do,108
+F64,68,Other mental and behavioural disorders,static,NBD215grProgram.do,108
+F65,68,Other mental and behavioural disorders,static,NBD215grProgram.do,108
+F66,68,Other mental and behavioural disorders,static,NBD215grProgram.do,108
+F67,68,Other mental and behavioural disorders,static,NBD215grProgram.do,108
+F68,68,Other mental and behavioural disorders,static,NBD215grProgram.do,108
+F69,68,Other mental and behavioural disorders,static,NBD215grProgram.do,108
+F70,67,Mental retardation not included as sequelae elsewhere,static,NBD215grProgram.do,106
+F71,67,Mental retardation not included as sequelae elsewhere,static,NBD215grProgram.do,106
+F72,67,Mental retardation not included as sequelae elsewhere,static,NBD215grProgram.do,106
+F73,67,Mental retardation not included as sequelae elsewhere,static,NBD215grProgram.do,106
+F78,67,Mental retardation not included as sequelae elsewhere,static,NBD215grProgram.do,106
+F79,67,Mental retardation not included as sequelae elsewhere,static,NBD215grProgram.do,106
+F80,65,Development disorders,static,NBD215grProgram.do,104
+F81,65,Development disorders,static,NBD215grProgram.do,104
+F82,65,Development disorders,static,NBD215grProgram.do,104
+F84,65,Development disorders,static,NBD215grProgram.do,104
+F88,65,Development disorders,static,NBD215grProgram.do,104
+F89,65,Development disorders,static,NBD215grProgram.do,104
+F90,66,Childhood behaviour disorders,static,NBD215grProgram.do,105
+F91,66,Childhood behaviour disorders,static,NBD215grProgram.do,105
+F92,66,Childhood behaviour disorders,static,NBD215grProgram.do,105
+F93,68,Other mental and behavioural disorders,static,NBD215grProgram.do,108
+F94,68,Other mental and behavioural disorders,static,NBD215grProgram.do,108
+F95,68,Other mental and behavioural disorders,static,NBD215grProgram.do,108
+F96,68,Other mental and behavioural disorders,static,NBD215grProgram.do,108
+F97,68,Other mental and behavioural disorders,static,NBD215grProgram.do,108
+F98,68,Other mental and behavioural disorders,static,NBD215grProgram.do,108
+F99,148,"Mental disorder, not otherwise specified",static,NBD215grProgram.do,198
+G00,8,Meningitis,static,NBD215grProgram.do,19
+G01,8,Meningitis,static,NBD215grProgram.do,19
+G02,8,Meningitis,static,NBD215grProgram.do,19
+G03,8,Meningitis,static,NBD215grProgram.do,19
+G04,212,Encephalitis,static,NBD215grProgram.do,260
+G05,8,Meningitis,static,NBD215grProgram.do,19
+G06,75,Other neurological conditions,static,NBD215grProgram.do,116
+G07,75,Other neurological conditions,static,NBD215grProgram.do,116
+G08,75,Other neurological conditions,static,NBD215grProgram.do,116
+G09,193,Sequelae of inflammatory diseases of central nervous system,static,NBD215grProgram.do,241
+G10,75,Other neurological conditions,static,NBD215grProgram.do,116
+G11,75,Other neurological conditions,static,NBD215grProgram.do,116
+G12,75,Other neurological conditions,static,NBD215grProgram.do,116
+G13,75,Other neurological conditions,static,NBD215grProgram.do,118
+G14,75,Other neurological conditions,static,NBD215grProgram.do,118
+G20,70,Parkisons disease,static,NBD215grProgram.do,111
+G21,70,Parkisons disease,static,NBD215grProgram.do,111
+G22,75,Other neurological conditions,static,NBD215grProgram.do,118
+G23,75,Other neurological conditions,static,NBD215grProgram.do,118
+G24,75,Other neurological conditions,static,NBD215grProgram.do,118
+G25,75,Other neurological conditions,static,NBD215grProgram.do,118
+G30,69,Alzheimer and other degenerative diseases of nervous system,static,NBD215grProgram.do,109
+G31,69,Alzheimer and other degenerative diseases of nervous system,static,NBD215grProgram.do,109
+G32,75,Other neurological conditions,static,NBD215grProgram.do,118
+G35,71,Multiple sclerosis,static,NBD215grProgram.do,112
+G36,75,Other neurological conditions,static,NBD215grProgram.do,116
+G37,75,Other neurological conditions,static,NBD215grProgram.do,116
+G40,72,Epilepsy,static,NBD215grProgram.do,113
+G41,72,Epilepsy,static,NBD215grProgram.do,113
+G43,73,Migraine,static,NBD215grProgram.do,114
+G44,74,Non-migraine headache,static,NBD215grProgram.do,115
+G45,75,Other neurological conditions,static,NBD215grProgram.do,116
+G46,75,Other neurological conditions,static,NBD215grProgram.do,116
+G47,75,Other neurological conditions,static,NBD215grProgram.do,116
+G50,75,Other neurological conditions,static,NBD215grProgram.do,116
+G51,75,Other neurological conditions,static,NBD215grProgram.do,116
+G52,75,Other neurological conditions,static,NBD215grProgram.do,116
+G53,75,Other neurological conditions,static,NBD215grProgram.do,116
+G54,75,Other neurological conditions,static,NBD215grProgram.do,116
+G55,75,Other neurological conditions,static,NBD215grProgram.do,116
+G56,75,Other neurological conditions,static,NBD215grProgram.do,116
+G57,75,Other neurological conditions,static,NBD215grProgram.do,116
+G58,75,Other neurological conditions,static,NBD215grProgram.do,116
+G59,75,Other neurological conditions,static,NBD215grProgram.do,116
+G60,75,Other neurological conditions,static,NBD215grProgram.do,117
+G61,75,Other neurological conditions,static,NBD215grProgram.do,117
+G62,75,Other neurological conditions,static,NBD215grProgram.do,117
+G63,75,Other neurological conditions,static,NBD215grProgram.do,117
+G64,75,Other neurological conditions,static,NBD215grProgram.do,117
+G70,75,Other neurological conditions,static,NBD215grProgram.do,117
+G71,75,Other neurological conditions,static,NBD215grProgram.do,117
+G72,75,Other neurological conditions,static,NBD215grProgram.do,117
+G81,195,Hemiplegia,static,NBD215grProgram.do,243
+G82,196,Paraplegia and tetraplegia,static,NBD215grProgram.do,244
+G83,197,Other paralytic syndromes,static,NBD215grProgram.do,245
+G90,75,Other neurological conditions,static,NBD215grProgram.do,117
+G91,75,Other neurological conditions,static,NBD215grProgram.do,117
+G92,165,Toxic encephalopathy,static,NBD215grProgram.do,213
+G93,209,Other disorders of brain (encaphalitis),static,NBD215grProgram.do,257
+G95,75,Other neurological conditions,static,NBD215grProgram.do,117
+G96,75,Other neurological conditions,static,NBD215grProgram.do,117
+G97,75,Other neurological conditions,static,NBD215grProgram.do,117
+G98,75,Other neurological conditions,static,NBD215grProgram.do,117
+H00,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H01,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H02,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H03,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H04,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H05,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H06,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H07,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H08,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H09,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H10,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H11,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H12,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H13,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H14,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H15,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H16,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H17,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H18,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H19,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H20,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H21,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H25,77,Cataracts,static,NBD215grProgram.do,120
+H26,77,Cataracts,static,NBD215grProgram.do,120
+H27,80,Other sense organ disorders,static,NBD215grProgram.do,124
+H30,79,Other vision loss,static,NBD215grProgram.do,122
+H31,79,Other vision loss,static,NBD215grProgram.do,122
+H32,79,Other vision loss,static,NBD215grProgram.do,122
+H33,79,Other vision loss,static,NBD215grProgram.do,122
+H34,79,Other vision loss,static,NBD215grProgram.do,122
+H35,79,Other vision loss,static,NBD215grProgram.do,122
+H40,76,Glaucoma,static,NBD215grProgram.do,119
+H43,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H44,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H45,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H46,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H47,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H49,79,Other vision loss,static,NBD215grProgram.do,122
+H50,79,Other vision loss,static,NBD215grProgram.do,122
+H51,79,Other vision loss,static,NBD215grProgram.do,122
+H52,79,Other vision loss,static,NBD215grProgram.do,122
+H53,79,Other vision loss,static,NBD215grProgram.do,122
+H54,79,Other vision loss,static,NBD215grProgram.do,122
+H55,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H56,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H57,80,Other sense organ disorders,static,NBD215grProgram.do,123
+H60,80,Other sense organ disorders,static,NBD215grProgram.do,124
+H61,80,Other sense organ disorders,static,NBD215grProgram.do,124
+H65,13,Otitis media,static,NBD215grProgram.do,39
+H66,13,Otitis media,static,NBD215grProgram.do,39
+H68,80,Other sense organ disorders,static,NBD215grProgram.do,124
+H69,80,Other sense organ disorders,static,NBD215grProgram.do,124
+H70,80,Other sense organ disorders,static,NBD215grProgram.do,124
+H71,80,Other sense organ disorders,static,NBD215grProgram.do,124
+H72,80,Other sense organ disorders,static,NBD215grProgram.do,124
+H73,80,Other sense organ disorders,static,NBD215grProgram.do,124
+H74,80,Other sense organ disorders,static,NBD215grProgram.do,124
+H75,80,Other sense organ disorders,static,NBD215grProgram.do,124
+H76,80,Other sense organ disorders,static,NBD215grProgram.do,124
+H77,80,Other sense organ disorders,static,NBD215grProgram.do,124
+H78,80,Other sense organ disorders,static,NBD215grProgram.do,124
+H79,80,Other sense organ disorders,static,NBD215grProgram.do,124
+H80,80,Other sense organ disorders,static,NBD215grProgram.do,124
+H81,80,Other sense organ disorders,static,NBD215grProgram.do,124
+H82,80,Other sense organ disorders,static,NBD215grProgram.do,124
+H83,80,Other sense organ disorders,static,NBD215grProgram.do,124
+H90,78,Hearing loss not due to other diseases or injuries,static,NBD215grProgram.do,121
+H91,78,Hearing loss not due to other diseases or injuries,static,NBD215grProgram.do,121
+H92,80,Other sense organ disorders,static,NBD215grProgram.do,124
+H93,80,Other sense organ disorders,static,NBD215grProgram.do,124
+I00,81,Rheumatic heart disease,static,NBD215grProgram.do,125
+I01,81,Rheumatic heart disease,static,NBD215grProgram.do,125
+I02,81,Rheumatic heart disease,static,NBD215grProgram.do,125
+I03,81,Rheumatic heart disease,static,NBD215grProgram.do,125
+I04,81,Rheumatic heart disease,static,NBD215grProgram.do,125
+I05,81,Rheumatic heart disease,static,NBD215grProgram.do,125
+I06,81,Rheumatic heart disease,static,NBD215grProgram.do,125
+I07,81,Rheumatic heart disease,static,NBD215grProgram.do,125
+I08,81,Rheumatic heart disease,static,NBD215grProgram.do,125
+I09,81,Rheumatic heart disease,static,NBD215grProgram.do,125
+I10,82,Hypertensive heart disease,static,NBD215grProgram.do,126
+I11,82,Hypertensive heart disease,static,NBD215grProgram.do,126
+I12,82,Hypertensive heart disease,static,NBD215grProgram.do,126
+I13,82,Hypertensive heart disease,static,NBD215grProgram.do,126
+I15,207,Secondary hypertension,static,NBD215grProgram.do,255
+I20,83,Ischaemic heart disease,static,NBD215grProgram.do,127
+I21,83,Ischaemic heart disease,static,NBD215grProgram.do,127
+I22,83,Ischaemic heart disease,static,NBD215grProgram.do,127
+I23,83,Ischaemic heart disease,static,NBD215grProgram.do,127
+I24,83,Ischaemic heart disease,static,NBD215grProgram.do,127
+I25,83,Ischaemic heart disease,static,NBD215grProgram.do,127
+I26,166,Pulmonary embolism,static,NBD215grProgram.do,214
+I27,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I28,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I30,84,"Pericarditis, endocarditis and myocarditis",static,NBD215grProgram.do,128
+I31,84,"Pericarditis, endocarditis and myocarditis",static,NBD215grProgram.do,128
+I33,84,"Pericarditis, endocarditis and myocarditis",static,NBD215grProgram.do,128
+I34,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I35,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I36,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I37,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I38,84,"Pericarditis, endocarditis and myocarditis",static,NBD215grProgram.do,128
+I39,84,"Pericarditis, endocarditis and myocarditis",static,NBD215grProgram.do,128
+I40,84,"Pericarditis, endocarditis and myocarditis",static,NBD215grProgram.do,128
+I42,85,Cardiomyopathy,static,NBD215grProgram.do,129
+I44,167,Atrioventricular and left bundle-branch block,static,NBD215grProgram.do,215
+I45,168,Other conduction disorders,static,NBD215grProgram.do,216
+I46,203,Cardiac arrest,static,NBD215grProgram.do,251
+I47,87,Conduction disorders and other dysrythmias,static,NBD215grProgram.do,131
+I48,87,Conduction disorders and other dysrythmias,static,NBD215grProgram.do,131
+I49,204,Other cardiac arrhythmias,static,NBD215grProgram.do,252
+I50,205,Heart failure,static,NBD215grProgram.do,253
+I51,146,Ill defined descriptions of heart disease and unspecified disorders of circulatory system,static,NBD215grProgram.do,196
+I60,86,Cerebrovascular disease,static,NBD215grProgram.do,130
+I61,86,Cerebrovascular disease,static,NBD215grProgram.do,130
+I62,86,Cerebrovascular disease,static,NBD215grProgram.do,130
+I63,86,Cerebrovascular disease,static,NBD215grProgram.do,130
+I64,86,Cerebrovascular disease,static,NBD215grProgram.do,130
+I65,86,Cerebrovascular disease,static,NBD215grProgram.do,130
+I66,86,Cerebrovascular disease,static,NBD215grProgram.do,130
+I67,86,Cerebrovascular disease,static,NBD215grProgram.do,130
+I68,86,Cerebrovascular disease,static,NBD215grProgram.do,130
+I69,86,Cerebrovascular disease,static,NBD215grProgram.do,130
+I70,208,Atherosclerosis,static,NBD215grProgram.do,256
+I71,88,Aortic aneurism,static,NBD215grProgram.do,132
+I72,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I73,89,Peripheral vascular disorders,static,NBD215grProgram.do,133
+I74,169,Arterial embolism and thrombosis,static,NBD215grProgram.do,217
+I77,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I78,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I80,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I81,170,Portal vein thrombosis,static,NBD215grProgram.do,218
+I82,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I83,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I84,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I85,174,Oesophageal varices,static,NBD215grProgram.do,222
+I86,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I87,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I88,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I89,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I95,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I96,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I97,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I98,90,Other circulatory diseases,static,NBD215grProgram.do,134
+I99,147,Hypertension,static,NBD215grProgram.do,197
+J00,12,Upper respiratory infections,static,NBD215grProgram.do,38
+J01,12,Upper respiratory infections,static,NBD215grProgram.do,38
+J02,12,Upper respiratory infections,static,NBD215grProgram.do,38
+J03,12,Upper respiratory infections,static,NBD215grProgram.do,38
+J04,12,Upper respiratory infections,static,NBD215grProgram.do,38
+J05,12,Upper respiratory infections,static,NBD215grProgram.do,38
+J06,12,Upper respiratory infections,static,NBD215grProgram.do,38
+J09,11,Lower respiratory infections,static,NBD215grProgram.do,32
+J10,11,Lower respiratory infections,static,NBD215grProgram.do,32
+J11,11,Lower respiratory infections,static,NBD215grProgram.do,32
+J12,11,Lower respiratory infections,static,NBD215grProgram.do,32
+J13,11,Lower respiratory infections,static,NBD215grProgram.do,32
+J14,11,Lower respiratory infections,static,NBD215grProgram.do,32
+J15,11,Lower respiratory infections,static,NBD215grProgram.do,32
+J16,11,Lower respiratory infections,static,NBD215grProgram.do,32
+J17,11,Lower respiratory infections,static,NBD215grProgram.do,32
+J18,11,Lower respiratory infections,static,NBD215grProgram.do,32
+J20,11,Lower respiratory infections,static,NBD215grProgram.do,32
+J21,11,Lower respiratory infections,static,NBD215grProgram.do,32
+J22,11,Lower respiratory infections,static,NBD215grProgram.do,32
+J30,95,Other respiratory,static,NBD215grProgram.do,139
+J31,95,Other respiratory,static,NBD215grProgram.do,139
+J32,95,Other respiratory,static,NBD215grProgram.do,139
+J33,95,Other respiratory,static,NBD215grProgram.do,139
+J34,95,Other respiratory,static,NBD215grProgram.do,139
+J35,95,Other respiratory,static,NBD215grProgram.do,139
+J36,95,Other respiratory,static,NBD215grProgram.do,139
+J37,95,Other respiratory,static,NBD215grProgram.do,139
+J38,95,Other respiratory,static,NBD215grProgram.do,139
+J39,95,Other respiratory,static,NBD215grProgram.do,139
+J40,91,Copd,static,NBD215grProgram.do,135
+J41,91,Copd,static,NBD215grProgram.do,135
+J42,91,Copd,static,NBD215grProgram.do,135
+J43,91,Copd,static,NBD215grProgram.do,135
+J44,91,Copd,static,NBD215grProgram.do,135
+J45,93,Asthma,static,NBD215grProgram.do,137
+J46,93,Asthma,static,NBD215grProgram.do,137
+J47,95,Other respiratory,static,NBD215grProgram.do,139
+J60,92,Pneumoconiosis,static,NBD215grProgram.do,136
+J61,92,Pneumoconiosis,static,NBD215grProgram.do,136
+J62,92,Pneumoconiosis,static,NBD215grProgram.do,136
+J63,92,Pneumoconiosis,static,NBD215grProgram.do,136
+J64,92,Pneumoconiosis,static,NBD215grProgram.do,136
+J65,92,Pneumoconiosis,static,NBD215grProgram.do,136
+J66,95,Other respiratory,static,NBD215grProgram.do,139
+J67,95,Other respiratory,static,NBD215grProgram.do,139
+J68,95,Other respiratory,static,NBD215grProgram.do,139
+J69,171,Pneumonitis due to solids and liquids,static,NBD215grProgram.do,219
+J70,95,Other respiratory,static,NBD215grProgram.do,139
+J80,172,Adult respiratory distress syndrome,static,NBD215grProgram.do,220
+J81,173,Pulmonary oedema,static,NBD215grProgram.do,221
+J82,95,Other respiratory,static,NBD215grProgram.do,139
+J84,94,Other interstitial lung disease,static,NBD215grProgram.do,138
+J85,95,Other respiratory,static,NBD215grProgram.do,139
+J86,175,Pyothorax,static,NBD215grProgram.do,223
+J90,176,"Pleural effusion, not elsewhere classified",static,NBD215grProgram.do,224
+J91,95,Other respiratory,static,NBD215grProgram.do,139
+J92,95,Other respiratory,static,NBD215grProgram.do,139
+J93,177,Pneumothorax,static,NBD215grProgram.do,225
+J94,178,Other pleural conditions,static,NBD215grProgram.do,226
+J95,95,Other respiratory,static,NBD215grProgram.do,139
+J96,206,"Respiratory failure, not elsewhere classified",static,NBD215grProgram.do,254
+J98,95,Other respiratory,static,NBD215grProgram.do,139
+J99,95,Other respiratory,static,NBD215grProgram.do,139
+K00,123,Other oral diseases,static,NBD215grProgram.do,168
+K01,123,Other oral diseases,static,NBD215grProgram.do,168
+K02,121,Dental caries,static,NBD215grProgram.do,166
+K03,123,Other oral diseases,static,NBD215grProgram.do,168
+K04,123,Other oral diseases,static,NBD215grProgram.do,168
+K05,122,Periodontal disease,static,NBD215grProgram.do,167
+K06,123,Other oral diseases,static,NBD215grProgram.do,168
+K07,123,Other oral diseases,static,NBD215grProgram.do,168
+K08,123,Other oral diseases,static,NBD215grProgram.do,168
+K09,123,Other oral diseases,static,NBD215grProgram.do,168
+K10,123,Other oral diseases,static,NBD215grProgram.do,168
+K11,123,Other oral diseases,static,NBD215grProgram.do,168
+K12,123,Other oral diseases,static,NBD215grProgram.do,168
+K13,123,Other oral diseases,static,NBD215grProgram.do,168
+K14,123,Other oral diseases,static,NBD215grProgram.do,168
+K20,103,Other digestive,static,NBD215grProgram.do,147
+K21,103,Other digestive,static,NBD215grProgram.do,147
+K22,103,Other digestive,static,NBD215grProgram.do,147
+K25,96,Peptic ulcer,static,NBD215grProgram.do,140
+K26,96,Peptic ulcer,static,NBD215grProgram.do,140
+K27,96,Peptic ulcer,static,NBD215grProgram.do,140
+K28,103,Other digestive,static,NBD215grProgram.do,147
+K29,103,Other digestive,static,NBD215grProgram.do,147
+K30,103,Other digestive,static,NBD215grProgram.do,147
+K31,103,Other digestive,static,NBD215grProgram.do,147
+K35,97,Appendicitis,static,NBD215grProgram.do,141
+K36,97,Appendicitis,static,NBD215grProgram.do,141
+K37,97,Appendicitis,static,NBD215grProgram.do,141
+K38,103,Other digestive,static,NBD215grProgram.do,147
+K40,98,Intestinal obstruction and strangulated hernia,static,NBD215grProgram.do,142
+K41,98,Intestinal obstruction and strangulated hernia,static,NBD215grProgram.do,142
+K42,98,Intestinal obstruction and strangulated hernia,static,NBD215grProgram.do,142
+K43,98,Intestinal obstruction and strangulated hernia,static,NBD215grProgram.do,142
+K44,98,Intestinal obstruction and strangulated hernia,static,NBD215grProgram.do,142
+K45,98,Intestinal obstruction and strangulated hernia,static,NBD215grProgram.do,142
+K46,98,Intestinal obstruction and strangulated hernia,static,NBD215grProgram.do,142
+K50,99,Noninfective inflammatory bowel disease,static,NBD215grProgram.do,143
+K51,99,Noninfective inflammatory bowel disease,static,NBD215grProgram.do,143
+K52,4,Diarrhoeal disease,static,NBD215grProgram.do,8
+K55,103,Other digestive,static,NBD215grProgram.do,147
+K56,98,Intestinal obstruction and strangulated hernia,static,NBD215grProgram.do,142
+K57,103,Other digestive,static,NBD215grProgram.do,147
+K58,103,Other digestive,static,NBD215grProgram.do,147
+K59,103,Other digestive,static,NBD215grProgram.do,147
+K60,103,Other digestive,static,NBD215grProgram.do,147
+K61,103,Other digestive,static,NBD215grProgram.do,147
+K62,103,Other digestive,static,NBD215grProgram.do,147
+K63,103,Other digestive,static,NBD215grProgram.do,147
+K64,103,Other digestive,static,NBD215grProgram.do,147
+K65,179,Peritonitis,static,NBD215grProgram.do,227
+K66,180,Other disorders of peritoneum,static,NBD215grProgram.do,228
+K70,100,Cirrhosis and liver disease,static,NBD215grProgram.do,144
+K71,181,Toxic liver disease,static,NBD215grProgram.do,229
+K72,182,"Hepatic failure, not elsewhere classified",static,NBD215grProgram.do,230
+K73,100,Cirrhosis and liver disease,static,NBD215grProgram.do,144
+K74,100,Cirrhosis and liver disease,static,NBD215grProgram.do,144
+K75,183,Other inflammatory liver diseases,static,NBD215grProgram.do,231
+K76,103,Other digestive,static,NBD215grProgram.do,147
+K77,103,Other digestive,static,NBD215grProgram.do,147
+K80,101,Gall bladder and bile duct disease,static,NBD215grProgram.do,145
+K81,101,Gall bladder and bile duct disease,static,NBD215grProgram.do,145
+K82,101,Gall bladder and bile duct disease,static,NBD215grProgram.do,145
+K83,101,Gall bladder and bile duct disease,static,NBD215grProgram.do,145
+K85,102,Pancreatitis,static,NBD215grProgram.do,146
+K86,102,Pancreatitis,static,NBD215grProgram.do,146
+K90,103,Other digestive,static,NBD215grProgram.do,147
+K91,103,Other digestive,static,NBD215grProgram.do,147
+K92,184,Haematemesis and melaena/other diseases of GIT,static,NBD215grProgram.do,232
+L00,107,Skin diseases,static,NBD215grProgram.do,152
+L01,107,Skin diseases,static,NBD215grProgram.do,152
+L02,107,Skin diseases,static,NBD215grProgram.do,152
+L03,107,Skin diseases,static,NBD215grProgram.do,152
+L04,107,Skin diseases,static,NBD215grProgram.do,152
+L05,107,Skin diseases,static,NBD215grProgram.do,152
+L06,107,Skin diseases,static,NBD215grProgram.do,152
+L07,107,Skin diseases,static,NBD215grProgram.do,152
+L08,107,Skin diseases,static,NBD215grProgram.do,152
+L10,107,Skin diseases,static,NBD215grProgram.do,152
+L11,107,Skin diseases,static,NBD215grProgram.do,152
+L12,107,Skin diseases,static,NBD215grProgram.do,152
+L13,107,Skin diseases,static,NBD215grProgram.do,152
+L20,107,Skin diseases,static,NBD215grProgram.do,152
+L21,107,Skin diseases,static,NBD215grProgram.do,152
+L22,107,Skin diseases,static,NBD215grProgram.do,152
+L23,107,Skin diseases,static,NBD215grProgram.do,152
+L24,107,Skin diseases,static,NBD215grProgram.do,152
+L25,107,Skin diseases,static,NBD215grProgram.do,152
+L26,107,Skin diseases,static,NBD215grProgram.do,152
+L27,107,Skin diseases,static,NBD215grProgram.do,152
+L28,107,Skin diseases,static,NBD215grProgram.do,152
+L29,107,Skin diseases,static,NBD215grProgram.do,152
+L30,107,Skin diseases,static,NBD215grProgram.do,152
+L40,107,Skin diseases,static,NBD215grProgram.do,152
+L41,107,Skin diseases,static,NBD215grProgram.do,152
+L42,107,Skin diseases,static,NBD215grProgram.do,152
+L43,107,Skin diseases,static,NBD215grProgram.do,152
+L44,107,Skin diseases,static,NBD215grProgram.do,152
+L45,107,Skin diseases,static,NBD215grProgram.do,152
+L46,107,Skin diseases,static,NBD215grProgram.do,152
+L47,107,Skin diseases,static,NBD215grProgram.do,152
+L48,107,Skin diseases,static,NBD215grProgram.do,152
+L49,107,Skin diseases,static,NBD215grProgram.do,152
+L50,107,Skin diseases,static,NBD215grProgram.do,152
+L51,107,Skin diseases,static,NBD215grProgram.do,152
+L52,107,Skin diseases,static,NBD215grProgram.do,152
+L53,107,Skin diseases,static,NBD215grProgram.do,152
+L54,107,Skin diseases,static,NBD215grProgram.do,152
+L55,107,Skin diseases,static,NBD215grProgram.do,152
+L56,107,Skin diseases,static,NBD215grProgram.do,152
+L57,107,Skin diseases,static,NBD215grProgram.do,152
+L58,107,Skin diseases,static,NBD215grProgram.do,152
+L59,107,Skin diseases,static,NBD215grProgram.do,152
+L60,107,Skin diseases,static,NBD215grProgram.do,152
+L61,107,Skin diseases,static,NBD215grProgram.do,152
+L62,107,Skin diseases,static,NBD215grProgram.do,152
+L63,107,Skin diseases,static,NBD215grProgram.do,152
+L64,107,Skin diseases,static,NBD215grProgram.do,152
+L65,107,Skin diseases,static,NBD215grProgram.do,152
+L66,107,Skin diseases,static,NBD215grProgram.do,152
+L67,107,Skin diseases,static,NBD215grProgram.do,152
+L68,107,Skin diseases,static,NBD215grProgram.do,152
+L69,107,Skin diseases,static,NBD215grProgram.do,152
+L70,107,Skin diseases,static,NBD215grProgram.do,152
+L71,107,Skin diseases,static,NBD215grProgram.do,152
+L72,107,Skin diseases,static,NBD215grProgram.do,152
+L73,107,Skin diseases,static,NBD215grProgram.do,152
+L74,107,Skin diseases,static,NBD215grProgram.do,152
+L75,107,Skin diseases,static,NBD215grProgram.do,152
+L76,107,Skin diseases,static,NBD215grProgram.do,152
+L77,107,Skin diseases,static,NBD215grProgram.do,152
+L78,107,Skin diseases,static,NBD215grProgram.do,152
+L79,107,Skin diseases,static,NBD215grProgram.do,152
+L80,107,Skin diseases,static,NBD215grProgram.do,152
+L81,107,Skin diseases,static,NBD215grProgram.do,152
+L82,107,Skin diseases,static,NBD215grProgram.do,152
+L83,107,Skin diseases,static,NBD215grProgram.do,152
+L84,107,Skin diseases,static,NBD215grProgram.do,152
+L85,107,Skin diseases,static,NBD215grProgram.do,152
+L86,107,Skin diseases,static,NBD215grProgram.do,152
+L87,107,Skin diseases,static,NBD215grProgram.do,152
+L88,107,Skin diseases,static,NBD215grProgram.do,152
+L89,107,Skin diseases,static,NBD215grProgram.do,152
+L90,107,Skin diseases,static,NBD215grProgram.do,152
+L91,107,Skin diseases,static,NBD215grProgram.do,152
+L92,107,Skin diseases,static,NBD215grProgram.do,152
+L93,107,Skin diseases,static,NBD215grProgram.do,152
+L94,107,Skin diseases,static,NBD215grProgram.do,152
+L95,107,Skin diseases,static,NBD215grProgram.do,152
+L96,107,Skin diseases,static,NBD215grProgram.do,152
+L97,107,Skin diseases,static,NBD215grProgram.do,152
+L98,107,Skin diseases,static,NBD215grProgram.do,152
+M00,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M01,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M02,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M05,108,Rheumatoid arthriis,static,NBD215grProgram.do,153
+M06,108,Rheumatoid arthriis,static,NBD215grProgram.do,153
+M08,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M10,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M11,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M12,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M13,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M15,109,Osteoarthritis,static,NBD215grProgram.do,154
+M16,109,Osteoarthritis,static,NBD215grProgram.do,154
+M17,109,Osteoarthritis,static,NBD215grProgram.do,154
+M18,109,Osteoarthritis,static,NBD215grProgram.do,154
+M19,109,Osteoarthritis,static,NBD215grProgram.do,154
+M20,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M21,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M22,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M23,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M24,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M25,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M26,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M27,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M28,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M29,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M30,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M31,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M32,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M33,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M34,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M35,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M36,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M37,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M38,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M39,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M40,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M41,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M42,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M43,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M44,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M45,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M46,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M47,110,Back and neck pain,static,NBD215grProgram.do,155
+M48,110,Back and neck pain,static,NBD215grProgram.do,155
+M49,110,Back and neck pain,static,NBD215grProgram.do,155
+M50,110,Back and neck pain,static,NBD215grProgram.do,155
+M51,110,Back and neck pain,static,NBD215grProgram.do,155
+M52,110,Back and neck pain,static,NBD215grProgram.do,155
+M53,110,Back and neck pain,static,NBD215grProgram.do,155
+M54,110,Back and neck pain,static,NBD215grProgram.do,155
+M60,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M61,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M62,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M63,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M64,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M65,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M66,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M67,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M68,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M69,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M70,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M71,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M72,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M73,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M74,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M75,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M76,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M77,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M78,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M79,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M80,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M81,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M82,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M83,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M84,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M85,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M86,185,Osteomyelitis,static,NBD215grProgram.do,233
+M87,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M88,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M89,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M90,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M91,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M92,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M93,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M94,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M95,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M96,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M97,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M98,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+M99,111,Other muculo-skeletal,static,NBD215grProgram.do,156
+N00,104,Renal disease,static,NBD215grProgram.do,148
+N01,104,Renal disease,static,NBD215grProgram.do,148
+N02,104,Renal disease,static,NBD215grProgram.do,148
+N03,104,Renal disease,static,NBD215grProgram.do,148
+N04,104,Renal disease,static,NBD215grProgram.do,148
+N05,104,Renal disease,static,NBD215grProgram.do,148
+N06,104,Renal disease,static,NBD215grProgram.do,148
+N07,104,Renal disease,static,NBD215grProgram.do,148
+N08,104,Renal disease,static,NBD215grProgram.do,148
+N10,104,Renal disease,static,NBD215grProgram.do,148
+N11,104,Renal disease,static,NBD215grProgram.do,148
+N12,104,Renal disease,static,NBD215grProgram.do,148
+N13,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N14,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N15,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N17,186,Acute renal failure,static,NBD215grProgram.do,234
+N18,187,Chronic renal failure,static,NBD215grProgram.do,235
+N19,188,Unspecified renal failure,static,NBD215grProgram.do,236
+N20,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N21,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N23,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N25,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N26,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N27,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N28,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N29,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N30,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N31,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N32,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N33,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N34,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N35,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N36,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N37,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N38,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N39,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N40,105,Benign prostatic hypertrophy,static,NBD215grProgram.do,149
+N41,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N42,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N43,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N44,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N45,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N46,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N47,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N48,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N49,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N50,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N60,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N61,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N62,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N63,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N64,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,150
+N70,3,STDs excluding HIV,static,NBD215grProgram.do,6
+N71,3,STDs excluding HIV,static,NBD215grProgram.do,6
+N72,3,STDs excluding HIV,static,NBD215grProgram.do,6
+N73,3,STDs excluding HIV,static,NBD215grProgram.do,6
+N75,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N76,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N77,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N78,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N79,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N80,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N81,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N82,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N83,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N84,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N85,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N86,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N87,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N88,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N89,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N90,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N91,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N92,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N93,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N94,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N95,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N96,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N97,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+N98,106,Other urinary and gynaecological diseases,static,NBD215grProgram.do,151
+O00,18,Abortion,static,NBD215grProgram.do,45
+O01,18,Abortion,static,NBD215grProgram.do,45
+O02,18,Abortion,static,NBD215grProgram.do,45
+O03,18,Abortion,static,NBD215grProgram.do,45
+O04,18,Abortion,static,NBD215grProgram.do,45
+O05,18,Abortion,static,NBD215grProgram.do,45
+O06,18,Abortion,static,NBD215grProgram.do,45
+O07,18,Abortion,static,NBD215grProgram.do,45
+O08,18,Abortion,static,NBD215grProgram.do,45
+O10,16,Hypertension in pregnancy,static,NBD215grProgram.do,42
+O11,16,Hypertension in pregnancy,static,NBD215grProgram.do,42
+O12,16,Hypertension in pregnancy,static,NBD215grProgram.do,42
+O13,16,Hypertension in pregnancy,static,NBD215grProgram.do,42
+O14,16,Hypertension in pregnancy,static,NBD215grProgram.do,42
+O15,16,Hypertension in pregnancy,static,NBD215grProgram.do,42
+O16,16,Hypertension in pregnancy,static,NBD215grProgram.do,42
+O20,14,Maternal haemorrhage,static,NBD215grProgram.do,40
+O21,19,Other maternal,static,NBD215grProgram.do,47
+O22,19,Other maternal,static,NBD215grProgram.do,47
+O23,19,Other maternal,static,NBD215grProgram.do,47
+O24,19,Other maternal,static,NBD215grProgram.do,47
+O25,19,Other maternal,static,NBD215grProgram.do,47
+O26,19,Other maternal,static,NBD215grProgram.do,47
+O27,19,Other maternal,static,NBD215grProgram.do,47
+O28,19,Other maternal,static,NBD215grProgram.do,47
+O29,19,Other maternal,static,NBD215grProgram.do,47
+O30,19,Other maternal,static,NBD215grProgram.do,47
+O31,19,Other maternal,static,NBD215grProgram.do,47
+O32,19,Other maternal,static,NBD215grProgram.do,47
+O33,19,Other maternal,static,NBD215grProgram.do,47
+O34,19,Other maternal,static,NBD215grProgram.do,47
+O35,19,Other maternal,static,NBD215grProgram.do,47
+O36,19,Other maternal,static,NBD215grProgram.do,47
+O37,19,Other maternal,static,NBD215grProgram.do,47
+O38,19,Other maternal,static,NBD215grProgram.do,47
+O39,19,Other maternal,static,NBD215grProgram.do,47
+O40,19,Other maternal,static,NBD215grProgram.do,47
+O41,19,Other maternal,static,NBD215grProgram.do,47
+O42,19,Other maternal,static,NBD215grProgram.do,47
+O43,19,Other maternal,static,NBD215grProgram.do,47
+O44,14,Maternal haemorrhage,static,NBD215grProgram.do,40
+O45,14,Maternal haemorrhage,static,NBD215grProgram.do,40
+O46,14,Maternal haemorrhage,static,NBD215grProgram.do,40
+O47,19,Other maternal,static,NBD215grProgram.do,47
+O48,19,Other maternal,static,NBD215grProgram.do,47
+O60,19,Other maternal,static,NBD215grProgram.do,47
+O61,19,Other maternal,static,NBD215grProgram.do,47
+O62,19,Other maternal,static,NBD215grProgram.do,47
+O63,19,Other maternal,static,NBD215grProgram.do,47
+O64,17,Obstructed labour,static,NBD215grProgram.do,43
+O65,17,Obstructed labour,static,NBD215grProgram.do,43
+O66,17,Obstructed labour,static,NBD215grProgram.do,43
+O67,14,Maternal haemorrhage,static,NBD215grProgram.do,40
+O68,19,Other maternal,static,NBD215grProgram.do,48
+O69,19,Other maternal,static,NBD215grProgram.do,48
+O70,19,Other maternal,static,NBD215grProgram.do,48
+O71,19,Other maternal,static,NBD215grProgram.do,48
+O72,14,Maternal haemorrhage,static,NBD215grProgram.do,40
+O73,19,Other maternal,static,NBD215grProgram.do,48
+O74,19,Other maternal,static,NBD215grProgram.do,48
+O75,19,Other maternal,static,NBD215grProgram.do,48
+O80,19,Other maternal,static,NBD215grProgram.do,48
+O81,19,Other maternal,static,NBD215grProgram.do,48
+O82,19,Other maternal,static,NBD215grProgram.do,48
+O83,19,Other maternal,static,NBD215grProgram.do,48
+O84,19,Other maternal,static,NBD215grProgram.do,48
+O85,15,Maternal sepsis,static,NBD215grProgram.do,41
+O86,15,Maternal sepsis,static,NBD215grProgram.do,41
+O87,19,Other maternal,static,NBD215grProgram.do,49
+O88,19,Other maternal,static,NBD215grProgram.do,49
+O89,19,Other maternal,static,NBD215grProgram.do,49
+O90,19,Other maternal,static,NBD215grProgram.do,49
+O91,19,Other maternal,static,NBD215grProgram.do,49
+O92,19,Other maternal,static,NBD215grProgram.do,49
+O94,19,Other maternal,static,NBD215grProgram.do,49
+O95,19,Other maternal,static,NBD215grProgram.do,49
+O96,19,Other maternal,static,NBD215grProgram.do,49
+O97,19,Other maternal,static,NBD215grProgram.do,49
+O98,213,Indirect maternal,static,NBD215grProgram.do,261
+O99,213,Indirect maternal,static,NBD215grProgram.do,261
+P00,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P01,20,Preterm birth complications,static,NBD215grProgram.do,51
+P02,21,Birth asphyxia,static,NBD215grProgram.do,54
+P03,21,Birth asphyxia,static,NBD215grProgram.do,54
+P04,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P05,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P07,20,Preterm birth complications,static,NBD215grProgram.do,51
+P08,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P10,21,Birth asphyxia,static,NBD215grProgram.do,54
+P11,21,Birth asphyxia,static,NBD215grProgram.do,54
+P12,21,Birth asphyxia,static,NBD215grProgram.do,54
+P13,21,Birth asphyxia,static,NBD215grProgram.do,54
+P14,21,Birth asphyxia,static,NBD215grProgram.do,54
+P15,21,Birth asphyxia,static,NBD215grProgram.do,54
+P20,21,Birth asphyxia,static,NBD215grProgram.do,54
+P21,21,Birth asphyxia,static,NBD215grProgram.do,54
+P22,20,Preterm birth complications,static,NBD215grProgram.do,51
+P24,21,Birth asphyxia,static,NBD215grProgram.do,54
+P25,20,Preterm birth complications,static,NBD215grProgram.do,51
+P26,20,Preterm birth complications,static,NBD215grProgram.do,51
+P27,20,Preterm birth complications,static,NBD215grProgram.do,51
+P28,20,Preterm birth complications,static,NBD215grProgram.do,51
+P29,20,Preterm birth complications,static,NBD215grProgram.do,51
+P35,22,Sepsis and other infectious conditions of the newborn,static,NBD215grProgram.do,55
+P36,22,Sepsis and other infectious conditions of the newborn,static,NBD215grProgram.do,55
+P37,22,Sepsis and other infectious conditions of the newborn,static,NBD215grProgram.do,55
+P38,22,Sepsis and other infectious conditions of the newborn,static,NBD215grProgram.do,55
+P39,22,Sepsis and other infectious conditions of the newborn,static,NBD215grProgram.do,55
+P50,21,Birth asphyxia,static,NBD215grProgram.do,54
+P51,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P52,20,Preterm birth complications,static,NBD215grProgram.do,51
+P53,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P54,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P55,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P56,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P57,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P58,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P59,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P60,22,Sepsis and other infectious conditions of the newborn,static,NBD215grProgram.do,55
+P61,20,Preterm birth complications,static,NBD215grProgram.do,51
+P62,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P63,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P64,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P65,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P66,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P67,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P68,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P69,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P70,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P71,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P72,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P73,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P74,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P75,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+P76,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P77,20,Preterm birth complications,static,NBD215grProgram.do,51
+P78,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P79,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P80,20,Preterm birth complications,static,NBD215grProgram.do,51
+P81,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P82,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P83,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P84,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P85,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P86,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P87,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P88,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P89,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P90,21,Birth asphyxia,static,NBD215grProgram.do,54
+P91,21,Birth asphyxia,static,NBD215grProgram.do,54
+P92,149,Perinatal death unspecified cause,static,NBD215grProgram.do,199
+P93,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P94,23,Other perinatal conditions,static,NBD215grProgram.do,57
+P95,150,Fetal death of unspecified cause,static,NBD215grProgram.do,200
+P96,149,Perinatal death unspecified cause,static,NBD215grProgram.do,199
+Q00,112,Neural tube defects,static,NBD215grProgram.do,157
+Q01,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q02,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q03,112,Neural tube defects,static,NBD215grProgram.do,157
+Q04,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q05,112,Neural tube defects,static,NBD215grProgram.do,157
+Q06,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q07,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q10,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q11,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q12,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q13,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q14,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q15,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q16,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q17,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q18,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q20,114,Congenital heart anomalies,static,NBD215grProgram.do,159
+Q21,114,Congenital heart anomalies,static,NBD215grProgram.do,159
+Q22,114,Congenital heart anomalies,static,NBD215grProgram.do,159
+Q23,114,Congenital heart anomalies,static,NBD215grProgram.do,159
+Q24,114,Congenital heart anomalies,static,NBD215grProgram.do,159
+Q25,114,Congenital heart anomalies,static,NBD215grProgram.do,159
+Q26,114,Congenital heart anomalies,static,NBD215grProgram.do,159
+Q27,114,Congenital heart anomalies,static,NBD215grProgram.do,159
+Q28,114,Congenital heart anomalies,static,NBD215grProgram.do,159
+Q30,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q31,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q32,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q33,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q34,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q35,113,Cleft lip/palate,static,NBD215grProgram.do,158
+Q36,113,Cleft lip/palate,static,NBD215grProgram.do,158
+Q37,113,Cleft lip/palate,static,NBD215grProgram.do,158
+Q38,115,Congenital disorders of GIT,static,NBD215grProgram.do,160
+Q39,115,Congenital disorders of GIT,static,NBD215grProgram.do,160
+Q40,115,Congenital disorders of GIT,static,NBD215grProgram.do,160
+Q41,115,Congenital disorders of GIT,static,NBD215grProgram.do,160
+Q42,115,Congenital disorders of GIT,static,NBD215grProgram.do,160
+Q43,115,Congenital disorders of GIT,static,NBD215grProgram.do,160
+Q44,115,Congenital disorders of GIT,static,NBD215grProgram.do,160
+Q45,115,Congenital disorders of GIT,static,NBD215grProgram.do,160
+Q50,116,Urogenital malformations,static,NBD215grProgram.do,161
+Q51,116,Urogenital malformations,static,NBD215grProgram.do,161
+Q52,116,Urogenital malformations,static,NBD215grProgram.do,161
+Q53,116,Urogenital malformations,static,NBD215grProgram.do,161
+Q54,116,Urogenital malformations,static,NBD215grProgram.do,161
+Q55,116,Urogenital malformations,static,NBD215grProgram.do,161
+Q56,116,Urogenital malformations,static,NBD215grProgram.do,161
+Q57,116,Urogenital malformations,static,NBD215grProgram.do,161
+Q58,116,Urogenital malformations,static,NBD215grProgram.do,161
+Q59,116,Urogenital malformations,static,NBD215grProgram.do,161
+Q60,116,Urogenital malformations,static,NBD215grProgram.do,161
+Q61,116,Urogenital malformations,static,NBD215grProgram.do,161
+Q62,116,Urogenital malformations,static,NBD215grProgram.do,161
+Q63,116,Urogenital malformations,static,NBD215grProgram.do,161
+Q64,116,Urogenital malformations,static,NBD215grProgram.do,161
+Q65,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q66,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q67,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q68,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q69,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q70,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q71,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q72,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q73,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q74,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q75,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q76,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q77,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q78,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q79,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q80,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q81,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q82,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q83,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q84,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q85,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q86,117,Fetal alcohol syndrome,static,NBD215grProgram.do,162
+Q87,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q88,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q89,120,Other congenital abnormalities,static,NBD215grProgram.do,165
+Q90,118,Down syndrome and other chromosomal anomalies,static,NBD215grProgram.do,163
+Q91,119,Other chromosomal abnormalities,static,NBD215grProgram.do,164
+Q92,119,Other chromosomal abnormalities,static,NBD215grProgram.do,164
+Q93,119,Other chromosomal abnormalities,static,NBD215grProgram.do,164
+Q94,119,Other chromosomal abnormalities,static,NBD215grProgram.do,164
+Q95,119,Other chromosomal abnormalities,static,NBD215grProgram.do,164
+Q96,119,Other chromosomal abnormalities,static,NBD215grProgram.do,164
+Q97,119,Other chromosomal abnormalities,static,NBD215grProgram.do,164
+Q98,119,Other chromosomal abnormalities,static,NBD215grProgram.do,164
+Q99,119,Other chromosomal abnormalities,static,NBD215grProgram.do,164
+R00,143,Ill defined natural,static,NBD215grProgram.do,188
+R01,143,Ill defined natural,static,NBD215grProgram.do,188
+R02,189,"Gangrene, not elsewhere classified",static,NBD215grProgram.do,237
+R03,143,Ill defined natural,static,NBD215grProgram.do,188
+R04,143,Ill defined natural,static,NBD215grProgram.do,188
+R05,143,Ill defined natural,static,NBD215grProgram.do,188
+R06,143,Ill defined natural,static,NBD215grProgram.do,188
+R07,143,Ill defined natural,static,NBD215grProgram.do,188
+R08,143,Ill defined natural,static,NBD215grProgram.do,188
+R09,143,Ill defined natural,static,NBD215grProgram.do,188
+R10,143,Ill defined natural,static,NBD215grProgram.do,188
+R11,143,Ill defined natural,static,NBD215grProgram.do,188
+R12,143,Ill defined natural,static,NBD215grProgram.do,188
+R13,143,Ill defined natural,static,NBD215grProgram.do,188
+R14,143,Ill defined natural,static,NBD215grProgram.do,188
+R15,143,Ill defined natural,static,NBD215grProgram.do,188
+R16,143,Ill defined natural,static,NBD215grProgram.do,188
+R17,143,Ill defined natural,static,NBD215grProgram.do,188
+R18,190,Ascites,static,NBD215grProgram.do,238
+R19,143,Ill defined natural,static,NBD215grProgram.do,188
+R20,143,Ill defined natural,static,NBD215grProgram.do,188
+R21,143,Ill defined natural,static,NBD215grProgram.do,188
+R22,143,Ill defined natural,static,NBD215grProgram.do,188
+R23,143,Ill defined natural,static,NBD215grProgram.do,188
+R25,143,Ill defined natural,static,NBD215grProgram.do,189
+R26,143,Ill defined natural,static,NBD215grProgram.do,189
+R27,143,Ill defined natural,static,NBD215grProgram.do,189
+R28,143,Ill defined natural,static,NBD215grProgram.do,189
+R29,143,Ill defined natural,static,NBD215grProgram.do,189
+R30,143,Ill defined natural,static,NBD215grProgram.do,189
+R31,143,Ill defined natural,static,NBD215grProgram.do,189
+R32,143,Ill defined natural,static,NBD215grProgram.do,189
+R33,143,Ill defined natural,static,NBD215grProgram.do,189
+R34,143,Ill defined natural,static,NBD215grProgram.do,189
+R35,143,Ill defined natural,static,NBD215grProgram.do,189
+R36,143,Ill defined natural,static,NBD215grProgram.do,189
+R37,143,Ill defined natural,static,NBD215grProgram.do,189
+R38,143,Ill defined natural,static,NBD215grProgram.do,189
+R39,143,Ill defined natural,static,NBD215grProgram.do,189
+R40,143,Ill defined natural,static,NBD215grProgram.do,189
+R41,143,Ill defined natural,static,NBD215grProgram.do,189
+R42,143,Ill defined natural,static,NBD215grProgram.do,189
+R43,143,Ill defined natural,static,NBD215grProgram.do,189
+R44,143,Ill defined natural,static,NBD215grProgram.do,189
+R45,143,Ill defined natural,static,NBD215grProgram.do,189
+R46,143,Ill defined natural,static,NBD215grProgram.do,189
+R47,143,Ill defined natural,static,NBD215grProgram.do,189
+R48,143,Ill defined natural,static,NBD215grProgram.do,189
+R49,143,Ill defined natural,static,NBD215grProgram.do,189
+R50,143,Ill defined natural,static,NBD215grProgram.do,190
+R51,143,Ill defined natural,static,NBD215grProgram.do,190
+R52,143,Ill defined natural,static,NBD215grProgram.do,190
+R53,143,Ill defined natural,static,NBD215grProgram.do,190
+R54,143,Ill defined natural,static,NBD215grProgram.do,190
+R55,143,Ill defined natural,static,NBD215grProgram.do,192
+R56,143,Ill defined natural,static,NBD215grProgram.do,191
+R57,143,Ill defined natural,static,NBD215grProgram.do,192
+R58,143,Ill defined natural,static,NBD215grProgram.do,192
+R59,143,Ill defined natural,static,NBD215grProgram.do,190
+R60,143,Ill defined natural,static,NBD215grProgram.do,190
+R61,143,Ill defined natural,static,NBD215grProgram.do,190
+R62,143,Ill defined natural,static,NBD215grProgram.do,190
+R63,143,Ill defined natural,static,NBD215grProgram.do,190
+R64,143,Ill defined natural,static,NBD215grProgram.do,192
+R65,143,Ill defined natural,static,NBD215grProgram.do,193
+R68,143,Ill defined natural,static,NBD215grProgram.do,191
+R70,143,Ill defined natural,static,NBD215grProgram.do,190
+R71,143,Ill defined natural,static,NBD215grProgram.do,190
+R72,143,Ill defined natural,static,NBD215grProgram.do,190
+R73,143,Ill defined natural,static,NBD215grProgram.do,190
+R74,143,Ill defined natural,static,NBD215grProgram.do,190
+R75,143,Ill defined natural,static,NBD215grProgram.do,190
+R76,143,Ill defined natural,static,NBD215grProgram.do,190
+R77,143,Ill defined natural,static,NBD215grProgram.do,190
+R78,143,Ill defined natural,static,NBD215grProgram.do,190
+R79,143,Ill defined natural,static,NBD215grProgram.do,190
+R80,143,Ill defined natural,static,NBD215grProgram.do,190
+R81,143,Ill defined natural,static,NBD215grProgram.do,190
+R82,143,Ill defined natural,static,NBD215grProgram.do,190
+R83,143,Ill defined natural,static,NBD215grProgram.do,191
+R84,143,Ill defined natural,static,NBD215grProgram.do,191
+R85,143,Ill defined natural,static,NBD215grProgram.do,191
+R86,143,Ill defined natural,static,NBD215grProgram.do,191
+R87,143,Ill defined natural,static,NBD215grProgram.do,191
+R88,143,Ill defined natural,static,NBD215grProgram.do,191
+R89,143,Ill defined natural,static,NBD215grProgram.do,191
+R90,143,Ill defined natural,static,NBD215grProgram.do,191
+R91,143,Ill defined natural,static,NBD215grProgram.do,191
+R92,143,Ill defined natural,static,NBD215grProgram.do,191
+R93,143,Ill defined natural,static,NBD215grProgram.do,191
+R94,143,Ill defined natural,static,NBD215grProgram.do,191
+R95,143,Ill defined natural,static,NBD215grProgram.do,191
+R96,143,Ill defined natural,static,NBD215grProgram.do,191
+R97,143,Ill defined natural,static,NBD215grProgram.do,191
+R98,143,Ill defined natural,static,NBD215grProgram.do,191
+R99,143,Ill defined natural,static,NBD215grProgram.do,191
+U51,1,Tuberculosis,static,NBD215grProgram.do,2
+U52,1,Tuberculosis,static,NBD215grProgram.do,2
+V01,124,Road injuries,static,NBD215grProgram.do,169
+V02,124,Road injuries,static,NBD215grProgram.do,169
+V03,124,Road injuries,static,NBD215grProgram.do,169
+V04,124,Road injuries,static,NBD215grProgram.do,169
+V05,125,Rail injury,static,NBD215grProgram.do,170
+V06,124,Road injuries,static,NBD215grProgram.do,169
+V09,124,Road injuries,static,NBD215grProgram.do,169
+V10,124,Road injuries,static,NBD215grProgram.do,169
+V11,124,Road injuries,static,NBD215grProgram.do,169
+V12,124,Road injuries,static,NBD215grProgram.do,169
+V13,124,Road injuries,static,NBD215grProgram.do,169
+V14,124,Road injuries,static,NBD215grProgram.do,169
+V15,124,Road injuries,static,NBD215grProgram.do,169
+V16,124,Road injuries,static,NBD215grProgram.do,169
+V17,124,Road injuries,static,NBD215grProgram.do,169
+V18,124,Road injuries,static,NBD215grProgram.do,169
+V19,124,Road injuries,static,NBD215grProgram.do,169
+V20,124,Road injuries,static,NBD215grProgram.do,169
+V21,124,Road injuries,static,NBD215grProgram.do,169
+V22,124,Road injuries,static,NBD215grProgram.do,169
+V23,124,Road injuries,static,NBD215grProgram.do,169
+V24,124,Road injuries,static,NBD215grProgram.do,169
+V25,124,Road injuries,static,NBD215grProgram.do,169
+V26,124,Road injuries,static,NBD215grProgram.do,169
+V27,124,Road injuries,static,NBD215grProgram.do,169
+V28,124,Road injuries,static,NBD215grProgram.do,169
+V29,124,Road injuries,static,NBD215grProgram.do,169
+V30,124,Road injuries,static,NBD215grProgram.do,169
+V31,124,Road injuries,static,NBD215grProgram.do,169
+V32,124,Road injuries,static,NBD215grProgram.do,169
+V33,124,Road injuries,static,NBD215grProgram.do,169
+V34,124,Road injuries,static,NBD215grProgram.do,169
+V35,124,Road injuries,static,NBD215grProgram.do,169
+V36,124,Road injuries,static,NBD215grProgram.do,169
+V37,124,Road injuries,static,NBD215grProgram.do,169
+V38,124,Road injuries,static,NBD215grProgram.do,169
+V39,124,Road injuries,static,NBD215grProgram.do,169
+V40,124,Road injuries,static,NBD215grProgram.do,169
+V41,124,Road injuries,static,NBD215grProgram.do,169
+V42,124,Road injuries,static,NBD215grProgram.do,169
+V43,124,Road injuries,static,NBD215grProgram.do,169
+V44,124,Road injuries,static,NBD215grProgram.do,169
+V45,124,Road injuries,static,NBD215grProgram.do,169
+V46,124,Road injuries,static,NBD215grProgram.do,169
+V47,124,Road injuries,static,NBD215grProgram.do,169
+V48,124,Road injuries,static,NBD215grProgram.do,169
+V49,124,Road injuries,static,NBD215grProgram.do,169
+V50,124,Road injuries,static,NBD215grProgram.do,169
+V51,124,Road injuries,static,NBD215grProgram.do,169
+V52,124,Road injuries,static,NBD215grProgram.do,169
+V53,124,Road injuries,static,NBD215grProgram.do,169
+V54,124,Road injuries,static,NBD215grProgram.do,169
+V55,124,Road injuries,static,NBD215grProgram.do,169
+V56,124,Road injuries,static,NBD215grProgram.do,169
+V57,124,Road injuries,static,NBD215grProgram.do,169
+V58,124,Road injuries,static,NBD215grProgram.do,169
+V59,124,Road injuries,static,NBD215grProgram.do,169
+V60,124,Road injuries,static,NBD215grProgram.do,169
+V61,124,Road injuries,static,NBD215grProgram.do,169
+V62,124,Road injuries,static,NBD215grProgram.do,169
+V63,124,Road injuries,static,NBD215grProgram.do,169
+V64,124,Road injuries,static,NBD215grProgram.do,169
+V65,124,Road injuries,static,NBD215grProgram.do,169
+V66,124,Road injuries,static,NBD215grProgram.do,169
+V67,124,Road injuries,static,NBD215grProgram.do,169
+V68,124,Road injuries,static,NBD215grProgram.do,169
+V69,124,Road injuries,static,NBD215grProgram.do,169
+V70,124,Road injuries,static,NBD215grProgram.do,169
+V71,124,Road injuries,static,NBD215grProgram.do,169
+V72,124,Road injuries,static,NBD215grProgram.do,169
+V73,124,Road injuries,static,NBD215grProgram.do,169
+V74,124,Road injuries,static,NBD215grProgram.do,169
+V75,124,Road injuries,static,NBD215grProgram.do,169
+V76,124,Road injuries,static,NBD215grProgram.do,169
+V77,124,Road injuries,static,NBD215grProgram.do,169
+V78,124,Road injuries,static,NBD215grProgram.do,169
+V79,124,Road injuries,static,NBD215grProgram.do,169
+V80,124,Road injuries,static,NBD215grProgram.do,169
+V81,125,Rail injury,static,NBD215grProgram.do,170
+V82,124,Road injuries,static,NBD215grProgram.do,169
+V83,124,Road injuries,static,NBD215grProgram.do,169
+V84,124,Road injuries,static,NBD215grProgram.do,169
+V85,124,Road injuries,static,NBD215grProgram.do,169
+V86,126,Other transport accidents,static,NBD215grProgram.do,171
+V87,124,Road injuries,static,NBD215grProgram.do,169
+V88,126,Other transport accidents,static,NBD215grProgram.do,171
+V89,124,Road injuries,static,NBD215grProgram.do,169
+V90,130,Drowning,static,NBD215grProgram.do,175
+V91,126,Other transport accidents,static,NBD215grProgram.do,171
+V92,130,Drowning,static,NBD215grProgram.do,175
+V93,126,Other transport accidents,static,NBD215grProgram.do,171
+V94,126,Other transport accidents,static,NBD215grProgram.do,171
+V95,126,Other transport accidents,static,NBD215grProgram.do,171
+V96,126,Other transport accidents,static,NBD215grProgram.do,171
+V97,126,Other transport accidents,static,NBD215grProgram.do,171
+V98,126,Other transport accidents,static,NBD215grProgram.do,171
+V99,158,Unspecified transport accident,static,NBD215grProgram.do,208
+W00,128,Falls,static,NBD215grProgram.do,173
+W01,128,Falls,static,NBD215grProgram.do,173
+W02,128,Falls,static,NBD215grProgram.do,173
+W03,128,Falls,static,NBD215grProgram.do,173
+W04,128,Falls,static,NBD215grProgram.do,173
+W05,128,Falls,static,NBD215grProgram.do,173
+W06,128,Falls,static,NBD215grProgram.do,173
+W07,128,Falls,static,NBD215grProgram.do,173
+W08,128,Falls,static,NBD215grProgram.do,173
+W09,128,Falls,static,NBD215grProgram.do,173
+W10,128,Falls,static,NBD215grProgram.do,173
+W11,128,Falls,static,NBD215grProgram.do,173
+W12,128,Falls,static,NBD215grProgram.do,173
+W13,128,Falls,static,NBD215grProgram.do,173
+W14,128,Falls,static,NBD215grProgram.do,173
+W15,128,Falls,static,NBD215grProgram.do,173
+W16,128,Falls,static,NBD215grProgram.do,173
+W17,128,Falls,static,NBD215grProgram.do,173
+W18,128,Falls,static,NBD215grProgram.do,173
+W19,128,Falls,static,NBD215grProgram.do,173
+W20,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W21,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W22,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W23,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W24,132,Mechanical forces: machinery,static,NBD215grProgram.do,177
+W25,134,Mechanical forces: sharp object,static,NBD215grProgram.do,179
+W26,134,Mechanical forces: sharp object,static,NBD215grProgram.do,179
+W27,134,Mechanical forces: sharp object,static,NBD215grProgram.do,179
+W28,134,Mechanical forces: sharp object,static,NBD215grProgram.do,179
+W29,134,Mechanical forces: sharp object,static,NBD215grProgram.do,179
+W30,132,Mechanical forces: machinery,static,NBD215grProgram.do,177
+W31,132,Mechanical forces: machinery,static,NBD215grProgram.do,177
+W32,133,Mechanical forces; firearm,static,NBD215grProgram.do,178
+W33,133,Mechanical forces; firearm,static,NBD215grProgram.do,178
+W34,133,Mechanical forces; firearm,static,NBD215grProgram.do,178
+W35,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W36,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W37,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W38,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W39,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W40,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W41,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W42,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W43,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W44,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W45,134,Mechanical forces: sharp object,static,NBD215grProgram.do,179
+W46,134,Mechanical forces: sharp object,static,NBD215grProgram.do,179
+W49,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W50,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W51,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W52,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W53,138,Animal contact,static,NBD215grProgram.do,183
+W54,138,Animal contact,static,NBD215grProgram.do,183
+W55,138,Animal contact,static,NBD215grProgram.do,183
+W56,138,Animal contact,static,NBD215grProgram.do,183
+W57,138,Animal contact,static,NBD215grProgram.do,183
+W58,138,Animal contact,static,NBD215grProgram.do,183
+W59,138,Animal contact,static,NBD215grProgram.do,183
+W60,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W61,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W62,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W63,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W64,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W65,130,Drowning,static,NBD215grProgram.do,175
+W66,130,Drowning,static,NBD215grProgram.do,175
+W67,130,Drowning,static,NBD215grProgram.do,175
+W68,130,Drowning,static,NBD215grProgram.do,175
+W69,130,Drowning,static,NBD215grProgram.do,175
+W70,130,Drowning,static,NBD215grProgram.do,175
+W71,130,Drowning,static,NBD215grProgram.do,175
+W72,130,Drowning,static,NBD215grProgram.do,175
+W73,130,Drowning,static,NBD215grProgram.do,175
+W74,130,Drowning,static,NBD215grProgram.do,175
+W75,131,Other threats to breathing,static,NBD215grProgram.do,176
+W76,131,Other threats to breathing,static,NBD215grProgram.do,176
+W77,131,Other threats to breathing,static,NBD215grProgram.do,176
+W78,131,Other threats to breathing,static,NBD215grProgram.do,176
+W79,131,Other threats to breathing,static,NBD215grProgram.do,176
+W80,131,Other threats to breathing,static,NBD215grProgram.do,176
+W81,131,Other threats to breathing,static,NBD215grProgram.do,176
+W82,131,Other threats to breathing,static,NBD215grProgram.do,176
+W83,131,Other threats to breathing,static,NBD215grProgram.do,176
+W84,131,Other threats to breathing,static,NBD215grProgram.do,176
+W85,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W86,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W87,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W88,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W89,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W90,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W91,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W92,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W93,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W94,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W95,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W96,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W97,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W98,139,Other unintentional injuries,static,NBD215grProgram.do,184
+W99,139,Other unintentional injuries,static,NBD215grProgram.do,184
+X00,129,"Fires, heat and hot substances",static,NBD215grProgram.do,174
+X01,129,"Fires, heat and hot substances",static,NBD215grProgram.do,174
+X02,129,"Fires, heat and hot substances",static,NBD215grProgram.do,174
+X03,129,"Fires, heat and hot substances",static,NBD215grProgram.do,174
+X04,129,"Fires, heat and hot substances",static,NBD215grProgram.do,174
+X05,129,"Fires, heat and hot substances",static,NBD215grProgram.do,174
+X06,129,"Fires, heat and hot substances",static,NBD215grProgram.do,174
+X07,129,"Fires, heat and hot substances",static,NBD215grProgram.do,174
+X08,129,"Fires, heat and hot substances",static,NBD215grProgram.do,174
+X09,129,"Fires, heat and hot substances",static,NBD215grProgram.do,174
+X10,129,"Fires, heat and hot substances",static,NBD215grProgram.do,174
+X11,129,"Fires, heat and hot substances",static,NBD215grProgram.do,174
+X12,129,"Fires, heat and hot substances",static,NBD215grProgram.do,174
+X13,129,"Fires, heat and hot substances",static,NBD215grProgram.do,174
+X14,129,"Fires, heat and hot substances",static,NBD215grProgram.do,174
+X15,129,"Fires, heat and hot substances",static,NBD215grProgram.do,174
+X16,129,"Fires, heat and hot substances",static,NBD215grProgram.do,174
+X17,129,"Fires, heat and hot substances",static,NBD215grProgram.do,174
+X18,129,"Fires, heat and hot substances",static,NBD215grProgram.do,174
+X19,129,"Fires, heat and hot substances",static,NBD215grProgram.do,174
+X20,138,Animal contact,static,NBD215grProgram.do,183
+X21,138,Animal contact,static,NBD215grProgram.do,183
+X22,138,Animal contact,static,NBD215grProgram.do,183
+X23,138,Animal contact,static,NBD215grProgram.do,183
+X24,138,Animal contact,static,NBD215grProgram.do,183
+X25,138,Animal contact,static,NBD215grProgram.do,183
+X26,138,Animal contact,static,NBD215grProgram.do,183
+X27,138,Animal contact,static,NBD215grProgram.do,183
+X28,139,Other unintentional injuries,static,NBD215grProgram.do,184
+X29,138,Animal contact,static,NBD215grProgram.do,183
+X30,135,Exposure to natural forces,static,NBD215grProgram.do,180
+X31,135,Exposure to natural forces,static,NBD215grProgram.do,180
+X32,135,Exposure to natural forces,static,NBD215grProgram.do,180
+X33,135,Exposure to natural forces,static,NBD215grProgram.do,180
+X34,135,Exposure to natural forces,static,NBD215grProgram.do,180
+X35,135,Exposure to natural forces,static,NBD215grProgram.do,180
+X36,135,Exposure to natural forces,static,NBD215grProgram.do,180
+X37,135,Exposure to natural forces,static,NBD215grProgram.do,180
+X38,135,Exposure to natural forces,static,NBD215grProgram.do,180
+X39,135,Exposure to natural forces,static,NBD215grProgram.do,180
+X40,127,Poisonings (including herbal),static,NBD215grProgram.do,172
+X41,127,Poisonings (including herbal),static,NBD215grProgram.do,172
+X42,127,Poisonings (including herbal),static,NBD215grProgram.do,172
+X43,127,Poisonings (including herbal),static,NBD215grProgram.do,172
+X44,127,Poisonings (including herbal),static,NBD215grProgram.do,172
+X45,127,Poisonings (including herbal),static,NBD215grProgram.do,172
+X46,127,Poisonings (including herbal),static,NBD215grProgram.do,172
+X47,127,Poisonings (including herbal),static,NBD215grProgram.do,172
+X48,127,Poisonings (including herbal),static,NBD215grProgram.do,172
+X49,127,Poisonings (including herbal),static,NBD215grProgram.do,172
+X50,139,Other unintentional injuries,static,NBD215grProgram.do,184
+X51,139,Other unintentional injuries,static,NBD215grProgram.do,184
+X52,139,Other unintentional injuries,static,NBD215grProgram.do,184
+X53,139,Other unintentional injuries,static,NBD215grProgram.do,184
+X54,139,Other unintentional injuries,static,NBD215grProgram.do,184
+X55,139,Other unintentional injuries,static,NBD215grProgram.do,184
+X56,139,Other unintentional injuries,static,NBD215grProgram.do,184
+X57,139,Other unintentional injuries,static,NBD215grProgram.do,184
+X58,139,Other unintentional injuries,static,NBD215grProgram.do,184
+X59,159,Exposure to unspecified factor,static,NBD215grProgram.do,209
+X60,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X61,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X62,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X63,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X64,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X65,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X66,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X67,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X68,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X69,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X70,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X71,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X72,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X73,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X74,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X75,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X76,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X77,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X78,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X79,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X80,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X81,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X82,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X83,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X84,140,Self-inflicted injuries,static,NBD215grProgram.do,185
+X85,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+X86,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+X87,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+X88,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+X89,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+X90,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+X91,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+X92,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+X93,141,Interpersonal violence with firearm,static,NBD215grProgram.do,186
+X94,141,Interpersonal violence with firearm,static,NBD215grProgram.do,186
+X95,141,Interpersonal violence with firearm,static,NBD215grProgram.do,186
+X96,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+X97,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+X98,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+X99,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+Y00,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+Y01,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+Y02,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+Y03,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+Y04,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+Y05,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+Y06,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+Y07,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+Y08,142,Interpersonal violence without firearm,static,NBD215grProgram.do,187
+Y09,151,Homicide unspecified means,static,NBD215grProgram.do,201
+Y10,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y11,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y12,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y13,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y14,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y15,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y16,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y17,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y18,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y19,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y20,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y21,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y22,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y23,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y24,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y25,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y26,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y27,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y28,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y29,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y30,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y31,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y32,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y33,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y34,160,Injuries with Undetermined intent,static,NBD215grProgram.do,210
+Y35,214,Legal intervention and acts of war,static,NBD215grProgram.do,262
+Y36,151,Homicide unspecified means,static,NBD215grProgram.do,201
+Y37,137,Mining accidents,static,NBD215grProgram.do,182
+Y38,139,Other unintentional injuries,static,NBD215grProgram.do,184
+Y39,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y40,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y41,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y42,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y43,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y44,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y45,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y46,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y47,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y48,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y49,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y50,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y51,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y52,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y53,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y54,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y55,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y56,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y57,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y58,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y59,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y60,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y61,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y62,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y63,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y64,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y65,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y66,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y67,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y68,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y69,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y70,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y71,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y72,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y73,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y74,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y75,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y76,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y77,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y78,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y79,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y80,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y81,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y82,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y83,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y84,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y85,198,Sequelae of transport accidents,static,NBD215grProgram.do,246
+Y86,199,Sequelae of other accidents,static,NBD215grProgram.do,247
+Y87,200,"Sequelae of intentional self-harm, assault and events of undetermined intent",static,NBD215grProgram.do,248
+Y88,136,Adverse effects of medical and surgical treatment,static,NBD215grProgram.do,181
+Y89,201,Sequelae of other external causes,static,NBD215grProgram.do,249

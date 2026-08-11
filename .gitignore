@@ -1,0 +1,43 @@
+# Restricted inputs
+/data/raw/*
+!/data/raw/.gitkeep
+!/data/raw/README.md
+/report/data/legacy/*
+!/report/data/legacy/.gitkeep
+!/report/data/legacy/README.md
+
+# Generated analytical data
+/data/derived/*
+!/data/derived/.gitkeep
+/output/*
+!/output/database/
+!/output/figures/
+!/output/report-data/
+!/output/tables/
+!/output/uncertainty/
+/output/database/*
+!/output/database/.gitkeep
+/output/figures/*
+!/output/figures/.gitkeep
+/output/report-data/*
+!/output/report-data/.gitkeep
+/output/tables/*
+!/output/tables/.gitkeep
+/output/uncertainty/*
+!/output/uncertainty/.gitkeep
+
+# targets and R session files
+/_targets/
+/.Rhistory
+/.RData
+/.Ruserdata
+/.Rproj.user/
+/renv/library/
+/renv/staging/
+
+# Temporary and operating-system files
+*.tmp
+*.log
+~$*
+Thumbs.db
+.DS_Store

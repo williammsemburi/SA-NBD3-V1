@@ -1,0 +1,91 @@
+project:
+  title: "South African National Burden of Disease"
+  short_title: "NBD3 Version 1 results"
+  subtitle: "Methods, uncertainty, model comparisons, and detailed results"
+  version: "NBD3 Version 1"
+  analysis_period: "1997-2019"
+  repository_name: "sa-nbd3-v1"
+
+paths:
+  legacy_rda: "report/data/legacy/viz.input.Rda"
+  nbd3_database: "output/database/NBD_database_1997_2019.parquet"
+  nbd3_validation: "output/tables/pipeline_validation_summary.csv"
+  nbd3_pipeline_readme: "README.md"
+  injury_source_fractions: "data/derived/03_injury_source_fractions.parquet"
+  injury_model_fractions: "data/derived/03_injury_fractions.parquet"
+  injury_survey_model_comparison: "data/derived/03_injury_survey_model_comparison.parquet"
+  injury_fraction_model: "data/derived/03_injury_fraction_model.rds"
+  injury_diagnostics: "output/tables/03_injury_model_diagnostics.csv"
+  injury_final_estimates: "data/derived/03_final_injuries.parquet"
+  derived_dir: "output/report-data"
+
+models:
+  order:
+    - "NBD2"
+    - "NBD3-Stata"
+    - "NBD3-R"
+    - "THEMBISA"
+    - "GBD2023"
+  colours:
+    NBD2: "#8C8C8C"
+    NBD3-Stata: "#D95F02"
+    NBD3-R: "#1B6CA8"
+    THEMBISA: "#2B8C4B"
+    GBD2023: "#7A5195"
+  line_types:
+    NBD2: "dot"
+    NBD3-Stata: "dash"
+    NBD3-R: "solid"
+    THEMBISA: "longdash"
+    GBD2023: "dot"
+
+geographies:
+  province:
+    codes: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    labels:
+      - "Western Cape"
+      - "Eastern Cape"
+      - "Northern Cape"
+      - "Free State"
+      - "KwaZulu-Natal"
+      - "North West"
+      - "Gauteng"
+      - "Mpumalanga"
+      - "Limpopo"
+  national:
+    codes: [10]
+    labels: ["South Africa"]
+  population_group:
+    codes: [11, 12, 13, 14]
+    labels:
+      - "African"
+      - "White"
+      - "Asian/Indian"
+      - "Coloured"
+
+sexes:
+  codes: [1, 2, 3]
+  labels: ["Male", "Female", "Person"]
+
+measures:
+  deaths: "Deaths"
+  fraction: "Fraction of all-cause deaths"
+  crude_rate: "Crude rate per 100,000"
+  asr: "Age-standardised rate per 100,000"
+  yll00: "YLLs (undiscounted)"
+  yll03: "YLLs (3% discount)"
+  yll015: "YLLs (1.5% discount)"
+
+build:
+  start_year: 1997
+  end_year: 2019
+  rate_scale: 100000
+  legacy_percent_auto_threshold: 1.5
+  strict: true
+  write_compatibility_rda: true
+
+methods:
+  nbd3_r_period: "1997-2019"
+  injury_method: "NIMS 2000, IMS 2009, and FAMHIS 2017 define hierarchical additive-log-ratio inputs. The raw path is linearly interpolated between surveys, held flat outside the survey range, and passed through a five-year triangular moving average (two passes of a centred three-year moving average). Survey-year values are not reinserted after smoothing."
+  comparison_note: "NBD3-Stata is the unpublished internal benchmark stored in viz.input.Rda. NBD3-R is generated from the reproducible Version 1 database."
+  uncertainty_note: "External uncertainty bounds are retained where supplied. NBD3-R intervals come from joint draws in which empirical completeness variation, injury survey-composition uncertainty propagated through the fixed interpolation and smoother, HIV fitted-parameter uncertainty, and expert-target subset uncertainty are propagated together. Detailed cells outside the configured uncertainty outputs remain point estimates."

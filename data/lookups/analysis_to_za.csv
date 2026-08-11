@@ -1,0 +1,701 @@
+analysis_code,za_code,weight,hierarchy,analysis_label,za_label,source_file,source_line
+1,1,1,detailed,Tuberculosis,Tuberculosis,Analysis to ZA codes.do,1
+2,2,1,detailed,HIV/AIDS,HIV/AIDS,Analysis to ZA codes.do,2
+3,3,1,detailed,STDs excluding HIV,STIs excluding HIV,Analysis to ZA codes.do,3
+4,4,1,detailed,Diarrhoeal disease,Diarrhoeal diseases,Analysis to ZA codes.do,4
+5,5,1,detailed,Vaccine preventable childhood,Vaccine preventable childhood,Analysis to ZA codes.do,5
+8,6,1,detailed,Meningitis,Meningitis/encephalitis,Analysis to ZA codes.do,6
+9,7,1,detailed,Hepatitis,Hepatitis,Analysis to ZA codes.do,7
+161,8,1,detailed,Septicaemia,Septicaemia,Analysis to ZA codes.do,8
+6,9,1,detailed,Malaria,Malaria,Analysis to ZA codes.do,9
+7,10,1,detailed,"Intestinal parasites, other parasitic and vector diseases",Intestinal parasites and vector,Analysis to ZA codes.do,10
+10,11,1,detailed,Other infectious diseases,Other infectious diseases,Analysis to ZA codes.do,11
+11,12,1,detailed,Lower respiratory infections,Lower respiratory infections,Analysis to ZA codes.do,12
+12,13,1,detailed,Upper respiratory infections,Upper respiratory infections,Analysis to ZA codes.do,13
+13,14,1,detailed,Otitis media,Otitis media,Analysis to ZA codes.do,14
+14,15,1,detailed,Maternal haemorrhage,Maternal haemorrhage,Analysis to ZA codes.do,15
+15,16,1,detailed,Maternal sepsis,Maternal sepsis,Analysis to ZA codes.do,16
+16,17,1,detailed,Hypertension in pregnancy,Hypertension in pregnancy,Analysis to ZA codes.do,17
+17,18,1,detailed,Obstructed labour,Obstructed labour,Analysis to ZA codes.do,18
+18,19,1,detailed,Abortion,Abortion,Analysis to ZA codes.do,19
+213,20,1,detailed,Indirect maternal,Indirect maternal,Analysis to ZA codes.do,20
+19,21,1,detailed,Other maternal,Other maternal,Analysis to ZA codes.do,21
+20,22,1,detailed,Preterm birth complications,Preterm birth complications,Analysis to ZA codes.do,22
+21,23,1,detailed,Birth asphyxia,Birth asphyxia,Analysis to ZA codes.do,23
+22,24,1,detailed,Sepsis and other infectious conditions of the newborn,Sepsis/other newborn infectious,Analysis to ZA codes.do,24
+23,25,1,detailed,Other perinatal conditions,Other perinatal conditions,Analysis to ZA codes.do,25
+24,26,1,detailed,Protein-energy malnutrition,Protein-energy malnutrition,Analysis to ZA codes.do,26
+25,27,1,detailed,Vitamin A deficiency,Vitamin A deficiency,Analysis to ZA codes.do,27
+26,28,1,detailed,Iron deficiency anaemia,Iron deficiency anaemia,Analysis to ZA codes.do,28
+27,29,1,detailed,Other nutritional disorders,Other nutritional disorders,Analysis to ZA codes.do,29
+28,30,1,detailed,Mouth and oropharynx,Mouth,Analysis to ZA codes.do,30
+29,31,1,detailed,Nasopharynx cancer and other pharynx cancer,Naso-oropharynx,Analysis to ZA codes.do,31
+30,32,1,detailed,Oesophagus,Oesophagus,Analysis to ZA codes.do,32
+31,33,1,detailed,Stomach,Stomach,Analysis to ZA codes.do,33
+32,34,1,detailed,Colo-rectal,Colo-rectal,Analysis to ZA codes.do,34
+33,35,1,detailed,Liver,Liver,Analysis to ZA codes.do,35
+34,36,1,detailed,Gallbladder and biliary tract,Gallbladder and biliary tract,Analysis to ZA codes.do,36
+35,37,1,detailed,Pancreas,Pancreas,Analysis to ZA codes.do,37
+36,38,1,detailed,Larynx,Larynx,Analysis to ZA codes.do,38
+37,39,1,detailed,Trachea/bronchi/lung,Trachea/bronchi/lung,Analysis to ZA codes.do,39
+38,40,1,detailed,Melanoma,Melanoma,Analysis to ZA codes.do,40
+39,41,1,detailed,Other skin cancer,Other skin cancer,Analysis to ZA codes.do,41
+40,42,1,detailed,Breast,Breast,Analysis to ZA codes.do,42
+41,43,1,detailed,Cervix,Cervix,Analysis to ZA codes.do,43
+42,44,1,detailed,Corpus uteri,Corpus uteri,Analysis to ZA codes.do,44
+43,45,1,detailed,Ovary,Ovary,Analysis to ZA codes.do,45
+44,46,1,detailed,Prostate,Prostate,Analysis to ZA codes.do,46
+45,47,1,detailed,Testis cancer,Testis cancer,Analysis to ZA codes.do,47
+46,48,1,detailed,Bladder,Bladder,Analysis to ZA codes.do,48
+47,49,1,detailed,Kidney,Kidney,Analysis to ZA codes.do,49
+48,50,1,detailed,Brain,Brain,Analysis to ZA codes.do,50
+49,51,1,detailed,Thyroid,Thyroid,Analysis to ZA codes.do,51
+50,52,1,detailed,Hodgkin's lymphoma,Hodgkin's lymphoma,Analysis to ZA codes.do,52
+51,53,1,detailed,Non-Hodgkins lymphoma,Non-Hodgkins lymphoma,Analysis to ZA codes.do,53
+52,54,1,detailed,Multiple myeloma,Multiple myeloma,Analysis to ZA codes.do,54
+53,55,1,detailed,Leukaemia,Leukaemia,Analysis to ZA codes.do,55
+54,56,1,detailed,Other malignant neoplasms,Other malignant neoplasms,Analysis to ZA codes.do,56
+55,57,1,detailed,Other neoplasms,Other neoplasms,Analysis to ZA codes.do,57
+56,58,1,detailed,Diabetes mellitus,Diabetes mellitus,Analysis to ZA codes.do,58
+57,59,1,detailed,"Endocrine nutritional,blood and immune disorders","Endocrine nutritional,blood, immune",Analysis to ZA codes.do,59
+58,60,1,detailed,Unipolar,Unipolar depression,Analysis to ZA codes.do,60
+59,61,1,detailed,Bipolar,Bipolar affective,Analysis to ZA codes.do,61
+60,62,1,detailed,Schizophrenia,Schizophrenia,Analysis to ZA codes.do,62
+61,63,1,detailed,Alcohol dependence,Alcohol dependence,Analysis to ZA codes.do,63
+62,64,1,detailed,Drug use,Drug use,Analysis to ZA codes.do,64
+63,65,1,detailed,Anxiety disorders,Anxiety disorders,Analysis to ZA codes.do,65
+64,66,1,detailed,Eating disorders,Eating disorders,Analysis to ZA codes.do,66
+65,67,1,detailed,Development disorders,Development disorders,Analysis to ZA codes.do,67
+66,68,1,detailed,Childhood behaviour disorders,Childhood behaviour disorders,Analysis to ZA codes.do,68
+67,69,1,detailed,Mental retardation not included as sequelae elsewhere,Mental retardation not included as sequelae elsewhere,Analysis to ZA codes.do,69
+68,70,1,detailed,Other mental and behavioural disorders,Other mental and behavioural disorders,Analysis to ZA codes.do,70
+69,71,1,detailed,Alzheimer and other degenerative diseases of nervous system,Alzheimer's,Analysis to ZA codes.do,71
+70,72,1,detailed,Parkisons disease,Parkinsons disease,Analysis to ZA codes.do,72
+71,73,1,detailed,Multiple sclerosis,Multiple sclerosis,Analysis to ZA codes.do,73
+72,74,1,detailed,Epilepsy,Epilepsy,Analysis to ZA codes.do,74
+73,75,1,detailed,Migraine,Migraine,Analysis to ZA codes.do,75
+74,76,1,detailed,Non-migraine headache,Non-migraine headache,Analysis to ZA codes.do,76
+75,77,1,detailed,Other neurological conditions,Other neurological conditions,Analysis to ZA codes.do,77
+76,78,1,detailed,Glaucoma,Glaucoma,Analysis to ZA codes.do,78
+77,79,1,detailed,Cataracts,Cataracts,Analysis to ZA codes.do,79
+78,80,1,detailed,Hearing loss not due to other diseases or injuries,"Hearing loss, adult onset",Analysis to ZA codes.do,80
+79,81,1,detailed,Other vision loss,Other vision loss,Analysis to ZA codes.do,81
+80,82,1,detailed,Other sense organ disorders,Other sense organ disorders,Analysis to ZA codes.do,82
+81,83,1,detailed,Rheumatic heart disease,Rheumatic heart disease,Analysis to ZA codes.do,83
+82,84,1,detailed,Hypertensive heart disease,Hypertensive heart disease,Analysis to ZA codes.do,84
+83,85,1,detailed,Ischaemic heart disease,Ischaemic heart disease,Analysis to ZA codes.do,85
+84,86,1,detailed,"Pericarditis, endocarditis and myocarditis","Pericarditis, endocarditis and myocarditis",Analysis to ZA codes.do,86
+85,87,1,detailed,Cardiomyopathy,Cardiomyopathy,Analysis to ZA codes.do,87
+86,88,1,detailed,Cerebrovascular disease,Cerebrovascular disease,Analysis to ZA codes.do,88
+87,89,1,detailed,Conduction disorders and other dysrythmias,Conduction disorders and other dysrythmias,Analysis to ZA codes.do,89
+88,90,1,detailed,Aortic aneurism,Aortic aneurism,Analysis to ZA codes.do,90
+89,91,1,detailed,Peripheral vascular disorders,Peripheral vascular disorders,Analysis to ZA codes.do,91
+90,92,1,detailed,Other circulatory diseases,Other circulatory diseases,Analysis to ZA codes.do,92
+91,93,1,detailed,Copd,COPD,Analysis to ZA codes.do,93
+92,94,1,detailed,Pneumoconiosis,Pneumoconiosis,Analysis to ZA codes.do,94
+93,95,1,detailed,Asthma,Asthma,Analysis to ZA codes.do,95
+94,96,1,detailed,Other interstitial lung disease,Other interstitial lung disease,Analysis to ZA codes.do,96
+95,97,1,detailed,Other respiratory,Other respiratory,Analysis to ZA codes.do,97
+96,98,1,detailed,Peptic ulcer,Peptic ulcer disease,Analysis to ZA codes.do,98
+97,99,1,detailed,Appendicitis,Appendicitis,Analysis to ZA codes.do,99
+98,100,1,detailed,Intestinal obstruction and strangulated hernia,"Intestinal obstruction, strangulated hernia",Analysis to ZA codes.do,100
+99,101,1,detailed,Noninfective inflammatory bowel disease,Non-infective inflammatory bowel disease,Analysis to ZA codes.do,101
+100,102,1,detailed,Cirrhosis and liver disease,Cirrhosis and liver disease,Analysis to ZA codes.do,102
+101,103,1,detailed,Gall bladder and bile duct disease,Gall bladder and bile duct disease,Analysis to ZA codes.do,103
+102,104,1,detailed,Pancreatitis,Pancreatitis,Analysis to ZA codes.do,104
+103,105,1,detailed,Other digestive,Other digestive diseases,Analysis to ZA codes.do,105
+104,106,1,detailed,Renal disease,Renal disease,Analysis to ZA codes.do,106
+105,107,1,detailed,Benign prostatic hypertrophy,Benign prostatic hypertrophy,Analysis to ZA codes.do,107
+106,108,1,detailed,Other urinary and gynaecological diseases,Other urinary and gynaecological diseases,Analysis to ZA codes.do,108
+107,109,1,detailed,Skin diseases,Skin diseases,Analysis to ZA codes.do,109
+108,110,1,detailed,Rheumatoid arthriis,Rheumatoid arthritis,Analysis to ZA codes.do,110
+109,111,1,detailed,Osteoarthritis,Osteoarthritis,Analysis to ZA codes.do,111
+110,112,1,detailed,Back and neck pain,Back and neck pain,Analysis to ZA codes.do,112
+111,113,1,detailed,Other muculo-skeletal,Other musculo-skeletal,Analysis to ZA codes.do,113
+112,114,1,detailed,Neural tube defects,Neural tube defects,Analysis to ZA codes.do,114
+113,115,1,detailed,Cleft lip/palate,Cleft lip/palate,Analysis to ZA codes.do,115
+114,116,1,detailed,Congenital heart anomalies,Congenital heart anomalies,Analysis to ZA codes.do,116
+115,117,1,detailed,Congenital disorders of GIT,Congenital disorders of GIT,Analysis to ZA codes.do,117
+116,118,1,detailed,Urogenital malformations,Urogenital malformations,Analysis to ZA codes.do,118
+117,119,1,detailed,Fetal alcohol syndrome,Fetal alcohol syndrome,Analysis to ZA codes.do,119
+118,120,1,detailed,Down syndrome and other chromosomal anomalies,Down syndrome,Analysis to ZA codes.do,120
+119,121,1,detailed,Other chromosomal abnormalities,Other chromosomal abnormalities,Analysis to ZA codes.do,121
+120,122,1,detailed,Other congenital abnormalities,Other congenital abnormalities,Analysis to ZA codes.do,122
+121,123,1,detailed,Dental caries,Dental caries,Analysis to ZA codes.do,123
+122,124,1,detailed,Periodontal disease,Periodontal disease,Analysis to ZA codes.do,124
+123,125,1,detailed,Other oral diseases,Other oral diseases,Analysis to ZA codes.do,125
+124,126,1,detailed,Road injuries,Road injuries,Analysis to ZA codes.do,127
+125,127,1,detailed,Rail injury,Other transport injuries,Analysis to ZA codes.do,128
+127,128,1,detailed,Poisonings (including herbal),Poisonings (including herbal),Analysis to ZA codes.do,129
+128,129,1,detailed,Falls,Falls,Analysis to ZA codes.do,130
+129,130,1,detailed,"Fires, heat and hot substances","Fires, hot substances",Analysis to ZA codes.do,131
+130,131,1,detailed,Drowning,Drowning,Analysis to ZA codes.do,132
+131,132,1,detailed,Other threats to breathing,"Hanging, strangulation",Analysis to ZA codes.do,133
+137,132,1,detailed,Mining accidents,"Hanging, strangulation",Analysis to ZA codes.do,133
+132,133,1,detailed,Mechanical forces: machinery,Mechanical forces,Analysis to ZA codes.do,134
+135,134,1,detailed,Exposure to natural forces,Exposure to natural forces,Analysis to ZA codes.do,135
+136,135,1,detailed,Adverse effects of medical and surgical treatment,Adverse effects medical/surgical,Analysis to ZA codes.do,136
+138,136,1,detailed,Animal contact,Animal contact,Analysis to ZA codes.do,137
+139,137,1,detailed,Other unintentional injuries,Other unintentional injuries,Analysis to ZA codes.do,138
+140,138,1,detailed,Self-inflicted injuries,Self-inflicted injuries,Analysis to ZA codes.do,139
+141,139,1,detailed,Interpersonal violence with firearm,Interpersonal violence,Analysis to ZA codes.do,140
+3,145,1,cause_group,STDs excluding HIV,Infectious and parasitic diseases,Analysis to ZA codes.do,156
+4,145,1,cause_group,Diarrhoeal disease,Infectious and parasitic diseases,Analysis to ZA codes.do,156
+5,145,1,cause_group,Vaccine preventable childhood,Infectious and parasitic diseases,Analysis to ZA codes.do,156
+6,145,1,cause_group,Malaria,Infectious and parasitic diseases,Analysis to ZA codes.do,156
+7,145,1,cause_group,"Intestinal parasites, other parasitic and vector diseases",Infectious and parasitic diseases,Analysis to ZA codes.do,156
+8,145,1,cause_group,Meningitis,Infectious and parasitic diseases,Analysis to ZA codes.do,156
+9,145,1,cause_group,Hepatitis,Infectious and parasitic diseases,Analysis to ZA codes.do,156
+10,145,1,cause_group,Other infectious diseases,Infectious and parasitic diseases,Analysis to ZA codes.do,156
+161,145,1,cause_group,Septicaemia,Infectious and parasitic diseases,Analysis to ZA codes.do,156
+11,146,1,cause_group,Lower respiratory infections,Respiratory infections,Analysis to ZA codes.do,157
+12,146,1,cause_group,Upper respiratory infections,Respiratory infections,Analysis to ZA codes.do,157
+13,146,1,cause_group,Otitis media,Respiratory infections,Analysis to ZA codes.do,157
+14,147,1,cause_group,Maternal haemorrhage,Maternal conditions,Analysis to ZA codes.do,158
+15,147,1,cause_group,Maternal sepsis,Maternal conditions,Analysis to ZA codes.do,158
+16,147,1,cause_group,Hypertension in pregnancy,Maternal conditions,Analysis to ZA codes.do,158
+17,147,1,cause_group,Obstructed labour,Maternal conditions,Analysis to ZA codes.do,158
+18,147,1,cause_group,Abortion,Maternal conditions,Analysis to ZA codes.do,158
+19,147,1,cause_group,Other maternal,Maternal conditions,Analysis to ZA codes.do,158
+213,147,1,cause_group,Indirect maternal,Maternal conditions,Analysis to ZA codes.do,158
+20,148,1,cause_group,Preterm birth complications,Perinatal conditions,Analysis to ZA codes.do,159
+21,148,1,cause_group,Birth asphyxia,Perinatal conditions,Analysis to ZA codes.do,159
+22,148,1,cause_group,Sepsis and other infectious conditions of the newborn,Perinatal conditions,Analysis to ZA codes.do,159
+23,148,1,cause_group,Other perinatal conditions,Perinatal conditions,Analysis to ZA codes.do,159
+24,149,1,cause_group,Protein-energy malnutrition,Nutritional deficiencies,Analysis to ZA codes.do,160
+25,149,1,cause_group,Vitamin A deficiency,Nutritional deficiencies,Analysis to ZA codes.do,160
+26,149,1,cause_group,Iron deficiency anaemia,Nutritional deficiencies,Analysis to ZA codes.do,160
+27,149,1,cause_group,Other nutritional disorders,Nutritional deficiencies,Analysis to ZA codes.do,160
+1,150,1,cause_group,Tuberculosis,HIV/AIDS and TB,Analysis to ZA codes.do,155
+2,150,1,cause_group,HIV/AIDS,HIV/AIDS and TB,Analysis to ZA codes.do,155
+28,151,1,cause_group,Mouth and oropharynx,Malignant neoplasms,Analysis to ZA codes.do,161
+29,151,1,cause_group,Nasopharynx cancer and other pharynx cancer,Malignant neoplasms,Analysis to ZA codes.do,161
+30,151,1,cause_group,Oesophagus,Malignant neoplasms,Analysis to ZA codes.do,161
+31,151,1,cause_group,Stomach,Malignant neoplasms,Analysis to ZA codes.do,161
+32,151,1,cause_group,Colo-rectal,Malignant neoplasms,Analysis to ZA codes.do,161
+33,151,1,cause_group,Liver,Malignant neoplasms,Analysis to ZA codes.do,161
+34,151,1,cause_group,Gallbladder and biliary tract,Malignant neoplasms,Analysis to ZA codes.do,161
+35,151,1,cause_group,Pancreas,Malignant neoplasms,Analysis to ZA codes.do,161
+36,151,1,cause_group,Larynx,Malignant neoplasms,Analysis to ZA codes.do,161
+37,151,1,cause_group,Trachea/bronchi/lung,Malignant neoplasms,Analysis to ZA codes.do,161
+38,151,1,cause_group,Melanoma,Malignant neoplasms,Analysis to ZA codes.do,161
+39,151,1,cause_group,Other skin cancer,Malignant neoplasms,Analysis to ZA codes.do,161
+40,151,1,cause_group,Breast,Malignant neoplasms,Analysis to ZA codes.do,161
+41,151,1,cause_group,Cervix,Malignant neoplasms,Analysis to ZA codes.do,161
+42,151,1,cause_group,Corpus uteri,Malignant neoplasms,Analysis to ZA codes.do,161
+43,151,1,cause_group,Ovary,Malignant neoplasms,Analysis to ZA codes.do,161
+44,151,1,cause_group,Prostate,Malignant neoplasms,Analysis to ZA codes.do,161
+45,151,1,cause_group,Testis cancer,Malignant neoplasms,Analysis to ZA codes.do,161
+46,151,1,cause_group,Bladder,Malignant neoplasms,Analysis to ZA codes.do,161
+47,151,1,cause_group,Kidney,Malignant neoplasms,Analysis to ZA codes.do,161
+48,151,1,cause_group,Brain,Malignant neoplasms,Analysis to ZA codes.do,161
+49,151,1,cause_group,Thyroid,Malignant neoplasms,Analysis to ZA codes.do,161
+50,151,1,cause_group,Hodgkin's lymphoma,Malignant neoplasms,Analysis to ZA codes.do,161
+51,151,1,cause_group,Non-Hodgkins lymphoma,Malignant neoplasms,Analysis to ZA codes.do,161
+52,151,1,cause_group,Multiple myeloma,Malignant neoplasms,Analysis to ZA codes.do,161
+53,151,1,cause_group,Leukaemia,Malignant neoplasms,Analysis to ZA codes.do,161
+54,151,1,cause_group,Other malignant neoplasms,Malignant neoplasms,Analysis to ZA codes.do,161
+55,152,1,cause_group,Other neoplasms,Benign neoplasms,Analysis to ZA codes.do,163
+56,153,1,cause_group,Diabetes mellitus,Diabetes mellitus,Analysis to ZA codes.do,164
+57,154,1,cause_group,"Endocrine nutritional,blood and immune disorders",Endocrine and metabolic,Analysis to ZA codes.do,165
+58,155,1,cause_group,Unipolar,Mental disorders,Analysis to ZA codes.do,166
+59,155,1,cause_group,Bipolar,Mental disorders,Analysis to ZA codes.do,166
+60,155,1,cause_group,Schizophrenia,Mental disorders,Analysis to ZA codes.do,166
+61,155,1,cause_group,Alcohol dependence,Mental disorders,Analysis to ZA codes.do,166
+62,155,1,cause_group,Drug use,Mental disorders,Analysis to ZA codes.do,166
+63,155,1,cause_group,Anxiety disorders,Mental disorders,Analysis to ZA codes.do,166
+64,155,1,cause_group,Eating disorders,Mental disorders,Analysis to ZA codes.do,166
+65,155,1,cause_group,Development disorders,Mental disorders,Analysis to ZA codes.do,166
+66,155,1,cause_group,Childhood behaviour disorders,Mental disorders,Analysis to ZA codes.do,166
+67,155,1,cause_group,Mental retardation not included as sequelae elsewhere,Mental disorders,Analysis to ZA codes.do,166
+68,155,1,cause_group,Other mental and behavioural disorders,Mental disorders,Analysis to ZA codes.do,166
+69,156,1,cause_group,Alzheimer and other degenerative diseases of nervous system,Nervous system disorders,Analysis to ZA codes.do,167
+70,156,1,cause_group,Parkisons disease,Nervous system disorders,Analysis to ZA codes.do,167
+71,156,1,cause_group,Multiple sclerosis,Nervous system disorders,Analysis to ZA codes.do,167
+72,156,1,cause_group,Epilepsy,Nervous system disorders,Analysis to ZA codes.do,167
+73,156,1,cause_group,Migraine,Nervous system disorders,Analysis to ZA codes.do,167
+74,156,1,cause_group,Non-migraine headache,Nervous system disorders,Analysis to ZA codes.do,167
+75,156,1,cause_group,Other neurological conditions,Nervous system disorders,Analysis to ZA codes.do,167
+76,157,1,cause_group,Glaucoma,Sense organs,Analysis to ZA codes.do,168
+77,157,1,cause_group,Cataracts,Sense organs,Analysis to ZA codes.do,168
+78,157,1,cause_group,Hearing loss not due to other diseases or injuries,Sense organs,Analysis to ZA codes.do,168
+79,157,1,cause_group,Other vision loss,Sense organs,Analysis to ZA codes.do,168
+80,157,1,cause_group,Other sense organ disorders,Sense organs,Analysis to ZA codes.do,168
+81,158,1,cause_group,Rheumatic heart disease,Cardiovascular disease,Analysis to ZA codes.do,169
+82,158,1,cause_group,Hypertensive heart disease,Cardiovascular disease,Analysis to ZA codes.do,169
+83,158,1,cause_group,Ischaemic heart disease,Cardiovascular disease,Analysis to ZA codes.do,169
+84,158,1,cause_group,"Pericarditis, endocarditis and myocarditis",Cardiovascular disease,Analysis to ZA codes.do,169
+85,158,1,cause_group,Cardiomyopathy,Cardiovascular disease,Analysis to ZA codes.do,169
+86,158,1,cause_group,Cerebrovascular disease,Cardiovascular disease,Analysis to ZA codes.do,169
+87,158,1,cause_group,Conduction disorders and other dysrythmias,Cardiovascular disease,Analysis to ZA codes.do,169
+88,158,1,cause_group,Aortic aneurism,Cardiovascular disease,Analysis to ZA codes.do,169
+89,158,1,cause_group,Peripheral vascular disorders,Cardiovascular disease,Analysis to ZA codes.do,169
+90,158,1,cause_group,Other circulatory diseases,Cardiovascular disease,Analysis to ZA codes.do,169
+91,159,1,cause_group,Copd,Respiratory disease,Analysis to ZA codes.do,170
+92,159,1,cause_group,Pneumoconiosis,Respiratory disease,Analysis to ZA codes.do,170
+93,159,1,cause_group,Asthma,Respiratory disease,Analysis to ZA codes.do,170
+94,159,1,cause_group,Other interstitial lung disease,Respiratory disease,Analysis to ZA codes.do,170
+95,159,1,cause_group,Other respiratory,Respiratory disease,Analysis to ZA codes.do,170
+96,160,1,cause_group,Peptic ulcer,Digestive diseases,Analysis to ZA codes.do,171
+97,160,1,cause_group,Appendicitis,Digestive diseases,Analysis to ZA codes.do,171
+98,160,1,cause_group,Intestinal obstruction and strangulated hernia,Digestive diseases,Analysis to ZA codes.do,171
+99,160,1,cause_group,Noninfective inflammatory bowel disease,Digestive diseases,Analysis to ZA codes.do,171
+100,160,1,cause_group,Cirrhosis and liver disease,Digestive diseases,Analysis to ZA codes.do,171
+101,160,1,cause_group,Gall bladder and bile duct disease,Digestive diseases,Analysis to ZA codes.do,171
+102,160,1,cause_group,Pancreatitis,Digestive diseases,Analysis to ZA codes.do,171
+103,160,1,cause_group,Other digestive,Digestive diseases,Analysis to ZA codes.do,171
+104,161,1,cause_group,Renal disease,Genito-urinary diseases,Analysis to ZA codes.do,172
+105,161,1,cause_group,Benign prostatic hypertrophy,Genito-urinary diseases,Analysis to ZA codes.do,172
+106,161,1,cause_group,Other urinary and gynaecological diseases,Genito-urinary diseases,Analysis to ZA codes.do,172
+107,162,1,cause_group,Skin diseases,Skin diseases,Analysis to ZA codes.do,173
+108,163,1,cause_group,Rheumatoid arthriis,Musculo-skeletal diseases,Analysis to ZA codes.do,174
+109,163,1,cause_group,Osteoarthritis,Musculo-skeletal diseases,Analysis to ZA codes.do,174
+110,163,1,cause_group,Back and neck pain,Musculo-skeletal diseases,Analysis to ZA codes.do,174
+111,163,1,cause_group,Other muculo-skeletal,Musculo-skeletal diseases,Analysis to ZA codes.do,174
+112,164,1,cause_group,Neural tube defects,Congenital abnormalities,Analysis to ZA codes.do,175
+113,164,1,cause_group,Cleft lip/palate,Congenital abnormalities,Analysis to ZA codes.do,175
+114,164,1,cause_group,Congenital heart anomalies,Congenital abnormalities,Analysis to ZA codes.do,175
+115,164,1,cause_group,Congenital disorders of GIT,Congenital abnormalities,Analysis to ZA codes.do,175
+116,164,1,cause_group,Urogenital malformations,Congenital abnormalities,Analysis to ZA codes.do,175
+117,164,1,cause_group,Fetal alcohol syndrome,Congenital abnormalities,Analysis to ZA codes.do,175
+118,164,1,cause_group,Down syndrome and other chromosomal anomalies,Congenital abnormalities,Analysis to ZA codes.do,175
+119,164,1,cause_group,Other chromosomal abnormalities,Congenital abnormalities,Analysis to ZA codes.do,175
+120,164,1,cause_group,Other congenital abnormalities,Congenital abnormalities,Analysis to ZA codes.do,175
+121,165,1,cause_group,Dental caries,Oral diseases,Analysis to ZA codes.do,176
+122,165,1,cause_group,Periodontal disease,Oral diseases,Analysis to ZA codes.do,176
+123,165,1,cause_group,Other oral diseases,Oral diseases,Analysis to ZA codes.do,176
+124,166,1,cause_group,Road injuries,Unintentional Injuries,Analysis to ZA codes.do,178
+125,166,1,cause_group,Rail injury,Unintentional Injuries,Analysis to ZA codes.do,178
+127,166,1,cause_group,Poisonings (including herbal),Unintentional Injuries,Analysis to ZA codes.do,178
+128,166,1,cause_group,Falls,Unintentional Injuries,Analysis to ZA codes.do,178
+129,166,1,cause_group,"Fires, heat and hot substances",Unintentional Injuries,Analysis to ZA codes.do,178
+130,166,1,cause_group,Drowning,Unintentional Injuries,Analysis to ZA codes.do,178
+131,166,1,cause_group,Other threats to breathing,Unintentional Injuries,Analysis to ZA codes.do,178
+132,166,1,cause_group,Mechanical forces: machinery,Unintentional Injuries,Analysis to ZA codes.do,178
+135,166,1,cause_group,Exposure to natural forces,Unintentional Injuries,Analysis to ZA codes.do,178
+136,166,1,cause_group,Adverse effects of medical and surgical treatment,Unintentional Injuries,Analysis to ZA codes.do,178
+137,166,1,cause_group,Mining accidents,Unintentional Injuries,Analysis to ZA codes.do,178
+138,166,1,cause_group,Animal contact,Unintentional Injuries,Analysis to ZA codes.do,178
+139,166,1,cause_group,Other unintentional injuries,Unintentional Injuries,Analysis to ZA codes.do,178
+140,167,1,cause_group,Self-inflicted injuries,Intentional Injuries,Analysis to ZA codes.do,179
+141,167,1,cause_group,Interpersonal violence with firearm,Intentional Injuries,Analysis to ZA codes.do,179
+3,168,1,broad_group,STDs excluding HIV,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+4,168,1,broad_group,Diarrhoeal disease,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+5,168,1,broad_group,Vaccine preventable childhood,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+6,168,1,broad_group,Malaria,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+7,168,1,broad_group,"Intestinal parasites, other parasitic and vector diseases",Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+8,168,1,broad_group,Meningitis,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+9,168,1,broad_group,Hepatitis,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+10,168,1,broad_group,Other infectious diseases,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+11,168,1,broad_group,Lower respiratory infections,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+12,168,1,broad_group,Upper respiratory infections,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+13,168,1,broad_group,Otitis media,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+14,168,1,broad_group,Maternal haemorrhage,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+15,168,1,broad_group,Maternal sepsis,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+16,168,1,broad_group,Hypertension in pregnancy,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+17,168,1,broad_group,Obstructed labour,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+18,168,1,broad_group,Abortion,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+19,168,1,broad_group,Other maternal,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+20,168,1,broad_group,Preterm birth complications,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+21,168,1,broad_group,Birth asphyxia,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+22,168,1,broad_group,Sepsis and other infectious conditions of the newborn,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+23,168,1,broad_group,Other perinatal conditions,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+24,168,1,broad_group,Protein-energy malnutrition,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+25,168,1,broad_group,Vitamin A deficiency,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+26,168,1,broad_group,Iron deficiency anaemia,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+27,168,1,broad_group,Other nutritional disorders,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+161,168,1,broad_group,Septicaemia,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+213,168,1,broad_group,Indirect maternal,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,182
+1,169,1,broad_group,Tuberculosis,HIV/AIDS and TB,Analysis to ZA codes.do,183
+2,169,1,broad_group,HIV/AIDS,HIV/AIDS and TB,Analysis to ZA codes.do,183
+28,170,1,broad_group,Mouth and oropharynx,Non-communicable,Analysis to ZA codes.do,184
+29,170,1,broad_group,Nasopharynx cancer and other pharynx cancer,Non-communicable,Analysis to ZA codes.do,184
+30,170,1,broad_group,Oesophagus,Non-communicable,Analysis to ZA codes.do,184
+31,170,1,broad_group,Stomach,Non-communicable,Analysis to ZA codes.do,184
+32,170,1,broad_group,Colo-rectal,Non-communicable,Analysis to ZA codes.do,184
+33,170,1,broad_group,Liver,Non-communicable,Analysis to ZA codes.do,184
+34,170,1,broad_group,Gallbladder and biliary tract,Non-communicable,Analysis to ZA codes.do,184
+35,170,1,broad_group,Pancreas,Non-communicable,Analysis to ZA codes.do,184
+36,170,1,broad_group,Larynx,Non-communicable,Analysis to ZA codes.do,184
+37,170,1,broad_group,Trachea/bronchi/lung,Non-communicable,Analysis to ZA codes.do,184
+38,170,1,broad_group,Melanoma,Non-communicable,Analysis to ZA codes.do,184
+39,170,1,broad_group,Other skin cancer,Non-communicable,Analysis to ZA codes.do,184
+40,170,1,broad_group,Breast,Non-communicable,Analysis to ZA codes.do,184
+41,170,1,broad_group,Cervix,Non-communicable,Analysis to ZA codes.do,184
+42,170,1,broad_group,Corpus uteri,Non-communicable,Analysis to ZA codes.do,184
+43,170,1,broad_group,Ovary,Non-communicable,Analysis to ZA codes.do,184
+44,170,1,broad_group,Prostate,Non-communicable,Analysis to ZA codes.do,184
+45,170,1,broad_group,Testis cancer,Non-communicable,Analysis to ZA codes.do,184
+46,170,1,broad_group,Bladder,Non-communicable,Analysis to ZA codes.do,184
+47,170,1,broad_group,Kidney,Non-communicable,Analysis to ZA codes.do,184
+48,170,1,broad_group,Brain,Non-communicable,Analysis to ZA codes.do,184
+49,170,1,broad_group,Thyroid,Non-communicable,Analysis to ZA codes.do,184
+50,170,1,broad_group,Hodgkin's lymphoma,Non-communicable,Analysis to ZA codes.do,184
+51,170,1,broad_group,Non-Hodgkins lymphoma,Non-communicable,Analysis to ZA codes.do,184
+52,170,1,broad_group,Multiple myeloma,Non-communicable,Analysis to ZA codes.do,184
+53,170,1,broad_group,Leukaemia,Non-communicable,Analysis to ZA codes.do,184
+54,170,1,broad_group,Other malignant neoplasms,Non-communicable,Analysis to ZA codes.do,184
+55,170,1,broad_group,Other neoplasms,Non-communicable,Analysis to ZA codes.do,184
+56,170,1,broad_group,Diabetes mellitus,Non-communicable,Analysis to ZA codes.do,184
+57,170,1,broad_group,"Endocrine nutritional,blood and immune disorders",Non-communicable,Analysis to ZA codes.do,184
+58,170,1,broad_group,Unipolar,Non-communicable,Analysis to ZA codes.do,184
+59,170,1,broad_group,Bipolar,Non-communicable,Analysis to ZA codes.do,184
+60,170,1,broad_group,Schizophrenia,Non-communicable,Analysis to ZA codes.do,184
+61,170,1,broad_group,Alcohol dependence,Non-communicable,Analysis to ZA codes.do,184
+62,170,1,broad_group,Drug use,Non-communicable,Analysis to ZA codes.do,184
+63,170,1,broad_group,Anxiety disorders,Non-communicable,Analysis to ZA codes.do,184
+64,170,1,broad_group,Eating disorders,Non-communicable,Analysis to ZA codes.do,184
+65,170,1,broad_group,Development disorders,Non-communicable,Analysis to ZA codes.do,184
+66,170,1,broad_group,Childhood behaviour disorders,Non-communicable,Analysis to ZA codes.do,184
+67,170,1,broad_group,Mental retardation not included as sequelae elsewhere,Non-communicable,Analysis to ZA codes.do,184
+68,170,1,broad_group,Other mental and behavioural disorders,Non-communicable,Analysis to ZA codes.do,184
+69,170,1,broad_group,Alzheimer and other degenerative diseases of nervous system,Non-communicable,Analysis to ZA codes.do,184
+70,170,1,broad_group,Parkisons disease,Non-communicable,Analysis to ZA codes.do,184
+71,170,1,broad_group,Multiple sclerosis,Non-communicable,Analysis to ZA codes.do,184
+72,170,1,broad_group,Epilepsy,Non-communicable,Analysis to ZA codes.do,184
+73,170,1,broad_group,Migraine,Non-communicable,Analysis to ZA codes.do,184
+74,170,1,broad_group,Non-migraine headache,Non-communicable,Analysis to ZA codes.do,184
+75,170,1,broad_group,Other neurological conditions,Non-communicable,Analysis to ZA codes.do,184
+76,170,1,broad_group,Glaucoma,Non-communicable,Analysis to ZA codes.do,184
+77,170,1,broad_group,Cataracts,Non-communicable,Analysis to ZA codes.do,184
+78,170,1,broad_group,Hearing loss not due to other diseases or injuries,Non-communicable,Analysis to ZA codes.do,184
+79,170,1,broad_group,Other vision loss,Non-communicable,Analysis to ZA codes.do,184
+80,170,1,broad_group,Other sense organ disorders,Non-communicable,Analysis to ZA codes.do,184
+81,170,1,broad_group,Rheumatic heart disease,Non-communicable,Analysis to ZA codes.do,184
+82,170,1,broad_group,Hypertensive heart disease,Non-communicable,Analysis to ZA codes.do,184
+83,170,1,broad_group,Ischaemic heart disease,Non-communicable,Analysis to ZA codes.do,184
+84,170,1,broad_group,"Pericarditis, endocarditis and myocarditis",Non-communicable,Analysis to ZA codes.do,184
+85,170,1,broad_group,Cardiomyopathy,Non-communicable,Analysis to ZA codes.do,184
+86,170,1,broad_group,Cerebrovascular disease,Non-communicable,Analysis to ZA codes.do,184
+87,170,1,broad_group,Conduction disorders and other dysrythmias,Non-communicable,Analysis to ZA codes.do,184
+88,170,1,broad_group,Aortic aneurism,Non-communicable,Analysis to ZA codes.do,184
+89,170,1,broad_group,Peripheral vascular disorders,Non-communicable,Analysis to ZA codes.do,184
+90,170,1,broad_group,Other circulatory diseases,Non-communicable,Analysis to ZA codes.do,184
+91,170,1,broad_group,Copd,Non-communicable,Analysis to ZA codes.do,184
+92,170,1,broad_group,Pneumoconiosis,Non-communicable,Analysis to ZA codes.do,184
+93,170,1,broad_group,Asthma,Non-communicable,Analysis to ZA codes.do,184
+94,170,1,broad_group,Other interstitial lung disease,Non-communicable,Analysis to ZA codes.do,184
+95,170,1,broad_group,Other respiratory,Non-communicable,Analysis to ZA codes.do,184
+96,170,1,broad_group,Peptic ulcer,Non-communicable,Analysis to ZA codes.do,184
+97,170,1,broad_group,Appendicitis,Non-communicable,Analysis to ZA codes.do,184
+98,170,1,broad_group,Intestinal obstruction and strangulated hernia,Non-communicable,Analysis to ZA codes.do,184
+99,170,1,broad_group,Noninfective inflammatory bowel disease,Non-communicable,Analysis to ZA codes.do,184
+100,170,1,broad_group,Cirrhosis and liver disease,Non-communicable,Analysis to ZA codes.do,184
+101,170,1,broad_group,Gall bladder and bile duct disease,Non-communicable,Analysis to ZA codes.do,184
+102,170,1,broad_group,Pancreatitis,Non-communicable,Analysis to ZA codes.do,184
+103,170,1,broad_group,Other digestive,Non-communicable,Analysis to ZA codes.do,184
+104,170,1,broad_group,Renal disease,Non-communicable,Analysis to ZA codes.do,184
+105,170,1,broad_group,Benign prostatic hypertrophy,Non-communicable,Analysis to ZA codes.do,184
+106,170,1,broad_group,Other urinary and gynaecological diseases,Non-communicable,Analysis to ZA codes.do,184
+107,170,1,broad_group,Skin diseases,Non-communicable,Analysis to ZA codes.do,184
+108,170,1,broad_group,Rheumatoid arthriis,Non-communicable,Analysis to ZA codes.do,184
+109,170,1,broad_group,Osteoarthritis,Non-communicable,Analysis to ZA codes.do,184
+110,170,1,broad_group,Back and neck pain,Non-communicable,Analysis to ZA codes.do,184
+111,170,1,broad_group,Other muculo-skeletal,Non-communicable,Analysis to ZA codes.do,184
+112,170,1,broad_group,Neural tube defects,Non-communicable,Analysis to ZA codes.do,184
+113,170,1,broad_group,Cleft lip/palate,Non-communicable,Analysis to ZA codes.do,184
+114,170,1,broad_group,Congenital heart anomalies,Non-communicable,Analysis to ZA codes.do,184
+115,170,1,broad_group,Congenital disorders of GIT,Non-communicable,Analysis to ZA codes.do,184
+116,170,1,broad_group,Urogenital malformations,Non-communicable,Analysis to ZA codes.do,184
+117,170,1,broad_group,Fetal alcohol syndrome,Non-communicable,Analysis to ZA codes.do,184
+118,170,1,broad_group,Down syndrome and other chromosomal anomalies,Non-communicable,Analysis to ZA codes.do,184
+119,170,1,broad_group,Other chromosomal abnormalities,Non-communicable,Analysis to ZA codes.do,184
+120,170,1,broad_group,Other congenital abnormalities,Non-communicable,Analysis to ZA codes.do,184
+121,170,1,broad_group,Dental caries,Non-communicable,Analysis to ZA codes.do,184
+122,170,1,broad_group,Periodontal disease,Non-communicable,Analysis to ZA codes.do,184
+123,170,1,broad_group,Other oral diseases,Non-communicable,Analysis to ZA codes.do,184
+124,171,1,broad_group,Road injuries,Injuries,Analysis to ZA codes.do,185
+125,171,1,broad_group,Rail injury,Injuries,Analysis to ZA codes.do,185
+127,171,1,broad_group,Poisonings (including herbal),Injuries,Analysis to ZA codes.do,185
+128,171,1,broad_group,Falls,Injuries,Analysis to ZA codes.do,185
+129,171,1,broad_group,"Fires, heat and hot substances",Injuries,Analysis to ZA codes.do,185
+130,171,1,broad_group,Drowning,Injuries,Analysis to ZA codes.do,185
+131,171,1,broad_group,Other threats to breathing,Injuries,Analysis to ZA codes.do,185
+132,171,1,broad_group,Mechanical forces: machinery,Injuries,Analysis to ZA codes.do,185
+135,171,1,broad_group,Exposure to natural forces,Injuries,Analysis to ZA codes.do,185
+136,171,1,broad_group,Adverse effects of medical and surgical treatment,Injuries,Analysis to ZA codes.do,185
+137,171,1,broad_group,Mining accidents,Injuries,Analysis to ZA codes.do,185
+138,171,1,broad_group,Animal contact,Injuries,Analysis to ZA codes.do,185
+139,171,1,broad_group,Other unintentional injuries,Injuries,Analysis to ZA codes.do,185
+140,171,1,broad_group,Self-inflicted injuries,Injuries,Analysis to ZA codes.do,185
+141,171,1,broad_group,Interpersonal violence with firearm,Injuries,Analysis to ZA codes.do,185
+1,172,1,broad_group,Tuberculosis,Total,Analysis to ZA codes.do,186
+2,172,1,broad_group,HIV/AIDS,Total,Analysis to ZA codes.do,186
+3,172,1,broad_group,STDs excluding HIV,Total,Analysis to ZA codes.do,186
+4,172,1,broad_group,Diarrhoeal disease,Total,Analysis to ZA codes.do,186
+5,172,1,broad_group,Vaccine preventable childhood,Total,Analysis to ZA codes.do,186
+6,172,1,broad_group,Malaria,Total,Analysis to ZA codes.do,186
+7,172,1,broad_group,"Intestinal parasites, other parasitic and vector diseases",Total,Analysis to ZA codes.do,186
+8,172,1,broad_group,Meningitis,Total,Analysis to ZA codes.do,186
+9,172,1,broad_group,Hepatitis,Total,Analysis to ZA codes.do,186
+10,172,1,broad_group,Other infectious diseases,Total,Analysis to ZA codes.do,186
+11,172,1,broad_group,Lower respiratory infections,Total,Analysis to ZA codes.do,186
+12,172,1,broad_group,Upper respiratory infections,Total,Analysis to ZA codes.do,186
+13,172,1,broad_group,Otitis media,Total,Analysis to ZA codes.do,186
+14,172,1,broad_group,Maternal haemorrhage,Total,Analysis to ZA codes.do,186
+15,172,1,broad_group,Maternal sepsis,Total,Analysis to ZA codes.do,186
+16,172,1,broad_group,Hypertension in pregnancy,Total,Analysis to ZA codes.do,186
+17,172,1,broad_group,Obstructed labour,Total,Analysis to ZA codes.do,186
+18,172,1,broad_group,Abortion,Total,Analysis to ZA codes.do,186
+19,172,1,broad_group,Other maternal,Total,Analysis to ZA codes.do,186
+20,172,1,broad_group,Preterm birth complications,Total,Analysis to ZA codes.do,186
+21,172,1,broad_group,Birth asphyxia,Total,Analysis to ZA codes.do,186
+22,172,1,broad_group,Sepsis and other infectious conditions of the newborn,Total,Analysis to ZA codes.do,186
+23,172,1,broad_group,Other perinatal conditions,Total,Analysis to ZA codes.do,186
+24,172,1,broad_group,Protein-energy malnutrition,Total,Analysis to ZA codes.do,186
+25,172,1,broad_group,Vitamin A deficiency,Total,Analysis to ZA codes.do,186
+26,172,1,broad_group,Iron deficiency anaemia,Total,Analysis to ZA codes.do,186
+27,172,1,broad_group,Other nutritional disorders,Total,Analysis to ZA codes.do,186
+28,172,1,broad_group,Mouth and oropharynx,Total,Analysis to ZA codes.do,186
+29,172,1,broad_group,Nasopharynx cancer and other pharynx cancer,Total,Analysis to ZA codes.do,186
+30,172,1,broad_group,Oesophagus,Total,Analysis to ZA codes.do,186
+31,172,1,broad_group,Stomach,Total,Analysis to ZA codes.do,186
+32,172,1,broad_group,Colo-rectal,Total,Analysis to ZA codes.do,186
+33,172,1,broad_group,Liver,Total,Analysis to ZA codes.do,186
+34,172,1,broad_group,Gallbladder and biliary tract,Total,Analysis to ZA codes.do,186
+35,172,1,broad_group,Pancreas,Total,Analysis to ZA codes.do,186
+36,172,1,broad_group,Larynx,Total,Analysis to ZA codes.do,186
+37,172,1,broad_group,Trachea/bronchi/lung,Total,Analysis to ZA codes.do,186
+38,172,1,broad_group,Melanoma,Total,Analysis to ZA codes.do,186
+39,172,1,broad_group,Other skin cancer,Total,Analysis to ZA codes.do,186
+40,172,1,broad_group,Breast,Total,Analysis to ZA codes.do,186
+41,172,1,broad_group,Cervix,Total,Analysis to ZA codes.do,186
+42,172,1,broad_group,Corpus uteri,Total,Analysis to ZA codes.do,186
+43,172,1,broad_group,Ovary,Total,Analysis to ZA codes.do,186
+44,172,1,broad_group,Prostate,Total,Analysis to ZA codes.do,186
+45,172,1,broad_group,Testis cancer,Total,Analysis to ZA codes.do,186
+46,172,1,broad_group,Bladder,Total,Analysis to ZA codes.do,186
+47,172,1,broad_group,Kidney,Total,Analysis to ZA codes.do,186
+48,172,1,broad_group,Brain,Total,Analysis to ZA codes.do,186
+49,172,1,broad_group,Thyroid,Total,Analysis to ZA codes.do,186
+50,172,1,broad_group,Hodgkin's lymphoma,Total,Analysis to ZA codes.do,186
+51,172,1,broad_group,Non-Hodgkins lymphoma,Total,Analysis to ZA codes.do,186
+52,172,1,broad_group,Multiple myeloma,Total,Analysis to ZA codes.do,186
+53,172,1,broad_group,Leukaemia,Total,Analysis to ZA codes.do,186
+54,172,1,broad_group,Other malignant neoplasms,Total,Analysis to ZA codes.do,186
+55,172,1,broad_group,Other neoplasms,Total,Analysis to ZA codes.do,186
+56,172,1,broad_group,Diabetes mellitus,Total,Analysis to ZA codes.do,186
+57,172,1,broad_group,"Endocrine nutritional,blood and immune disorders",Total,Analysis to ZA codes.do,186
+58,172,1,broad_group,Unipolar,Total,Analysis to ZA codes.do,186
+59,172,1,broad_group,Bipolar,Total,Analysis to ZA codes.do,186
+60,172,1,broad_group,Schizophrenia,Total,Analysis to ZA codes.do,186
+61,172,1,broad_group,Alcohol dependence,Total,Analysis to ZA codes.do,186
+62,172,1,broad_group,Drug use,Total,Analysis to ZA codes.do,186
+63,172,1,broad_group,Anxiety disorders,Total,Analysis to ZA codes.do,186
+64,172,1,broad_group,Eating disorders,Total,Analysis to ZA codes.do,186
+65,172,1,broad_group,Development disorders,Total,Analysis to ZA codes.do,186
+66,172,1,broad_group,Childhood behaviour disorders,Total,Analysis to ZA codes.do,186
+67,172,1,broad_group,Mental retardation not included as sequelae elsewhere,Total,Analysis to ZA codes.do,186
+68,172,1,broad_group,Other mental and behavioural disorders,Total,Analysis to ZA codes.do,186
+69,172,1,broad_group,Alzheimer and other degenerative diseases of nervous system,Total,Analysis to ZA codes.do,186
+70,172,1,broad_group,Parkisons disease,Total,Analysis to ZA codes.do,186
+71,172,1,broad_group,Multiple sclerosis,Total,Analysis to ZA codes.do,186
+72,172,1,broad_group,Epilepsy,Total,Analysis to ZA codes.do,186
+73,172,1,broad_group,Migraine,Total,Analysis to ZA codes.do,186
+74,172,1,broad_group,Non-migraine headache,Total,Analysis to ZA codes.do,186
+75,172,1,broad_group,Other neurological conditions,Total,Analysis to ZA codes.do,186
+76,172,1,broad_group,Glaucoma,Total,Analysis to ZA codes.do,186
+77,172,1,broad_group,Cataracts,Total,Analysis to ZA codes.do,186
+78,172,1,broad_group,Hearing loss not due to other diseases or injuries,Total,Analysis to ZA codes.do,186
+79,172,1,broad_group,Other vision loss,Total,Analysis to ZA codes.do,186
+80,172,1,broad_group,Other sense organ disorders,Total,Analysis to ZA codes.do,186
+81,172,1,broad_group,Rheumatic heart disease,Total,Analysis to ZA codes.do,186
+82,172,1,broad_group,Hypertensive heart disease,Total,Analysis to ZA codes.do,186
+83,172,1,broad_group,Ischaemic heart disease,Total,Analysis to ZA codes.do,186
+84,172,1,broad_group,"Pericarditis, endocarditis and myocarditis",Total,Analysis to ZA codes.do,186
+85,172,1,broad_group,Cardiomyopathy,Total,Analysis to ZA codes.do,186
+86,172,1,broad_group,Cerebrovascular disease,Total,Analysis to ZA codes.do,186
+87,172,1,broad_group,Conduction disorders and other dysrythmias,Total,Analysis to ZA codes.do,186
+88,172,1,broad_group,Aortic aneurism,Total,Analysis to ZA codes.do,186
+89,172,1,broad_group,Peripheral vascular disorders,Total,Analysis to ZA codes.do,186
+90,172,1,broad_group,Other circulatory diseases,Total,Analysis to ZA codes.do,186
+91,172,1,broad_group,Copd,Total,Analysis to ZA codes.do,186
+92,172,1,broad_group,Pneumoconiosis,Total,Analysis to ZA codes.do,186
+93,172,1,broad_group,Asthma,Total,Analysis to ZA codes.do,186
+94,172,1,broad_group,Other interstitial lung disease,Total,Analysis to ZA codes.do,186
+95,172,1,broad_group,Other respiratory,Total,Analysis to ZA codes.do,186
+96,172,1,broad_group,Peptic ulcer,Total,Analysis to ZA codes.do,186
+97,172,1,broad_group,Appendicitis,Total,Analysis to ZA codes.do,186
+98,172,1,broad_group,Intestinal obstruction and strangulated hernia,Total,Analysis to ZA codes.do,186
+99,172,1,broad_group,Noninfective inflammatory bowel disease,Total,Analysis to ZA codes.do,186
+100,172,1,broad_group,Cirrhosis and liver disease,Total,Analysis to ZA codes.do,186
+101,172,1,broad_group,Gall bladder and bile duct disease,Total,Analysis to ZA codes.do,186
+102,172,1,broad_group,Pancreatitis,Total,Analysis to ZA codes.do,186
+103,172,1,broad_group,Other digestive,Total,Analysis to ZA codes.do,186
+104,172,1,broad_group,Renal disease,Total,Analysis to ZA codes.do,186
+105,172,1,broad_group,Benign prostatic hypertrophy,Total,Analysis to ZA codes.do,186
+106,172,1,broad_group,Other urinary and gynaecological diseases,Total,Analysis to ZA codes.do,186
+107,172,1,broad_group,Skin diseases,Total,Analysis to ZA codes.do,186
+108,172,1,broad_group,Rheumatoid arthriis,Total,Analysis to ZA codes.do,186
+109,172,1,broad_group,Osteoarthritis,Total,Analysis to ZA codes.do,186
+110,172,1,broad_group,Back and neck pain,Total,Analysis to ZA codes.do,186
+111,172,1,broad_group,Other muculo-skeletal,Total,Analysis to ZA codes.do,186
+112,172,1,broad_group,Neural tube defects,Total,Analysis to ZA codes.do,186
+113,172,1,broad_group,Cleft lip/palate,Total,Analysis to ZA codes.do,186
+114,172,1,broad_group,Congenital heart anomalies,Total,Analysis to ZA codes.do,186
+115,172,1,broad_group,Congenital disorders of GIT,Total,Analysis to ZA codes.do,186
+116,172,1,broad_group,Urogenital malformations,Total,Analysis to ZA codes.do,186
+117,172,1,broad_group,Fetal alcohol syndrome,Total,Analysis to ZA codes.do,186
+118,172,1,broad_group,Down syndrome and other chromosomal anomalies,Total,Analysis to ZA codes.do,186
+119,172,1,broad_group,Other chromosomal abnormalities,Total,Analysis to ZA codes.do,186
+120,172,1,broad_group,Other congenital abnormalities,Total,Analysis to ZA codes.do,186
+121,172,1,broad_group,Dental caries,Total,Analysis to ZA codes.do,186
+122,172,1,broad_group,Periodontal disease,Total,Analysis to ZA codes.do,186
+123,172,1,broad_group,Other oral diseases,Total,Analysis to ZA codes.do,186
+124,172,1,broad_group,Road injuries,Total,Analysis to ZA codes.do,186
+125,172,1,broad_group,Rail injury,Total,Analysis to ZA codes.do,186
+127,172,1,broad_group,Poisonings (including herbal),Total,Analysis to ZA codes.do,186
+128,172,1,broad_group,Falls,Total,Analysis to ZA codes.do,186
+129,172,1,broad_group,"Fires, heat and hot substances",Total,Analysis to ZA codes.do,186
+130,172,1,broad_group,Drowning,Total,Analysis to ZA codes.do,186
+131,172,1,broad_group,Other threats to breathing,Total,Analysis to ZA codes.do,186
+132,172,1,broad_group,Mechanical forces: machinery,Total,Analysis to ZA codes.do,186
+135,172,1,broad_group,Exposure to natural forces,Total,Analysis to ZA codes.do,186
+136,172,1,broad_group,Adverse effects of medical and surgical treatment,Total,Analysis to ZA codes.do,186
+137,172,1,broad_group,Mining accidents,Total,Analysis to ZA codes.do,186
+138,172,1,broad_group,Animal contact,Total,Analysis to ZA codes.do,186
+139,172,1,broad_group,Other unintentional injuries,Total,Analysis to ZA codes.do,186
+140,172,1,broad_group,Self-inflicted injuries,Total,Analysis to ZA codes.do,186
+141,172,1,broad_group,Interpersonal violence with firearm,Total,Analysis to ZA codes.do,186
+161,172,1,broad_group,Septicaemia,Total,Analysis to ZA codes.do,186
+213,172,1,broad_group,Indirect maternal,Total,Analysis to ZA codes.do,186
+3,173,1,report_group,STDs excluding HIV,Inf/para,Analysis to ZA codes.do,188
+4,173,1,report_group,Diarrhoeal disease,Inf/para,Analysis to ZA codes.do,188
+5,173,1,report_group,Vaccine preventable childhood,Inf/para,Analysis to ZA codes.do,188
+6,173,1,report_group,Malaria,Inf/para,Analysis to ZA codes.do,188
+7,173,1,report_group,"Intestinal parasites, other parasitic and vector diseases",Inf/para,Analysis to ZA codes.do,188
+8,173,1,report_group,Meningitis,Inf/para,Analysis to ZA codes.do,188
+9,173,1,report_group,Hepatitis,Inf/para,Analysis to ZA codes.do,188
+10,173,1,report_group,Other infectious diseases,Inf/para,Analysis to ZA codes.do,188
+11,173,1,report_group,Lower respiratory infections,Inf/para,Analysis to ZA codes.do,188
+12,173,1,report_group,Upper respiratory infections,Inf/para,Analysis to ZA codes.do,188
+13,173,1,report_group,Otitis media,Inf/para,Analysis to ZA codes.do,188
+161,173,1,report_group,Septicaemia,Inf/para,Analysis to ZA codes.do,188
+14,174,1,report_group,Maternal haemorrhage,Other Type 1,Analysis to ZA codes.do,189
+15,174,1,report_group,Maternal sepsis,Other Type 1,Analysis to ZA codes.do,189
+16,174,1,report_group,Hypertension in pregnancy,Other Type 1,Analysis to ZA codes.do,189
+17,174,1,report_group,Obstructed labour,Other Type 1,Analysis to ZA codes.do,189
+18,174,1,report_group,Abortion,Other Type 1,Analysis to ZA codes.do,189
+19,174,1,report_group,Other maternal,Other Type 1,Analysis to ZA codes.do,189
+20,174,1,report_group,Preterm birth complications,Other Type 1,Analysis to ZA codes.do,189
+21,174,1,report_group,Birth asphyxia,Other Type 1,Analysis to ZA codes.do,189
+22,174,1,report_group,Sepsis and other infectious conditions of the newborn,Other Type 1,Analysis to ZA codes.do,189
+23,174,1,report_group,Other perinatal conditions,Other Type 1,Analysis to ZA codes.do,189
+24,174,1,report_group,Protein-energy malnutrition,Other Type 1,Analysis to ZA codes.do,189
+25,174,1,report_group,Vitamin A deficiency,Other Type 1,Analysis to ZA codes.do,189
+26,174,1,report_group,Iron deficiency anaemia,Other Type 1,Analysis to ZA codes.do,189
+27,174,1,report_group,Other nutritional disorders,Other Type 1,Analysis to ZA codes.do,189
+213,174,1,report_group,Indirect maternal,Other Type 1,Analysis to ZA codes.do,189
+1,175,1,report_group,Tuberculosis,HIV/AIDS and TB,Analysis to ZA codes.do,190
+2,175,1,report_group,HIV/AIDS,HIV/AIDS and TB,Analysis to ZA codes.do,190
+28,176,1,report_group,Mouth and oropharynx,Cancers,Analysis to ZA codes.do,191
+29,176,1,report_group,Nasopharynx cancer and other pharynx cancer,Cancers,Analysis to ZA codes.do,191
+30,176,1,report_group,Oesophagus,Cancers,Analysis to ZA codes.do,191
+31,176,1,report_group,Stomach,Cancers,Analysis to ZA codes.do,191
+32,176,1,report_group,Colo-rectal,Cancers,Analysis to ZA codes.do,191
+33,176,1,report_group,Liver,Cancers,Analysis to ZA codes.do,191
+34,176,1,report_group,Gallbladder and biliary tract,Cancers,Analysis to ZA codes.do,191
+35,176,1,report_group,Pancreas,Cancers,Analysis to ZA codes.do,191
+36,176,1,report_group,Larynx,Cancers,Analysis to ZA codes.do,191
+37,176,1,report_group,Trachea/bronchi/lung,Cancers,Analysis to ZA codes.do,191
+38,176,1,report_group,Melanoma,Cancers,Analysis to ZA codes.do,191
+39,176,1,report_group,Other skin cancer,Cancers,Analysis to ZA codes.do,191
+40,176,1,report_group,Breast,Cancers,Analysis to ZA codes.do,191
+41,176,1,report_group,Cervix,Cancers,Analysis to ZA codes.do,191
+42,176,1,report_group,Corpus uteri,Cancers,Analysis to ZA codes.do,191
+43,176,1,report_group,Ovary,Cancers,Analysis to ZA codes.do,191
+44,176,1,report_group,Prostate,Cancers,Analysis to ZA codes.do,191
+45,176,1,report_group,Testis cancer,Cancers,Analysis to ZA codes.do,191
+46,176,1,report_group,Bladder,Cancers,Analysis to ZA codes.do,191
+47,176,1,report_group,Kidney,Cancers,Analysis to ZA codes.do,191
+48,176,1,report_group,Brain,Cancers,Analysis to ZA codes.do,191
+49,176,1,report_group,Thyroid,Cancers,Analysis to ZA codes.do,191
+50,176,1,report_group,Hodgkin's lymphoma,Cancers,Analysis to ZA codes.do,191
+51,176,1,report_group,Non-Hodgkins lymphoma,Cancers,Analysis to ZA codes.do,191
+52,176,1,report_group,Multiple myeloma,Cancers,Analysis to ZA codes.do,191
+53,176,1,report_group,Leukaemia,Cancers,Analysis to ZA codes.do,191
+54,176,1,report_group,Other malignant neoplasms,Cancers,Analysis to ZA codes.do,191
+55,176,1,report_group,Other neoplasms,Cancers,Analysis to ZA codes.do,191
+56,177,1,report_group,Diabetes mellitus,Diabetes,Analysis to ZA codes.do,192
+81,178,1,report_group,Rheumatic heart disease,Cardiovascular,Analysis to ZA codes.do,193
+82,178,1,report_group,Hypertensive heart disease,Cardiovascular,Analysis to ZA codes.do,193
+83,178,1,report_group,Ischaemic heart disease,Cardiovascular,Analysis to ZA codes.do,193
+84,178,1,report_group,"Pericarditis, endocarditis and myocarditis",Cardiovascular,Analysis to ZA codes.do,193
+85,178,1,report_group,Cardiomyopathy,Cardiovascular,Analysis to ZA codes.do,193
+86,178,1,report_group,Cerebrovascular disease,Cardiovascular,Analysis to ZA codes.do,193
+87,178,1,report_group,Conduction disorders and other dysrythmias,Cardiovascular,Analysis to ZA codes.do,193
+88,178,1,report_group,Aortic aneurism,Cardiovascular,Analysis to ZA codes.do,193
+89,178,1,report_group,Peripheral vascular disorders,Cardiovascular,Analysis to ZA codes.do,193
+90,178,1,report_group,Other circulatory diseases,Cardiovascular,Analysis to ZA codes.do,193
+57,179,1,report_group,"Endocrine nutritional,blood and immune disorders",Other Type 2,Analysis to ZA codes.do,194
+58,179,1,report_group,Unipolar,Other Type 2,Analysis to ZA codes.do,194
+59,179,1,report_group,Bipolar,Other Type 2,Analysis to ZA codes.do,194
+60,179,1,report_group,Schizophrenia,Other Type 2,Analysis to ZA codes.do,194
+61,179,1,report_group,Alcohol dependence,Other Type 2,Analysis to ZA codes.do,194
+62,179,1,report_group,Drug use,Other Type 2,Analysis to ZA codes.do,194
+63,179,1,report_group,Anxiety disorders,Other Type 2,Analysis to ZA codes.do,194
+64,179,1,report_group,Eating disorders,Other Type 2,Analysis to ZA codes.do,194
+65,179,1,report_group,Development disorders,Other Type 2,Analysis to ZA codes.do,194
+66,179,1,report_group,Childhood behaviour disorders,Other Type 2,Analysis to ZA codes.do,194
+67,179,1,report_group,Mental retardation not included as sequelae elsewhere,Other Type 2,Analysis to ZA codes.do,194
+68,179,1,report_group,Other mental and behavioural disorders,Other Type 2,Analysis to ZA codes.do,194
+69,179,1,report_group,Alzheimer and other degenerative diseases of nervous system,Other Type 2,Analysis to ZA codes.do,194
+70,179,1,report_group,Parkisons disease,Other Type 2,Analysis to ZA codes.do,194
+71,179,1,report_group,Multiple sclerosis,Other Type 2,Analysis to ZA codes.do,194
+72,179,1,report_group,Epilepsy,Other Type 2,Analysis to ZA codes.do,194
+73,179,1,report_group,Migraine,Other Type 2,Analysis to ZA codes.do,194
+74,179,1,report_group,Non-migraine headache,Other Type 2,Analysis to ZA codes.do,194
+75,179,1,report_group,Other neurological conditions,Other Type 2,Analysis to ZA codes.do,194
+76,179,1,report_group,Glaucoma,Other Type 2,Analysis to ZA codes.do,194
+77,179,1,report_group,Cataracts,Other Type 2,Analysis to ZA codes.do,194
+78,179,1,report_group,Hearing loss not due to other diseases or injuries,Other Type 2,Analysis to ZA codes.do,194
+79,179,1,report_group,Other vision loss,Other Type 2,Analysis to ZA codes.do,194
+80,179,1,report_group,Other sense organ disorders,Other Type 2,Analysis to ZA codes.do,194
+91,179,1,report_group,Copd,Other Type 2,Analysis to ZA codes.do,194
+92,179,1,report_group,Pneumoconiosis,Other Type 2,Analysis to ZA codes.do,194
+93,179,1,report_group,Asthma,Other Type 2,Analysis to ZA codes.do,194
+94,179,1,report_group,Other interstitial lung disease,Other Type 2,Analysis to ZA codes.do,194
+95,179,1,report_group,Other respiratory,Other Type 2,Analysis to ZA codes.do,194
+96,179,1,report_group,Peptic ulcer,Other Type 2,Analysis to ZA codes.do,194
+97,179,1,report_group,Appendicitis,Other Type 2,Analysis to ZA codes.do,194
+98,179,1,report_group,Intestinal obstruction and strangulated hernia,Other Type 2,Analysis to ZA codes.do,194
+99,179,1,report_group,Noninfective inflammatory bowel disease,Other Type 2,Analysis to ZA codes.do,194
+100,179,1,report_group,Cirrhosis and liver disease,Other Type 2,Analysis to ZA codes.do,194
+101,179,1,report_group,Gall bladder and bile duct disease,Other Type 2,Analysis to ZA codes.do,194
+102,179,1,report_group,Pancreatitis,Other Type 2,Analysis to ZA codes.do,194
+103,179,1,report_group,Other digestive,Other Type 2,Analysis to ZA codes.do,194
+104,179,1,report_group,Renal disease,Other Type 2,Analysis to ZA codes.do,194
+105,179,1,report_group,Benign prostatic hypertrophy,Other Type 2,Analysis to ZA codes.do,194
+106,179,1,report_group,Other urinary and gynaecological diseases,Other Type 2,Analysis to ZA codes.do,194
+107,179,1,report_group,Skin diseases,Other Type 2,Analysis to ZA codes.do,194
+108,179,1,report_group,Rheumatoid arthriis,Other Type 2,Analysis to ZA codes.do,194
+109,179,1,report_group,Osteoarthritis,Other Type 2,Analysis to ZA codes.do,194
+110,179,1,report_group,Back and neck pain,Other Type 2,Analysis to ZA codes.do,194
+111,179,1,report_group,Other muculo-skeletal,Other Type 2,Analysis to ZA codes.do,194
+112,179,1,report_group,Neural tube defects,Other Type 2,Analysis to ZA codes.do,194
+113,179,1,report_group,Cleft lip/palate,Other Type 2,Analysis to ZA codes.do,194
+114,179,1,report_group,Congenital heart anomalies,Other Type 2,Analysis to ZA codes.do,194
+115,179,1,report_group,Congenital disorders of GIT,Other Type 2,Analysis to ZA codes.do,194
+116,179,1,report_group,Urogenital malformations,Other Type 2,Analysis to ZA codes.do,194
+117,179,1,report_group,Fetal alcohol syndrome,Other Type 2,Analysis to ZA codes.do,194
+118,179,1,report_group,Down syndrome and other chromosomal anomalies,Other Type 2,Analysis to ZA codes.do,194
+119,179,1,report_group,Other chromosomal abnormalities,Other Type 2,Analysis to ZA codes.do,194
+120,179,1,report_group,Other congenital abnormalities,Other Type 2,Analysis to ZA codes.do,194
+121,179,1,report_group,Dental caries,Other Type 2,Analysis to ZA codes.do,194
+122,179,1,report_group,Periodontal disease,Other Type 2,Analysis to ZA codes.do,194
+123,179,1,report_group,Other oral diseases,Other Type 2,Analysis to ZA codes.do,194
+124,180,1,report_group,Road injuries,Unintentional injuries,Analysis to ZA codes.do,195
+125,180,1,report_group,Rail injury,Unintentional injuries,Analysis to ZA codes.do,195
+127,180,1,report_group,Poisonings (including herbal),Unintentional injuries,Analysis to ZA codes.do,195
+128,180,1,report_group,Falls,Unintentional injuries,Analysis to ZA codes.do,195
+129,180,1,report_group,"Fires, heat and hot substances",Unintentional injuries,Analysis to ZA codes.do,195
+130,180,1,report_group,Drowning,Unintentional injuries,Analysis to ZA codes.do,195
+131,180,1,report_group,Other threats to breathing,Unintentional injuries,Analysis to ZA codes.do,195
+132,180,1,report_group,Mechanical forces: machinery,Unintentional injuries,Analysis to ZA codes.do,195
+135,180,1,report_group,Exposure to natural forces,Unintentional injuries,Analysis to ZA codes.do,195
+136,180,1,report_group,Adverse effects of medical and surgical treatment,Unintentional injuries,Analysis to ZA codes.do,195
+137,180,1,report_group,Mining accidents,Unintentional injuries,Analysis to ZA codes.do,195
+138,180,1,report_group,Animal contact,Unintentional injuries,Analysis to ZA codes.do,195
+139,180,1,report_group,Other unintentional injuries,Unintentional injuries,Analysis to ZA codes.do,195
+140,181,1,report_group,Self-inflicted injuries,Intentional injuries,Analysis to ZA codes.do,196
+141,181,1,report_group,Interpersonal violence with firearm,Intentional injuries,Analysis to ZA codes.do,196

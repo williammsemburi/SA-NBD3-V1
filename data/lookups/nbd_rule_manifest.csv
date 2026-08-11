@@ -1,0 +1,242 @@
+rule_order,target_nbdcode,condition,age_sensitive,source_file,source_line
+1,1,"(""A15""<=uc_recode & uc_recode<=""A16""|uc_recode==""U51""|uc_recode==""U52""|uc_recode==""B90"")",False,NBD215grProgram.do,2
+2,2,"(""B20""<=uc_recode & uc_recode<=""B24"" )",False,NBD215grProgram.do,4
+3,3,"( uc_recode==""A50""|uc_recode==""A54"")|""A51""<=uc_recode & uc_recode<=""A53""|""A55""<=uc_recode & uc_recode<=""A63""|""N70""<=uc_recode & uc_recode<=""N73""",False,NBD215grProgram.do,6
+4,4,"(""A00""<=uc_recode & uc_recode<=""A09""|uc_recode==""K52"" )",False,NBD215grProgram.do,8
+5,5,"(""A36""<=uc_recode & uc_recode<=""A37"")",False,NBD215grProgram.do,10
+6,5,"uc_recode==""A80""|uc_recode==""B01""|uc_recode==""B05""|uc_recode==""B06""|uc_recode==""B26""|uc_recode==""B91"" | uc_recode==""A33""",False,NBD215grProgram.do,11
+7,5,"(""A33""<=uc_recode & uc_recode<=""A35"" & age_u5==4 )",True,NBD215grProgram.do,12
+8,5,"(""A33""<=uc_recode & uc_recode<=""A35"" & age_>=1 )",True,NBD215grProgram.do,13
+9,6,"(""B50""<=uc_recode & uc_recode<=""B54"" )",False,NBD215grProgram.do,15
+10,7,"(uc_recode==""A82""|uc_recode==""A95""|uc_recode==""B65"")|""A90""<=uc_recode & uc_recode<=""A91""| ""B55""<=uc_recode & uc_recode<=""B57""|""B67""<=uc_recode & uc_recode<=""B74""|""B76""<=uc_recode & uc_recode<=""B81""",False,NBD215grProgram.do,17
+11,8,"(uc_recode==""A39""|uc_recode==""A87""|uc_recode==""G05"")|""G00""<=uc_recode & uc_recode<=""G03""",False,NBD215grProgram.do,19
+12,9,"(""B15""<=uc_recode & uc_recode<=""B19"" )",False,NBD215grProgram.do,21
+13,10,"""A20""<=uc_recode & uc_recode<=""A28""|""A30""<=uc_recode & uc_recode<=""A32""|""A42""<=uc_recode & uc_recode<=""A49"" |""A65""<=uc_recode & uc_recode<=""A69""|""A70""<=uc_recode & uc_recode<=""A74""|""A75""<=uc_recode & uc_recode<=""A79""",False,NBD215grProgram.do,25
+14,10,"""A92""<=uc_recode & uc_recode<=""A94""|""A96""<=uc_recode & uc_recode<=""A99""|""B02""<=uc_recode & uc_recode<=""B04""",False,NBD215grProgram.do,26
+15,10,"""B27""<=uc_recode & uc_recode<=""B32""|""B37""<=uc_recode & uc_recode<=""B44""|""B46""<=uc_recode & uc_recode<=""B49""",False,NBD215grProgram.do,27
+16,10,"""B60""<=uc_recode & uc_recode<=""B64""|""B94""<=uc_recode & uc_recode<=""B99""",False,NBD215grProgram.do,28
+17,10,"uc_recode==""A38""|uc_recode==""A81""|uc_recode==""A88""|uc_recode==""A89""|uc_recode==""B00""|uc_recode==""B07""|uc_recode==""B08""|uc_recode==""B09""|uc_recode==""B25""|uc_recode==""B34"" |uc_recode==""B58""|uc_recode==""B66""",False,NBD215grProgram.do,29
+18,10,"uc_recode==""B75""|uc_recode==""B83""|uc_recode==""B92""|uc_recode==""N30""|uc_recode==""N34""",False,NBD215grProgram.do,30
+19,11,"(""J09""<=uc_recode & uc_recode<=""J18""|""J20""<=uc_recode & uc_recode<=""J22"" )",False,NBD215grProgram.do,32
+20,11,"(uc_recode==""P23"" & 3<=age_u5 & age_u5<=4)",True,NBD215grProgram.do,33
+21,11,"(uc_recode==""P23"" & age_>=1)",True,NBD215grProgram.do,34
+22,11,"uc_recode==""P23"" & age_u5==5",True,NBD215grProgram.do,35
+23,11,"uc_recode==""P23"" & age_u5==3",True,NBD215grProgram.do,36
+24,12,"(""J00""<=uc_recode & uc_recode<=""J06"" )",False,NBD215grProgram.do,38
+25,13,"(""H65""<=uc_recode & uc_recode<=""H66"" )",False,NBD215grProgram.do,39
+26,14,"(""O44""<=uc_recode & uc_recode<=""O46""|uc_recode==""O20""|uc_recode==""O67""|uc_recode==""O72"")",False,NBD215grProgram.do,40
+27,15,"(""O85""<=uc_recode & uc_recode<=""O86"" )",False,NBD215grProgram.do,41
+28,16,"(""O10""<=uc_recode & uc_recode<=""O16"" )",False,NBD215grProgram.do,42
+29,17,"(""O64""<=uc_recode & uc_recode<=""O66"" )",False,NBD215grProgram.do,43
+30,18,"(""O00""<=uc_recode & uc_recode<=""O08"" )",False,NBD215grProgram.do,45
+31,19,"(""O21""<=uc_recode & uc_recode<=""O29""|""O30""<=uc_recode & uc_recode<=""O43""|""O47""<=uc_recode & uc_recode<=""O48""|""O60""<=uc_recode & uc_recode<=""O63"")",False,NBD215grProgram.do,47
+32,19,"(""O68""<=uc_recode & uc_recode<=""O71""|""O73""<=uc_recode & uc_recode<=""O75""|""O80""<=uc_recode & uc_recode<=""O84"")",False,NBD215grProgram.do,48
+33,19,"(""O87""<=uc_recode & uc_recode<=""O92""|""O94""<=uc_recode & uc_recode<=""O99"" )",False,NBD215grProgram.do,49
+34,20,"(uc_recode==""P01""|uc_recode==""P07""|uc_recode==""P22""|uc_recode==""P29""|uc_recode==""P52""|uc_recode==""P61""|uc_recode==""P77""|uc_recode==""P80"")|""P25""<=uc_recode & uc_recode<=""P28""",False,NBD215grProgram.do,51
+35,20,"uc_recode==""P23"" & age_u5==2",True,NBD215grProgram.do,52
+36,21,"(uc_recode==""P02""|uc_recode==""P03""|uc_recode==""P20""|uc_recode==""P21""|uc_recode==""P24""|uc_recode==""P50""|uc_recode==""P90""|uc_recode==""P91"")|(""P10""<=uc_recode & uc_recode<=""P15"" )",False,NBD215grProgram.do,54
+37,22,"(""P35""<=uc_recode & uc_recode<=""P39"" |uc_recode==""P60"") |((uc_recode==""A33""|uc_recode==""A34""|uc_recode==""A35""|uc_recode==""A50""|uc_recode==""A54"") & (age_u5>=2 & age_u5<=3))",True,NBD215grProgram.do,55
+38,23,"(uc_recode==""P00""|uc_recode==""P04""|uc_recode==""P05""|uc_recode==""P08""|uc_recode==""P51""|uc_recode==""P76""|uc_recode==""P93""|uc_recode==""P94"")|""P53""<=uc_recode & uc_recode<=""P59""|""P62""<=uc_recode & uc_recode<=""P74""| ""P78""<=uc_recode & uc_recode<=""P79""|""P81""<=uc_recode & uc_recode<=""P89""",False,NBD215grProgram.do,57
+39,24,"""E40""<=uc_recode & uc_recode<=""E46""",False,NBD215grProgram.do,59
+40,25,"uc_recode==""E50""",False,NBD215grProgram.do,60
+41,26,"uc_recode==""D50""",False,NBD215grProgram.do,61
+42,27,"""D51""<=uc_recode & uc_recode<=""D53""|""E00""<=uc_recode & uc_recode<=""E02""|""E51""<=uc_recode & uc_recode<=""E63""",False,NBD215grProgram.do,62
+43,28,"""C00""<=uc_recode & uc_recode<=""C08""",False,NBD215grProgram.do,63
+44,29,"""C09""<=uc_recode & uc_recode<=""C13""",False,NBD215grProgram.do,64
+45,30,"uc_recode==""C15""",False,NBD215grProgram.do,65
+46,31,"uc_recode==""C16""",False,NBD215grProgram.do,66
+47,32,"""C18""<=uc_recode & uc_recode<=""C21""",False,NBD215grProgram.do,67
+48,33,"uc_recode==""C22""",False,NBD215grProgram.do,68
+49,34,"""C23""<=uc_recode & uc_recode<=""C24""",False,NBD215grProgram.do,69
+50,35,"uc_recode==""C25""",False,NBD215grProgram.do,70
+51,36,"uc_recode==""C32""",False,NBD215grProgram.do,71
+52,37,"""C33""<=uc_recode & uc_recode<=""C34""",False,NBD215grProgram.do,72
+53,38,"uc_recode==""C43""",False,NBD215grProgram.do,73
+54,39,"uc_recode==""C44""",False,NBD215grProgram.do,74
+55,40,"uc_recode==""C50""",False,NBD215grProgram.do,75
+56,41,"uc_recode==""C53""",False,NBD215grProgram.do,76
+57,42,"uc_recode==""C54""|uc_recode==""C55""",False,NBD215grProgram.do,77
+58,43,"uc_recode==""C56""",False,NBD215grProgram.do,78
+59,44,"uc_recode==""C61""",False,NBD215grProgram.do,79
+60,45,"uc_recode==""C62""",False,NBD215grProgram.do,80
+61,46,"uc_recode==""C67""",False,NBD215grProgram.do,81
+62,47,"""C64""<=uc_recode & uc_recode<=""C66""|uc_recode==""C68""",False,NBD215grProgram.do,82
+63,48,"""C70""<=uc_recode & uc_recode<=""C72""",False,NBD215grProgram.do,83
+64,49,"uc_recode==""C73""",False,NBD215grProgram.do,84
+65,50,"uc_recode==""C81""",False,NBD215grProgram.do,85
+66,51,"""C82""<=uc_recode & uc_recode<=""C85""|uc_recode==""C96"" | uc_recode==""C86""",False,NBD215grProgram.do,86
+67,52,"uc_recode==""C88""|uc_recode==""C90""",False,NBD215grProgram.do,87
+68,53,"""C91""<=uc_recode & uc_recode<=""C95""",False,NBD215grProgram.do,88
+69,54,"""C30""<=uc_recode & uc_recode<=""C31""|""C37""<=uc_recode & uc_recode<=""C38""|""C40""<=uc_recode & uc_recode<=""C41""|""C47""<=uc_recode & uc_recode<=""C49""",False,NBD215grProgram.do,89
+70,54,"""C51""<=uc_recode & uc_recode<=""C52""|""C57""<=uc_recode & uc_recode<=""C58""|""C74""<=uc_recode & uc_recode<=""C75""",False,NBD215grProgram.do,90
+71,54,"""C77""<=uc_recode & uc_recode<=""C79""|uc_recode==""C17""|uc_recode==""C45""|uc_recode==""C60""|uc_recode==""C63""|uc_recode==""C69""|uc_recode==""C97""",False,NBD215grProgram.do,91
+72,55,"""D00""<=uc_recode & uc_recode<=""D48""",False,NBD215grProgram.do,92
+73,56,"""E10""<=uc_recode & uc_recode<=""E14""",False,NBD215grProgram.do,93
+74,57,"uc_recode==""D56""|uc_recode==""D55""|uc_recode==""D57""|uc_recode==""D58""|uc_recode==""D59""|uc_recode==""D60""|uc_recode==""D61""|uc_recode==""D62""|uc_recode==""D64""|uc_recode==""E34""|uc_recode==""E88""",False,NBD215grProgram.do,94
+75,57,"""D66""<=uc_recode & uc_recode<=""D83""|""D86""<=uc_recode & uc_recode<=""D89""|""E03""<=uc_recode & uc_recode<=""E07""|""E15""<=uc_recode & uc_recode<=""E16""|""E20""<=uc_recode & uc_recode<=""E32""",False,NBD215grProgram.do,95
+76,57,"""E65""<=uc_recode & uc_recode<=""E67""|""E70""<=uc_recode & uc_recode<=""E80""|""E83""<=uc_recode & uc_recode<=""E85""",False,NBD215grProgram.do,96
+77,58,"""F32""<=uc_recode & uc_recode<=""F33""",False,NBD215grProgram.do,97
+78,59,"""F30""<=uc_recode & uc_recode<=""F31""",False,NBD215grProgram.do,98
+79,60,"""F20""<=uc_recode & uc_recode<=""F29""",False,NBD215grProgram.do,99
+80,61,"uc_recode==""F10""",False,NBD215grProgram.do,100
+81,62,"""F11""<=uc_recode & uc_recode<=""F16""|""F18""<=uc_recode & uc_recode<=""F19""",False,NBD215grProgram.do,101
+82,63,"""F40""<=uc_recode & uc_recode<=""F44""",False,NBD215grProgram.do,102
+83,64,"uc_recode==""F50""",False,NBD215grProgram.do,103
+84,65,"uc_recode==""F80""|uc_recode==""F81""|uc_recode==""F82""|uc_recode==""F84""|uc_recode==""F88""|uc_recode==""F89""",False,NBD215grProgram.do,104
+85,66,"""F90""<=uc_recode & uc_recode<=""F92""",False,NBD215grProgram.do,105
+86,67,"""F70""<=uc_recode & uc_recode<=""F73""|uc_recode==""F78""|uc_recode==""F79""",False,NBD215grProgram.do,106
+87,68,"""F04""<=uc_recode & uc_recode<=""F07""|""F34""<=uc_recode & uc_recode<=""F39""|""F45""<=uc_recode & uc_recode<=""F48""|""F51""<=uc_recode & uc_recode<=""F59""",False,NBD215grProgram.do,107
+88,68,"(""F60""<=uc_recode & uc_recode<=""F69""|""F93""<=uc_recode & uc_recode<=""F98""|uc_recode==""F09""|uc_recode==""F17"")",False,NBD215grProgram.do,108
+89,69,"uc_recode==""F01""|uc_recode==""F03""|uc_recode==""G30""|uc_recode==""G31""|uc_recode==""F00""",False,NBD215grProgram.do,109
+90,70,"""G20""<=uc_recode & uc_recode<=""G21""",False,NBD215grProgram.do,111
+91,71,"uc_recode==""G35""",False,NBD215grProgram.do,112
+92,72,"""G40""<=uc_recode & uc_recode<=""G41""",False,NBD215grProgram.do,113
+93,73,"uc_recode==""G43""",False,NBD215grProgram.do,114
+94,74,"uc_recode==""G44""",False,NBD215grProgram.do,115
+95,75,"""G06""<=uc_recode & uc_recode<=""G08""|""G10""<=uc_recode & uc_recode<=""G12""|""G36""<=uc_recode & uc_recode<=""G37""|""G45""<=uc_recode & uc_recode<=""G47""|""G50""<=uc_recode & uc_recode<=""G59""",False,NBD215grProgram.do,116
+96,75,"(""G60""<=uc_recode & uc_recode<=""G64""|""G70""<=uc_recode & uc_recode<=""G72""|""G90""<=uc_recode & uc_recode<=""G91""|""G95""<=uc_recode & uc_recode<=""G98"")",False,NBD215grProgram.do,117
+97,75,"(uc_recode==""G14""|uc_recode==""G22""|uc_recode==""G23""|uc_recode==""G24""|uc_recode==""G25""|uc_recode==""G32""|uc_recode==""G13"" )",False,NBD215grProgram.do,118
+98,76,"uc_recode==""H40""",False,NBD215grProgram.do,119
+99,77,"""H25""<=uc_recode & uc_recode<=""H26""",False,NBD215grProgram.do,120
+100,78,"""H90""<=uc_recode & uc_recode<=""H91""",False,NBD215grProgram.do,121
+101,79,"""H30""<=uc_recode & uc_recode<=""H35""|""H49""<=uc_recode & uc_recode<=""H54""",False,NBD215grProgram.do,122
+102,80,"""H00""<=uc_recode & uc_recode<=""H21""|""H43""<=uc_recode & uc_recode<=""H47""|""H55""<=uc_recode & uc_recode<=""H57""",False,NBD215grProgram.do,123
+103,80,"(""H60""<=uc_recode & uc_recode<=""H61""|""H68""<=uc_recode & uc_recode<=""H83""|""H92""<=uc_recode & uc_recode<=""H93""|uc_recode==""H27"" )",False,NBD215grProgram.do,124
+104,81,"""I00""<=uc_recode & uc_recode<=""I09""",False,NBD215grProgram.do,125
+105,82,"""I10""<=uc_recode & uc_recode<=""I13""",False,NBD215grProgram.do,126
+106,83,"""I20""<=uc_recode & uc_recode<=""I25""",False,NBD215grProgram.do,127
+107,84,"uc_recode==""I30""|uc_recode==""I31""|uc_recode==""I33""|uc_recode==""I38""|uc_recode==""I39""|uc_recode==""I40""",False,NBD215grProgram.do,128
+108,85,"uc_recode==""I42""",False,NBD215grProgram.do,129
+109,86,"""I60""<=uc_recode & uc_recode<=""I69""",False,NBD215grProgram.do,130
+110,87,"uc_recode==""I48""|uc_recode==""I47""",False,NBD215grProgram.do,131
+111,88,"uc_recode==""I71""",False,NBD215grProgram.do,132
+112,89,"uc_recode==""I73""",False,NBD215grProgram.do,133
+113,90,"""I34""<=uc_recode & uc_recode<=""I37""|uc_recode==""I27""|uc_recode==""I28""|uc_recode==""I72""|uc_recode==""I77""|uc_recode==""I78""|uc_recode==""I80""|""I82""<=uc_recode & uc_recode<=""I84""| ""I86""<=uc_recode & uc_recode<=""I89""|""I95""<=uc_recode & uc_recode<=""I98""",False,NBD215grProgram.do,134
+114,91,"""J40""<=uc_recode & uc_recode<=""J44""",False,NBD215grProgram.do,135
+115,92,"""J60""<=uc_recode & uc_recode<=""J65""",False,NBD215grProgram.do,136
+116,93,"""J45""<=uc_recode & uc_recode<=""J46""",False,NBD215grProgram.do,137
+117,94,"uc_recode==""J84""",False,NBD215grProgram.do,138
+118,95,"uc_recode==""J47""|uc_recode==""J70""|uc_recode==""J82""|uc_recode==""J85""|uc_recode== ""J91""|uc_recode==""J92""|uc_recode==""J95""|uc_recode==""J98""|uc_recode==""J99""|""J30""<=uc_recode & uc_recode<=""J39""|""J66""<=uc_recode & uc_recode<=""J68""",False,NBD215grProgram.do,139
+119,96,"""K25""<=uc_recode & uc_recode<=""K27""",False,NBD215grProgram.do,140
+120,97,"""K35""<=uc_recode & uc_recode<=""K37""",False,NBD215grProgram.do,141
+121,98,"""K40""<=uc_recode & uc_recode<=""K46""|uc_recode==""K56""",False,NBD215grProgram.do,142
+122,99,"""K50""<=uc_recode & uc_recode<=""K51""",False,NBD215grProgram.do,143
+123,100,"uc_recode==""K70""|uc_recode==""K73""|uc_recode==""K74""",False,NBD215grProgram.do,144
+124,101,"""K80""<=uc_recode & uc_recode<=""K83""",False,NBD215grProgram.do,145
+125,102,"uc_recode==""K85""|uc_recode==""K86""",False,NBD215grProgram.do,146
+126,103,"""K20""<=uc_recode & uc_recode<=""K22""|""K28""<=uc_recode & uc_recode<=""K31""|""K57""<=uc_recode & uc_recode<=""K64""|uc_recode==""K38""|uc_recode==""K55""|uc_recode==""K76""|uc_recode==""K77""|""K90""<=uc_recode & uc_recode<=""K91""",False,NBD215grProgram.do,147
+127,104,"""N00""<=uc_recode & uc_recode<=""N08""|""N10""<=uc_recode & uc_recode<=""N12""",False,NBD215grProgram.do,148
+128,105,"uc_recode==""N40""",False,NBD215grProgram.do,149
+129,106,"""N13""<=uc_recode & uc_recode<=""N15""|""N20""<=uc_recode & uc_recode<=""N21""|""N25""<=uc_recode & uc_recode<=""N39""|""N41""<=uc_recode & uc_recode<=""N50""|""N60""<=uc_recode & uc_recode<=""N64""",False,NBD215grProgram.do,150
+130,106,"""N75""<=uc_recode & uc_recode<=""N96""|""N97""<=uc_recode & uc_recode<=""N98""|uc_recode==""N23""",False,NBD215grProgram.do,151
+131,107,"""L00""<=uc_recode & uc_recode<=""L08""|""L10""<=uc_recode & uc_recode<=""L13""|""L20""<=uc_recode & uc_recode<=""L30""|""L40""<=uc_recode & uc_recode<=""L98""|""B35""<=uc_recode & uc_recode<=""B36""|""B85""<=uc_recode & uc_recode<=""B88""",False,NBD215grProgram.do,152
+132,108,"""M05""<=uc_recode & uc_recode<=""M06""",False,NBD215grProgram.do,153
+133,109,"""M15""<=uc_recode & uc_recode<=""M19""",False,NBD215grProgram.do,154
+134,110,"""M47""<=uc_recode & uc_recode<=""M54""",False,NBD215grProgram.do,155
+135,111,"""M00""<=uc_recode & uc_recode<=""M02""|""M10""<=uc_recode & uc_recode<=""M13""|""M20""<=uc_recode & uc_recode<=""M46""|""M60""<=uc_recode & uc_recode<=""M85""|""M87""<=uc_recode & uc_recode<=""M99""|uc_recode==""M08""",False,NBD215grProgram.do,156
+136,112,"uc_recode==""Q00""|uc_recode==""Q03""|uc_recode==""Q05""",False,NBD215grProgram.do,157
+137,113,"""Q35""<=uc_recode & uc_recode<=""Q37""",False,NBD215grProgram.do,158
+138,114,"""Q20""<=uc_recode & uc_recode<=""Q28""",False,NBD215grProgram.do,159
+139,115,"""Q38""<=uc_recode & uc_recode<=""Q45""",False,NBD215grProgram.do,160
+140,116,"""Q50""<=uc_recode & uc_recode<=""Q64""",False,NBD215grProgram.do,161
+141,117,"uc_recode==""Q86""",False,NBD215grProgram.do,162
+142,118,"uc_recode==""Q90""",False,NBD215grProgram.do,163
+143,119,"""Q91""<=uc_recode & uc_recode<=""Q99""",False,NBD215grProgram.do,164
+144,120,"uc_recode==""Q01""|uc_recode==""Q02""|uc_recode==""Q04""|uc_recode==""Q06""|uc_recode==""Q07""|uc_recode==""P75""|""Q10""<=uc_recode & uc_recode<=""Q18""|""Q30""<=uc_recode & uc_recode<=""Q34""|""Q65""<=uc_recode & uc_recode<=""Q85""|""Q87""<=uc_recode & uc_recode<=""Q89""",False,NBD215grProgram.do,165
+145,121,"uc_recode==""K02""",False,NBD215grProgram.do,166
+146,122,"uc_recode==""K05""",False,NBD215grProgram.do,167
+147,123,"""K00""<=uc_recode & uc_recode<=""K01""|""K03""<=uc_recode & uc_recode<=""K04""|""K06""<=uc_recode & uc_recode<=""K14""",False,NBD215grProgram.do,168
+148,124,"""V01""<=uc_recode & uc_recode<=""V04""|""V10""<=uc_recode & uc_recode<=""V80""|uc_recode==""V06""|uc_recode==""V09""|uc_recode==""V82""|uc_recode==""V83""|uc_recode==""V84""|uc_recode==""V85""|uc_recode==""V87""|uc_recode==""V89""",False,NBD215grProgram.do,169
+149,125,"uc_recode==""V05""|uc_recode==""V81""",False,NBD215grProgram.do,170
+150,126,"uc_recode==""V86""|uc_recode==""V88""|uc_recode==""V91""|""V93""<=uc_recode & uc_recode<=""V98""",False,NBD215grProgram.do,171
+151,127,"""X40""<=uc_recode & uc_recode<=""X49""",False,NBD215grProgram.do,172
+152,128,"""W00""<=uc_recode & uc_recode<=""W19""",False,NBD215grProgram.do,173
+153,129,"""X00""<=uc_recode & uc_recode<=""X19""",False,NBD215grProgram.do,174
+154,130,"uc_recode==""V90""|uc_recode==""V92""|""W65""<=uc_recode & uc_recode<=""W74""",False,NBD215grProgram.do,175
+155,131,"""W75""<=uc_recode & uc_recode<=""W84""",False,NBD215grProgram.do,176
+156,132,"uc_recode==""W24""|""W30""<=uc_recode & uc_recode<=""W31""",False,NBD215grProgram.do,177
+157,133,"""W32""<=uc_recode & uc_recode<=""W34""",False,NBD215grProgram.do,178
+158,134,"""W25""<=uc_recode & uc_recode<=""W29""|""W45""<=uc_recode & uc_recode<=""W46""",False,NBD215grProgram.do,179
+159,135,"""X30""<=uc_recode & uc_recode<=""X39""",False,NBD215grProgram.do,180
+160,136,"""Y40""<=uc_recode & uc_recode<=""Y84""|uc_recode==""Y88""|uc_recode==""Y39""|uc_recode==""Y67""|uc_recode==""Y68""",False,NBD215grProgram.do,181
+161,137,"uc_recode==""Y37""",False,NBD215grProgram.do,182
+162,138,"""W53""<=uc_recode & uc_recode<=""W59""|""X20""<=uc_recode & uc_recode<=""X27""|uc_recode==""X29""",False,NBD215grProgram.do,183
+163,139,"""W20""<=uc_recode & uc_recode<=""W23""|""W35""<=uc_recode & uc_recode<=""W44""|""W49""<=uc_recode & uc_recode<=""W52""|""W60""<=uc_recode & uc_recode<=""W64""|""W85""<=uc_recode & uc_recode<=""W99""|uc_recode==""X28""|uc_recode==""Y38""|""X50""<=uc_recode & uc_recode<=""X58""",False,NBD215grProgram.do,184
+164,140,"""X60""<=uc_recode & uc_recode<=""X84""",False,NBD215grProgram.do,185
+165,141,"""X93""<=uc_recode & uc_recode<=""X95""",False,NBD215grProgram.do,186
+166,142,"""X85""<=uc_recode & uc_recode<=""X92""|""X96""<=uc_recode & uc_recode<=""X99""|""Y00""<=uc_recode & uc_recode<=""Y08""",False,NBD215grProgram.do,187
+167,143,"""R00""<=uc_recode & uc_recode<=""R01""|""R03""<=uc_recode & uc_recode<=""R09""|""R10""<=uc_recode & uc_recode<=""R17""|""R19""<=uc_recode & uc_recode<=""R23""",False,NBD215grProgram.do,188
+168,143,"""R25""<=uc_recode & uc_recode<=""R29""|""R30""<=uc_recode & uc_recode<=""R39""|""R40""<=uc_recode & uc_recode<=""R46""|""R47""<=uc_recode & uc_recode<=""R49""",False,NBD215grProgram.do,189
+169,143,"""R50""<=uc_recode & uc_recode<=""R54""|""R59""<=uc_recode & uc_recode<=""R63""|""R70""<=uc_recode & uc_recode<=""R79""|""R80""<=uc_recode & uc_recode<=""R82""",False,NBD215grProgram.do,190
+170,143,"""R83""<=uc_recode & uc_recode<=""R94""|""R95""<=uc_recode & uc_recode<=""R99""|uc_recode==""R56""|uc_recode==""R68"" |uc_recode=="" ""|uc_recode==""999""|uc_recode==""888""|uc_recode==""000""",False,NBD215grProgram.do,191
+171,143,"uc_recode==""R55""|uc_recode==""R57""|uc_recode==""R58""|uc_recode==""R64""|uc_recode==""E86""|uc_recode==""E87""",False,NBD215grProgram.do,192
+172,143,"uc_recode==""R65""",False,NBD215grProgram.do,193
+173,145,"uc_recode==""C80""|uc_recode==""C76""",False,NBD215grProgram.do,195
+174,146,"uc_recode==""I51""",False,NBD215grProgram.do,196
+175,147,"uc_recode==""I99""",False,NBD215grProgram.do,197
+176,148,"uc_recode==""F99""",False,NBD215grProgram.do,198
+177,149,"uc_recode==""P92""|uc_recode==""P96"" |(uc_recode==""G80"" & age_<20 )",True,NBD215grProgram.do,199
+178,150,"uc_recode==""P95""",False,NBD215grProgram.do,200
+179,151,"uc_recode==""Y09""|uc_recode==""Y36""",False,NBD215grProgram.do,201
+180,152,"uc_recode==""A64""",False,NBD215grProgram.do,202
+181,153,"uc_recode==""B82""",False,NBD215grProgram.do,203
+182,154,"uc_recode==""B89""",False,NBD215grProgram.do,204
+183,155,"uc_recode==""C14""",False,NBD215grProgram.do,205
+184,156,"uc_recode==""C26""",False,NBD215grProgram.do,206
+185,157,"uc_recode==""C39""",False,NBD215grProgram.do,207
+186,158,"uc_recode==""V99""",False,NBD215grProgram.do,208
+187,159,"uc_recode==""X59""",False,NBD215grProgram.do,209
+188,160,"""Y10""<=uc_recode & uc_recode<=""Y34""",False,NBD215grProgram.do,210
+189,161,"""A40""<=uc_recode & uc_recode<=""A41""",False,NBD215grProgram.do,211
+190,162,"uc_recode==""E68""",False,NBD215grProgram.do,212
+191,165,"uc_recode==""G92""",False,NBD215grProgram.do,213
+192,166,"uc_recode==""I26""",False,NBD215grProgram.do,214
+193,167,"uc_recode==""I44""",False,NBD215grProgram.do,215
+194,168,"uc_recode==""I45""",False,NBD215grProgram.do,216
+195,169,"uc_recode==""I74""",False,NBD215grProgram.do,217
+196,170,"uc_recode==""I81""",False,NBD215grProgram.do,218
+197,171,"uc_recode==""J69""",False,NBD215grProgram.do,219
+198,172,"uc_recode==""J80""",False,NBD215grProgram.do,220
+199,173,"uc_recode==""J81""",False,NBD215grProgram.do,221
+200,174,"uc_recode==""I85""",False,NBD215grProgram.do,222
+201,175,"uc_recode==""J86""",False,NBD215grProgram.do,223
+202,176,"uc_recode==""J90""",False,NBD215grProgram.do,224
+203,177,"uc_recode==""J93""",False,NBD215grProgram.do,225
+204,178,"uc_recode==""J94""",False,NBD215grProgram.do,226
+205,179,"uc_recode==""K65""",False,NBD215grProgram.do,227
+206,180,"uc_recode==""K66""",False,NBD215grProgram.do,228
+207,181,"uc_recode==""K71""",False,NBD215grProgram.do,229
+208,182,"uc_recode==""K72""",False,NBD215grProgram.do,230
+209,183,"uc_recode==""K75""",False,NBD215grProgram.do,231
+210,184,"uc_recode==""K92""",False,NBD215grProgram.do,232
+211,185,"uc_recode==""M86""",False,NBD215grProgram.do,233
+212,186,"uc_recode==""N17""",False,NBD215grProgram.do,234
+213,187,"uc_recode==""N18""",False,NBD215grProgram.do,235
+214,188,"uc_recode==""N19""",False,NBD215grProgram.do,236
+215,189,"uc_recode==""R02""",False,NBD215grProgram.do,237
+216,190,"uc_recode==""R18""",False,NBD215grProgram.do,238
+217,191,"uc_recode==""B94""",False,NBD215grProgram.do,239
+218,192,"uc_recode==""E64""",False,NBD215grProgram.do,240
+219,193,"uc_recode==""G09""",False,NBD215grProgram.do,241
+220,194,"(uc_recode==""G80"" & age_>=20 )",True,NBD215grProgram.do,242
+221,195,"uc_recode==""G81""",False,NBD215grProgram.do,243
+222,196,"uc_recode==""G82""",False,NBD215grProgram.do,244
+223,197,"uc_recode==""G83""",False,NBD215grProgram.do,245
+224,198,"uc_recode==""Y85""",False,NBD215grProgram.do,246
+225,199,"uc_recode==""Y86""",False,NBD215grProgram.do,247
+226,200,"uc_recode==""Y87""",False,NBD215grProgram.do,248
+227,201,"uc_recode==""Y89""",False,NBD215grProgram.do,249
+228,202,"uc_recode==""D65""",False,NBD215grProgram.do,250
+229,203,"uc_recode==""I46""",False,NBD215grProgram.do,251
+230,204,"uc_recode==""I49""",False,NBD215grProgram.do,252
+231,205,"uc_recode==""I50""",False,NBD215grProgram.do,253
+232,206,"uc_recode==""J96""",False,NBD215grProgram.do,254
+233,207,"uc_recode==""I15""",False,NBD215grProgram.do,255
+234,208,"uc_recode==""I70""",False,NBD215grProgram.do,256
+235,209,"uc_recode==""G93""",False,NBD215grProgram.do,257
+236,210,"uc_recode==""A17""|uc_recode==""A18""",False,NBD215grProgram.do,258
+237,211,"uc_recode==""A19""",False,NBD215grProgram.do,259
+238,212,"uc_recode==""G04""| (""A83""<=uc_recode & uc_recode<=""A86""  )",False,NBD215grProgram.do,260
+239,213,"""O98""<=uc_recode & uc_recode<=""O99""",False,NBD215grProgram.do,261
+240,214,"uc_recode==""Y35""",False,NBD215grProgram.do,262
+241,215,"uc_recode==""B33""|uc_recode==""B45""|uc_recode==""B59""|uc_recode==""C46""|uc_recode==""D84""",False,NBD215grProgram.do,263

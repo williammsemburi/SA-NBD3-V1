@@ -1,0 +1,60 @@
+project:
+  name: "Third South African National Burden of Disease Study — Version 1"
+  description: "Reproducible mortality estimates for South Africa, 1997-2019"
+
+paths:
+  raw: "data/raw"
+  lookups: "data/lookups"
+  derived: "data/derived"
+  figures: "output/figures"
+  tables: "output/tables"
+  database: "output/database"
+
+files:
+  cod_raw: "COD1997-2019_F1.dta"
+  population_workbook: "New AltMYR.xls"
+  population_current: "NewPropPopulation.dta"
+  nims_2000: "NIMS2.xlsx"
+  ims_2009: "IMS raw data for completeness.dta"
+  famhis_2017: "FAMHIS_FinalLabelled_Updated&Weighted_04January2023_NBD.dta"
+  completeness_child: "Completeness25April2014.csv"
+  completeness_province: "Completeness and Province Deaths 27012014.xlsx"
+  npr: "NPR15_22.dta"
+  investigation_parameters: "Investigation Parameters.dta"
+  prevalence_raw: "ProvPrevs.csv"
+  yll: "NBD YLL.xlsx"
+  asr_factors: "ASRFactor.dta"
+  icd_to_nbd_lookup: "icd10_to_nbd.csv"
+  analysis_to_za_lookup: "analysis_to_za.csv"
+
+settings:
+  start_year: 1997
+  end_year: 2019
+  population_workbook_end_year: 2013
+  completeness_freeze_year: 2010
+  npr_start_year: 2017
+  cod_aggregation_backend: "collapse"
+  cod_read_selected_columns: true
+  cod_drop_zero_cells: true
+  parquet_compression: "snappy"
+  # Fast closed-form injury trajectory. Broad and within-group additive log
+  # ratios are linearly interpolated through NIMS 2000, IMS 2009 and FAMHIS
+  # 2017. The unsmoothed tails are flat, then a fixed centred triangular moving
+  # average removes survey-year slope changes. Survey-year values are not reset.
+  injury_fraction_method: "nims_ims_famhis_alr_linear_triangular_ma"
+  injury_nims_year: 2000
+  injury_ims_year: 2009
+  injury_famhis_year: 2017
+  injury_nims_sheet: 1
+  injury_nims_count_floor: 1.0e-6
+  injury_fraction_floor: 1.0e-8
+  injury_bias_correction_floor: 1.0e-5
+  injury_alr_reference_code: 139
+  injury_smoothing_window: 5
+  hiv_round_background_counts: true
+  hiv_include_pseudo_234_in_background_model: false
+  allow_identity_za_mapping: false
+  write_stata_exports: false
+  strict_checks: true
+  n_threads: 0
+  seed: 20260805

@@ -1,0 +1,1428 @@
+---
+title: "Third South African National Burden of Disease Study"
+subtitle: "Version 1: Reproducible mortality estimates for South Africa, 1997–2019"
+author: "NBD3 analytical team"
+date: "`r format(Sys.Date(), '%d %B %Y')`"
+runtime: shiny
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+    toc_depth: 2
+    number_sections: false
+    theme: flatly
+    highlight: textmate
+    fig_caption: true
+    css: www/report.css
+    df_print: default
+    self_contained: true
+---
+
+```{r setup, include=FALSE}
+options(
+  stringsAsFactors = FALSE,
+  scipen = 999,
+  shiny.sanitize.errors = TRUE
+)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+required_packages <- c(
+  "arrow", "data.table", "dplyr", "highcharter", "htmltools",
+  "knitr", "rmarkdown", "scales", "shiny", "yaml"
+)
+missing_packages <- required_packages[
+  !vapply(required_packages, requireNamespace, logical(1), quietly = TRUE)
+]
+if (length(missing_packages)) {
+  stop(
+    "Missing report package(s): ", paste(missing_packages, collapse = ", "),
+    ". Run source('install_packages.R') from the repository root."
+  )
+}
+
+find_report_root <- function(
+    start = dirname(normalizePath(knitr::current_input(), mustWork = TRUE))) {
+  current <- normalizePath(start, winslash = "/", mustWork = TRUE)
+  repeat {
+    if (file.exists(file.path(current, "_targets.R")) &&
+        file.exists(file.path(current, "report", "R", "report_data.R"))) {
+      return(current)
+    }
+    parent <- dirname(current)
+    if (identical(parent, current)) stop("Could not locate the NBD repository root.")
+    current <- parent
+  }
+}
+
+root <- find_report_root()
+knitr::opts_knit$set(root.dir = root)
+source(file.path(root, "report", "R", "report_data.R"))
+source(file.path(root, "report", "R", "report_charts.R"))
+
+config <- read_viz_config(root)
+runtime <- load_viz_runtime_data(config, open_rates = TRUE)
+comparison_data <- data.table::as.data.table(data.table::copy(runtime$comparisons))
+cause_uncertainty <- data.table::as.data.table(data.table::copy(
+  runtime$cause_uncertainty %||% data.table::data.table()
+))
+catalog <- runtime$catalogs
+injury_inputs <- load_injury_report_inputs(config)
+injury_broad <- summarise_injury_broad_fractions(injury_inputs)
+injury_broad_comparison <- data.table::as.data.table(data.table::copy(
+  injury_broad$comparison
+))
+injury_detailed_comparison <- data.table::as.data.table(data.table::copy(
+  injury_broad$detailed_comparison
+))
+
+uncertainty_draw_n <- if (nrow(cause_uncertainty) && "n_draws" %in% names(cause_uncertainty)) {
+  values <- cause_uncertainty$n_draws[is.finite(cause_uncertainty$n_draws)]
+  if (length(values)) max(values) else NA_integer_
+} else {
+  NA_integer_
+}
+uncertainty_draw_label <- if (length(uncertainty_draw_n) == 1L && !is.na(uncertainty_draw_n) && is.finite(uncertainty_draw_n)) {
+  paste0(format(uncertainty_draw_n, big.mark = ",", scientific = FALSE), " joint draws")
+} else {
+  "joint draws"
+}
+model_names_available <- ordered_model_names(unique(comparison_data$model), config)
+
+measure_choices <- c(
+  "Deaths" = "deaths",
+  "Crude mortality rate per 100,000" = "crude_rate",
+  "Age-standardised rate per 100,000" = "asr",
+  "YLLs (undiscounted)" = "yll00",
+  "YLLs (3% discount)" = "yll03",
+  "YLLs (1.5% discount)" = "yll015"
+)
+
+format_value <- function(x, measure, digits = 1L) {
+  if (!length(x) || is.na(x) || !is.finite(x)) return("—")
+  if (identical(measure, "fraction")) {
+    return(scales::percent(x, accuracy = 0.1))
+  }
+  format(round(x, digits), big.mark = ",", scientific = FALSE, trim = TRUE)
+}
+
+metric_decimals <- function(measure) {
+  if (measure %in% c("deaths", "yll00", "yll03", "yll015")) 0 else 2
+}
+
+safe_default <- function(values, preferred = NULL) {
+  values <- as.character(values)
+  values <- values[!is.na(values) & nzchar(values)]
+  if (!length(values)) return(character())
+  if (!is.null(preferred) && as.character(preferred) %in% values) {
+    return(as.character(preferred))
+  }
+  values[[1L]]
+}
+
+named_choices <- function(data, value, label) {
+  data <- data.table::as.data.table(data.table::copy(data))
+  if (!all(c(value, label) %in% names(data))) return(stats::setNames(character(), character()))
+  data <- unique(data[, c(value, label), with = FALSE])
+  keep <- !is.na(data[[value]]) & !is.na(data[[label]]) &
+    nzchar(as.character(data[[value]])) & nzchar(as.character(data[[label]]))
+  data <- data[keep]
+  stats::setNames(as.character(data[[value]]), as.character(data[[label]]))
+}
+
+humanise <- function(x) tools::toTitleCase(gsub("_", " ", as.character(x)))
+format_count <- function(x) {
+  if (!length(x) || is.na(x) || !is.finite(x)) return("—")
+  format(round(x), big.mark = ",", scientific = FALSE, trim = TRUE)
+}
+
+format_table_value <- function(x, measure = NULL, digits = 1L) {
+  vapply(
+    x,
+    function(value) {
+      if (is.na(value) || !is.finite(value)) return("—")
+      if (!is.null(measure) && identical(measure, "fraction")) {
+        return(scales::percent(value, accuracy = 0.1))
+      }
+      format(
+        round(value, digits),
+        big.mark = ",",
+        scientific = FALSE,
+        trim = TRUE,
+        nsmall = if (digits > 0L) digits else 0L
+      )
+    },
+    character(1)
+  )
+}
+
+nbd_kable_html <- function(
+    data,
+    caption = NULL,
+    align = NULL,
+    escape = TRUE,
+    table_class = "nbd-kable",
+    wrap_class = "nbd-kable-wrap",
+    empty_message = "No data are available for this selection.") {
+  x <- as.data.frame(data, stringsAsFactors = FALSE, check.names = FALSE)
+  if (!nrow(x)) {
+    x <- data.frame(Note = empty_message, check.names = FALSE)
+  }
+  if (is.null(align)) {
+    align <- rep("l", ncol(x))
+  }
+  table_html <- knitr::kable(
+    x,
+    format = "html",
+    escape = escape,
+    align = align,
+    caption = caption,
+    table.attr = paste0('class="', table_class, '"')
+  )
+  htmltools::HTML(paste0(
+    '<div class="', wrap_class, '">',
+    as.character(table_html),
+    '</div>'
+  ))
+}
+
+comparison_panel_ui <- function(prefix, domain_name, default_series) {
+  available <- comparison_data[get("domain") == domain_name]
+  geographies <- unique(available[, .(
+    geography_type, geography_code, geography
+  )])[order(geography_type, geography_code)]
+  sexes <- unique(available[, .(sex_code, sex)])[order(sex_code)]
+  ages <- unique(available[, .(
+    age_id, age_label, age_sort_order
+  )])[order(age_sort_order)]
+  series <- unique(available[, .(
+    series_id, series_label, series_sort_order
+  )])[order(series_sort_order)]
+
+  ids <- paste0(prefix, c("_geography", "_sex", "_age", "_series"))
+  shiny::tagList(
+    shiny::fluidRow(
+      shiny::column(
+        3,
+        htmltools::div(
+          class = "control-panel",
+          shiny::selectizeInput(
+            ids[[1L]], "Geography",
+            choices = named_choices(geographies, "geography_code", "geography"),
+            selected = safe_default(geographies$geography_code, 10L),
+            multiple = FALSE
+          ),
+          shiny::selectizeInput(
+            ids[[2L]], "Sex",
+            choices = named_choices(sexes, "sex_code", "sex"),
+            selected = safe_default(sexes$sex_code, 3L),
+            multiple = FALSE
+          ),
+          shiny::selectizeInput(
+            ids[[3L]], "Age group",
+            choices = named_choices(ages, "age_id", "age_label"),
+            selected = safe_default(ages$age_id, "age_all"),
+            multiple = FALSE
+          ),
+          shiny::selectizeInput(
+            ids[[4L]], "Series",
+            choices = named_choices(series, "series_id", "series_label"),
+            selected = safe_default(series$series_id, default_series),
+            multiple = FALSE
+          ),
+          htmltools::p(
+            class = "control-hint",
+            "All available models are shown together. Click a legend item to hide or restore a series."
+          )
+        )
+      ),
+      shiny::column(
+        9,
+        htmltools::div(
+          class = "report-chart",
+          highcharter::highchartOutput(paste0(prefix, "_chart"), height = "500px")
+        )
+      )
+    ),
+    shiny::uiOutput(paste0(prefix, "_note")),
+    htmltools::tags$details(
+      class = "appendix-detail",
+      htmltools::tags$summary("View and download the annual model values"),
+      htmltools::div(
+        class = "report-table",
+        shiny::uiOutput(paste0(prefix, "_table")),
+        shiny::downloadLink(
+          paste0(prefix, "_download"),
+          "Download comparison data",
+          class = "download-link"
+        )
+      )
+    )
+  )
+}
+
+register_comparison_panel <- function(prefix, domain_name, default_series) {
+  ids <- list(
+    geography = paste0(prefix, "_geography"),
+    sex = paste0(prefix, "_sex"),
+    age = paste0(prefix, "_age"),
+    series = paste0(prefix, "_series"),
+    chart = paste0(prefix, "_chart"),
+    note = paste0(prefix, "_note"),
+    table = paste0(prefix, "_table"),
+    download = paste0(prefix, "_download")
+  )
+
+  selected_data <- shiny::reactive({
+    shiny::req(
+      input[[ids$geography]], input[[ids$sex]],
+      input[[ids$age]], input[[ids$series]]
+    )
+    comparison_data[
+      get("domain") == domain_name &
+        geography_code == as.integer(input[[ids$geography]]) &
+        sex_code == as.integer(input[[ids$sex]]) &
+        age_id == input[[ids$age]] &
+        series_id == input[[ids$series]]
+    ][order(
+      year,
+      factor(
+        model,
+        levels = as.character(unlist(config$labels$models$order, use.names = FALSE))
+      )
+    )]
+  })
+
+  output[[ids$chart]] <- highcharter::renderHighchart({
+    d <- data.table::copy(selected_data())
+    if (!nrow(d)) return(empty_nbd_chart(height = 500))
+    selected_measure <- unique(d$measure)[[1L]]
+    d[, `:=`(
+      plot_estimate = estimate,
+      plot_lower = lower,
+      plot_upper = upper
+    )]
+    suffix <- ""
+    decimals <- metric_decimals(selected_measure)
+    y_title <- measure_label(selected_measure, config)
+    if (identical(selected_measure, "fraction")) {
+      d[, `:=`(
+        plot_estimate = 100 * plot_estimate,
+        plot_lower = 100 * plot_lower,
+        plot_upper = 100 * plot_upper
+      )]
+      suffix <- "%"
+      decimals <- 1
+      y_title <- "Percent of all-cause deaths"
+    }
+    hc_nbd_lines(
+      d,
+      y = "plot_estimate",
+      series = "model",
+      lower = "plot_lower",
+      upper = "plot_upper",
+      title = unique(d$series_label)[[1L]],
+      subtitle = paste(unique(d$geography), unique(d$sex), unique(d$age_label), sep = " — "),
+      x_title = "Year",
+      y_title = y_title,
+      config = config,
+      decimals = decimals,
+      suffix = suffix,
+      height = 500,
+      filename = paste0(prefix, "-model-comparison"),
+      series_order = as.character(unlist(config$labels$models$order, use.names = FALSE))
+    )
+  })
+
+  output[[ids$note]] <- shiny::renderUI({
+    d <- selected_data()
+    if (!nrow(d)) {
+      return(htmltools::div(
+        class = "narrative-box warning",
+        "No model series are available for the selected cell."
+      ))
+    }
+    model_names <- ordered_model_names(unique(d$model), config)
+    interval_models <- ordered_model_names(
+      unique(d[is.finite(lower) & is.finite(upper), model]),
+      config
+    )
+    interval_text <- if (length(interval_models)) {
+      paste0(
+        "Uncertainty bands are available for: ",
+        paste(interval_models, collapse = ", "), "."
+      )
+    } else {
+      "No uncertainty limits are supplied for this exact selection."
+    }
+    htmltools::div(
+      class = "narrative-box",
+      htmltools::strong("Models shown: "),
+      paste(model_names, collapse = ", "),
+      htmltools::br(),
+      interval_text,
+      htmltools::br(),
+      htmltools::span(
+        class = "provisional-note",
+        paste0(
+          "NBD3-R intervals come from ", uncertainty_draw_label,
+          "; external intervals are retained as supplied."
+        )
+      )
+    )
+  })
+
+  output[[ids$table]] <- shiny::renderUI({
+    d <- data.table::copy(selected_data())
+    if (!nrow(d)) return(nbd_kable_html(data.frame()))
+    selected_measure <- unique(d$measure)[[1L]]
+    digits <- if (identical(selected_measure, "fraction")) {
+      1L
+    } else {
+      metric_decimals(selected_measure)
+    }
+    display <- d[, .(
+      Model = model,
+      Geography = geography,
+      Sex = sex,
+      Year = year,
+      Age = age_label,
+      Series = series_label,
+      Measure = measure,
+      Estimate = estimate,
+      Lower = lower,
+      Upper = upper,
+      Source = source
+    )]
+    display[, `:=`(
+      Estimate = format_table_value(Estimate, selected_measure, digits),
+      Lower = format_table_value(Lower, selected_measure, digits),
+      Upper = format_table_value(Upper, selected_measure, digits)
+    )]
+    nbd_kable_html(
+      display,
+      caption = "Annual estimates and uncertainty limits for the selected model comparison",
+      align = c("l", "l", "l", "r", "l", "l", "l", "r", "r", "r", "l")
+    )
+  })
+
+  output[[ids$download]] <- shiny::downloadHandler(
+    filename = function() paste0(prefix, "-model-comparison.csv"),
+    content = function(file) data.table::fwrite(selected_data(), file)
+  )
+
+  invisible(TRUE)
+}
+
+final_panel_ui <- function(prefix, geography_type_name, domain_name, default_series) {
+  availability <- unique(catalog$availability[
+    model == "NBD3-R" &
+      get("geography_type") %in% geography_type_name &
+      get("domain") == domain_name
+  ])
+  geographies <- unique(availability[, .(
+    geography_code, geography
+  )])[order(geography_code)]
+  sexes <- unique(availability[, .(sex_code, sex)])[order(sex_code)]
+  ages <- unique(availability[, .(
+    age_id, age_label, age_sort_order
+  )])[order(age_sort_order)]
+  causes <- unique(availability[, .(
+    series_id, series_label, hierarchy, series_sort_order
+  )])[order(series_sort_order)]
+  grouped_causes <- lapply(
+    split(causes, causes$hierarchy),
+    function(x) named_choices(x, "series_id", "series_label")
+  )
+  names(grouped_causes) <- humanise(names(grouped_causes))
+
+  ids <- paste0(prefix, c(
+    "_geographies", "_sex", "_cause", "_age", "_measure", "_years"
+  ))
+  shiny::tagList(
+    htmltools::div(
+      class = "control-panel final-control-panel",
+      shiny::fluidRow(
+        shiny::column(4, shiny::selectizeInput(
+          ids[[1L]], "Geographies",
+          choices = named_choices(geographies, "geography_code", "geography"),
+          selected = as.character(geographies$geography_code),
+          multiple = TRUE
+        )),
+        shiny::column(2, shiny::selectizeInput(
+          ids[[2L]], "Sex",
+          choices = named_choices(sexes, "sex_code", "sex"),
+          selected = safe_default(sexes$sex_code, 3L),
+          multiple = FALSE
+        )),
+        shiny::column(6, shiny::selectizeInput(
+          ids[[3L]], "Cause",
+          choices = grouped_causes,
+          selected = safe_default(causes$series_id, default_series),
+          multiple = FALSE
+        ))
+      ),
+      shiny::fluidRow(
+        shiny::column(4, shiny::selectizeInput(
+          ids[[4L]], "Age group",
+          choices = named_choices(ages[age_id != "asr_all"], "age_id", "age_label"),
+          selected = safe_default(ages$age_id, "age_all"),
+          multiple = FALSE
+        )),
+        shiny::column(4, shiny::selectInput(
+          ids[[5L]], "Measure",
+          choices = measure_choices,
+          selected = "crude_rate"
+        )),
+        shiny::column(4, shiny::sliderInput(
+          ids[[6L]], "Years",
+          min = as.integer(config$labels$build$start_year),
+          max = as.integer(config$labels$build$end_year),
+          value = c(
+            as.integer(config$labels$build$start_year),
+            as.integer(config$labels$build$end_year)
+          ),
+          sep = ""
+        ))
+      )
+    ),
+    htmltools::div(
+      class = "report-chart wide-report-chart",
+      highcharter::highchartOutput(paste0(prefix, "_chart"), height = "520px")
+    ),
+    shiny::uiOutput(paste0(prefix, "_note")),
+    htmltools::tags$details(
+      class = "appendix-detail",
+      htmltools::tags$summary("View and download the selected NBD3 Version 1 values"),
+      htmltools::div(
+        class = "report-table",
+        shiny::uiOutput(paste0(prefix, "_table")),
+        shiny::downloadLink(
+          paste0(prefix, "_download"),
+          "Download selected NBD3 Version 1 data",
+          class = "download-link"
+        )
+      )
+    )
+  )
+}
+
+register_final_panel <- function(prefix, geography_type_name, domain_name, default_series) {
+  ids <- list(
+    geographies = paste0(prefix, "_geographies"),
+    sex = paste0(prefix, "_sex"),
+    cause = paste0(prefix, "_cause"),
+    age = paste0(prefix, "_age"),
+    measure = paste0(prefix, "_measure"),
+    years = paste0(prefix, "_years"),
+    chart = paste0(prefix, "_chart"),
+    note = paste0(prefix, "_note"),
+    table = paste0(prefix, "_table"),
+    download = paste0(prefix, "_download")
+  )
+
+  availability <- unique(catalog$availability[
+    model == "NBD3-R" &
+      get("geography_type") %in% geography_type_name &
+      get("domain") == domain_name
+  ])
+  age_catalog <- unique(availability[, .(
+    age_id, age_label, age_sort_order
+  )])[order(age_sort_order)]
+
+  shiny::observeEvent(input[[ids$measure]], {
+    selected_measure <- input[[ids$measure]] %||% "crude_rate"
+    choices <- if (identical(selected_measure, "asr")) {
+      age_catalog[age_id == "asr_all"]
+    } else {
+      age_catalog[age_id != "asr_all"]
+    }
+    preferred <- if (identical(selected_measure, "asr")) "asr_all" else "age_all"
+    shiny::updateSelectizeInput(
+      session,
+      ids$age,
+      choices = named_choices(choices, "age_id", "age_label"),
+      selected = safe_default(choices$age_id, preferred),
+      server = TRUE
+    )
+  }, ignoreInit = FALSE)
+
+  selected_data <- shiny::reactive({
+    shiny::req(
+      input[[ids$geographies]], input[[ids$sex]], input[[ids$cause]],
+      input[[ids$age]], input[[ids$measure]], input[[ids$years]]
+    )
+    selected_geography_codes <- suppressWarnings(as.integer(unlist(
+      input[[ids$geographies]], recursive = TRUE, use.names = FALSE
+    )))
+    selected_geography_codes <- unique(selected_geography_codes[!is.na(selected_geography_codes)])
+    selected_sex_code <- suppressWarnings(as.integer(unlist(
+      input[[ids$sex]], recursive = TRUE, use.names = FALSE
+    )))[[1L]]
+    selected_years <- suppressWarnings(as.integer(unlist(
+      input[[ids$years]], recursive = TRUE, use.names = FALSE
+    )))
+    selected_years <- selected_years[!is.na(selected_years)]
+
+    d <- collect_cause_rates(
+      runtime$cause_rates_dataset,
+      models = "NBD3-R",
+      geography_type = geography_type_name,
+      geography_codes = selected_geography_codes,
+      sex_code = selected_sex_code,
+      series_id = input[[ids$cause]],
+      age_id = input[[ids$age]],
+      year_range = selected_years,
+      measure = input[[ids$measure]]
+    )
+    if (!nrow(d)) return(d)
+    d[, `:=`(
+      lower = NA_real_,
+      upper = NA_real_,
+      n_draws = NA_integer_,
+      uncertainty_source = NA_character_
+    )]
+    if (nrow(cause_uncertainty)) {
+      key <- c(
+        "geography_type", "geography_code", "sex_code", "year",
+        "age_id", "series_id", "measure"
+      )
+      uncertainty_slice <- cause_uncertainty[
+        get("geography_type") %in% geography_type_name &
+          geography_code %in% selected_geography_codes &
+          sex_code == selected_sex_code &
+          series_id == input[[ids$cause]] &
+          age_id == input[[ids$age]] &
+          measure == input[[ids$measure]] &
+          year >= min(selected_years) &
+          year <= max(selected_years),
+        c(key, "lower", "upper", "n_draws", "source"),
+        with = FALSE
+      ]
+      if (nrow(uncertainty_slice)) {
+        data.table::setnames(uncertainty_slice, "source", "uncertainty_source")
+        d[, c("lower", "upper", "n_draws", "uncertainty_source") := NULL]
+        d <- merge(d, uncertainty_slice, by = key, all.x = TRUE, sort = FALSE)
+      }
+    }
+    d[, line_name := geography]
+    d[order(geography_code, year)]
+  })
+
+  output[[ids$chart]] <- highcharter::renderHighchart({
+    d <- data.table::copy(selected_data())
+    if (!nrow(d)) return(empty_nbd_chart(height = 520))
+    hc_nbd_lines(
+      d,
+      y = "estimate",
+      series = "line_name",
+      lower = "lower",
+      upper = "upper",
+      title = unique(d$series_label)[[1L]],
+      subtitle = paste(unique(d$sex), unique(d$age_label), sep = " — "),
+      x_title = "Year",
+      y_title = measure_label(input[[ids$measure]], config),
+      config = config,
+      decimals = metric_decimals(input[[ids$measure]]),
+      height = 520,
+      filename = paste0(prefix, "-nbd3-r-trend")
+    )
+  })
+
+  output[[ids$note]] <- shiny::renderUI({
+    d <- selected_data()
+    if (!nrow(d)) {
+      return(htmltools::div(
+        class = "narrative-box warning",
+        "No NBD3 Version 1 R results are available for this selection."
+      ))
+    }
+    interval_rows <- d[is.finite(lower) & is.finite(upper), .N]
+    total_rows <- nrow(d)
+    interval_message <- if (interval_rows > 0L) {
+      paste0(
+        format(interval_rows, big.mark = ","), " of ",
+        format(total_rows, big.mark = ","),
+        " plotted cells have 95% uncertainty intervals from ",
+        uncertainty_draw_label, "."
+      )
+    } else if (identical(geography_type_name, "population_group")) {
+      paste(
+        "The loaded uncertainty profile does not contain an exact interval",
+        "for this population-group selection. The Version 1 joint uncertainty output",
+        "retains national population-group draws for Person estimates."
+      )
+    } else if (as.integer(input[[ids$sex]]) != 3L) {
+      "The completed uncertainty reporting profile stores Person estimates only; sex-specific results are point estimates."
+    } else if (!input[[ids$measure]] %in% c("deaths", "crude_rate")) {
+      "The completed draw outputs support deaths and crude rates; ASRs and YLLs are shown as point estimates."
+    } else {
+      "This cause or age group is outside the exact cause catalogue retained in the completed compact draw outputs."
+    }
+    htmltools::div(
+      class = if (interval_rows > 0L) "narrative-box success" else "narrative-box",
+      htmltools::strong("NBD3 Version 1 — R implementation. "),
+      interval_message,
+      htmltools::br(),
+      htmltools::span(
+        class = "provisional-note",
+        paste(
+          "Intervals combine under-reporting, injury survey-composition,",
+          "HIV fitted-parameter, and redistribution uncertainty in one joint run."
+        )
+      )
+    )
+  })
+
+  output[[ids$table]] <- shiny::renderUI({
+    d <- data.table::copy(selected_data())
+    if (!nrow(d)) return(nbd_kable_html(data.frame()))
+    selected_measure <- input[[ids$measure]]
+    digits <- metric_decimals(selected_measure)
+    display <- d[, .(
+      Geography = geography,
+      Sex = sex,
+      Year = year,
+      Age = age_label,
+      Cause = series_label,
+      Measure = measure,
+      Estimate = estimate,
+      Lower = lower,
+      Upper = upper,
+      `Draws used` = n_draws
+    )]
+    display[, `:=`(
+      Estimate = format_table_value(Estimate, selected_measure, digits),
+      Lower = format_table_value(Lower, selected_measure, digits),
+      Upper = format_table_value(Upper, selected_measure, digits),
+      `Draws used` = vapply(
+        `Draws used`,
+        function(value) if (is.na(value)) "—" else format(value, big.mark = ","),
+        character(1)
+      )
+    )]
+    nbd_kable_html(
+      display,
+      caption = "Selected NBD3 Version 1 estimates and 95% uncertainty intervals",
+      align = c("l", "l", "r", "l", "l", "l", "r", "r", "r", "r")
+    )
+  })
+
+  output[[ids$download]] <- shiny::downloadHandler(
+    filename = function() paste0(prefix, "-nbd3-r.csv"),
+    content = function(file) data.table::fwrite(selected_data(), file)
+  )
+
+  invisible(TRUE)
+}
+
+# Injury source table used in the methods section.
+injury_source_table <- data.table::data.table()
+source_fractions <- data.table::as.data.table(data.table::copy(
+  injury_inputs$source_fractions
+))
+if (nrow(source_fractions) && all(c(
+  "survey", "year", "nbdcode", "observed_count"
+) %in% names(source_fractions))) {
+  labels <- data.table::fread(file.path(root, "data", "lookups", "analysis_codes.csv"))
+  injury_source_table <- source_fractions[, .(
+    observed_deaths = sum(observed_count, na.rm = TRUE)
+  ), by = .(survey, year, nbdcode)]
+  injury_source_table[, percent := safe_ratio(
+    observed_deaths, sum(observed_deaths), 100
+  ), by = .(survey, year)]
+  injury_source_table <- merge(
+    injury_source_table,
+    labels[, .(nbdcode = as.integer(analysis_code), Cause = analysis_label)],
+    by = "nbdcode",
+    all.x = TRUE,
+    sort = FALSE
+  )
+  injury_source_table[is.na(Cause), Cause := paste("Cause", nbdcode)]
+  injury_source_table[, display := paste0(
+    "<span class=\"injury-table-count\">",
+    format(round(observed_deaths), big.mark = ",", scientific = FALSE),
+    "</span><span class=\"injury-table-share\">",
+    sprintf("%.2f%%", percent),
+    "</span>"
+  )]
+  injury_source_table <- data.table::dcast(
+    injury_source_table,
+    nbdcode + Cause ~ survey,
+    value.var = "display",
+    fill = "—"
+  )
+  data.table::setorder(injury_source_table, nbdcode)
+  data.table::setnames(
+    injury_source_table,
+    c("nbdcode", "Cause"),
+    c("Code", "Cause of injury")
+  )
+  survey_columns <- intersect(
+    c("NIMS 2000", "IMS 2009", "FAMHIS 2017"),
+    names(injury_source_table)
+  )
+  data.table::setcolorder(
+    injury_source_table,
+    c("Code", "Cause of injury", survey_columns)
+  )
+}
+
+injury_cause_labels <- data.table::fread(
+  file.path(root, "data", "lookups", "analysis_codes.csv")
+)[, .(
+  nbdcode = as.integer(analysis_code),
+  Cause = as.character(analysis_label)
+)]
+
+injury_broad_fit_table <- data.table::data.table()
+if (nrow(injury_broad_comparison)) {
+  injury_broad_fit_table <- injury_broad_comparison[, .(
+    Survey = survey,
+    Year = year,
+    `Broad injury group` = broad_group,
+    `Survey input (%)` = 100 * survey_fraction,
+    `Final smoothed estimate (%)` = 100 * model_fraction,
+    `Difference (percentage points)` = difference_percentage_points
+  )]
+  data.table::setorderv(
+    injury_broad_fit_table,
+    c("Year", "Broad injury group")
+  )
+}
+
+injury_flagged_fit_table <- data.table::data.table()
+if (nrow(injury_detailed_comparison)) {
+  injury_flagged_fit_table <- merge(
+    injury_detailed_comparison[nbdcode %in% c(132L, 136L, 138L)],
+    injury_cause_labels,
+    by = "nbdcode",
+    all.x = TRUE,
+    sort = FALSE
+  )[, .(
+    Survey = survey,
+    Year = year,
+    Code = nbdcode,
+    Cause,
+    `Survey input (%)` = 100 * survey_fraction,
+    `Final smoothed estimate (%)` = 100 * model_fraction,
+    `Difference (percentage points)` = difference_percentage_points
+  )]
+  data.table::setorder(injury_flagged_fit_table, Year, Code)
+}
+```
+
+<div class="nbd-report-header collaborator-header">
+<span class="nbd-report-kicker">Version 1 analytical report</span>
+<h1>Third South African National Burden of Disease Study</h1>
+<p>This release provides the reproducible R implementation of NBD3 for 1997–2019. It uses the unpublished NBD3 Stata implementation as the internal replication benchmark, carries forward the analytical foundations of NBD2, incorporates the expanded injury evidence base, and introduces formal propagation of analytical uncertainty.</p>
+</div>
+
+<div class="utility-note"><strong>Interactivity.</strong> Use the controls embedded in each results section. Charts support zooming, hover values, image export, and data download; the floating navigation panel follows the report as you scroll.</div>
+
+# Overview {#overview}
+
+<div class="section-lead">A national burden of disease study develops consistent and coherent estimates of the levels and underlying causes of death using the best available mortality, population, injury, and epidemiological information. It addresses deficiencies in registered cause-of-death data—including under-registration, HIV/AIDS misclassification, undetermined injury causes, and ill-defined or otherwise unusable underlying causes—and translates the corrected mortality profile into deaths, mortality rates, age-standardised rates, and years of life lost.</div>
+
+## Development of the South African NBD studies {#study-lineage}
+
+<div class="study-lineage-grid">
+<article class="study-generation-card generation-one"><span class="study-generation-label">Initial South African NBD</span><div class="study-generation-period">Reference year 2000</div><h3>National modelling foundation</h3><p>The first study was implemented through spreadsheet-based workflows. Total mortality and the HIV/AIDS epidemic were modelled using ASSA2000; the non-AIDS cause profile drew on registered mortality, Home Affairs data, and national injury surveillance. Its principal focus was premature mortality measured through YLLs, with initial YLD and DALY estimates.</p></article>
+<article class="study-generation-card generation-two"><span class="study-generation-label">Second South African NBD</span><div class="study-generation-period">1997–2012</div><h3>National and provincial time series</h3><p>NBD2 moved the analysis into Stata and produced annual national and provincial mortality profiles. It adjusted for incomplete registration, reallocated misclassified HIV/AIDS deaths, estimated specific injury causes from survey evidence, redistributed garbage and ill-defined causes, and reported coherent cause-specific deaths and YLLs.</p></article>
+<article class="study-generation-card generation-three"><span class="study-generation-label">Third South African NBD</span><div class="study-generation-period">Target: 1997–2022</div><h3>Reproducible, uncertainty-aware R system</h3><p>NBD3 is being built as a fully scripted R workflow. Version 1 covers 1997–2019 and reproduces the working unpublished NBD3 Stata analysis while incorporating NIMS 2000, IMS 2009, and FAMHIS 2017 in the injury model and quantifying uncertainty. The planned extension will add 2020–2022 and explicitly estimate COVID-19 mortality.</p></article>
+</div>
+
+<div class="report-callout callout-info study-scope-callout">
+<div class="callout-title">How to interpret the study and model labels</div>
+<div class="callout-body"><strong>NBD3-Stata</strong> and <strong>NBD3-R</strong> are two implementations of the third National Burden of Disease Study, not separate national study iterations. NBD3-Stata is the internal replication benchmark; NBD3-R is the reproducible implementation used for the final Version 1 cause estimates. <strong>NBD2</strong> is the preceding national study, while <strong>THEMBISA</strong> and <strong>GBD2023</strong> are external comparison series.</div>
+</div>
+
+<div class="nbd-overview-grid">
+<article class="overview-panel"><span class="overview-eyebrow">Version 1 scope</span><h3>Annual mortality estimates, 1997–2019</h3><p>Estimate deaths and premature mortality by year, age, sex, province or population group, and cause. Years 2020–2022 and COVID-19 mortality are outside the present release and form the next extension of NBD3.</p></article>
+<article class="overview-panel"><span class="overview-eyebrow">Core evidence</span><h3>Combine complementary data sources</h3><p>Use registered cause-of-death records and population denominators together with NIMS 2000, IMS 2009, FAMHIS 2017, completeness estimates, National Population Register information, antenatal HIV prevalence, YLL schedules, and standard-population weights.</p></article>
+<article class="overview-panel"><span class="overview-eyebrow">Analytical sequence</span><h3>Correct data problems while preserving deaths</h3><p>Verify and aggregate causes, estimate injury composition, adjust for incompleteness, reallocate misclassified HIV/AIDS deaths, redistribute ill-defined and garbage causes, and construct the final South African cause hierarchy.</p></article>
+<article class="overview-panel"><span class="overview-eyebrow">What this report provides</span><h3>Methods, comparisons, final estimates, and uncertainty</h3><p>Follow the established visualization order, compare the two NBD3 implementations with NBD2 and external benchmarks, and present the final Version 1 cause estimates from the R implementation with uncertainty wherever the completed draws support an exact result.</p></article>
+</div>
+
+<div class="nbd-summary-strip">
+<div><span>Current release</span><strong>NBD3 Version 1</strong><small>`r config$labels$project$analysis_period`</small></div>
+<div><span>Model series available</span><strong>`r length(model_names_available)`</strong><small>`r paste(model_names_available, collapse = ", ")`</small></div>
+<div><span>Uncertainty propagation</span><strong>`r uncertainty_draw_label`</strong><small>Exact intervals are shown only where the draw outputs support the report cell</small></div>
+</div>
+
+<div class="report-callout callout-warning">
+<div class="callout-title">Current uncertainty status</div>
+<div class="callout-body">Version 1 uses one joint uncertainty model. The completeness component uses the nine death-weighted province-level S2 aggregates in an exact cluster bootstrap of the national weighted mean, then applies one shared factor to all African natural-cause deaths while retaining the deterministic relative pattern between provinces; injury uncertainty draws the NIMS, IMS, and FAMHIS compositions from their count or Kish-equivalent information and reruns the same fixed interpolation and smoother; HIV/AIDS parameters are sampled from the Stage 05 variance-covariance matrices after completeness scaling; and garbage redistribution samples among the non-empty subsets of the same expert-approved targets. Province, South Africa, and national population-group Person estimates are retained within each draw. The total injury envelope remains fixed because its inputs do not provide a defensible variance model. The report summarises `r uncertainty_draw_label`. The draw count can be increased in config/uncertainty_joint.yml when final interval precision is required.</div>
+</div>
+
+<div class="historical-source-note"><strong>Historical basis.</strong> The study lineage summarises the initial South African NBD estimates for 2000 (Bradshaw et al., 2003), the Second National Burden of Disease cause-of-death profile for 1997–2012 (Msemburi et al., 2016), and the documented SA NBD cause-list mappings (Awotiwon et al., 2017).</div>
+
+# Contents {#contents}
+
+<div class="contents-intro">The detailed floating contents panel remains available on the left. The compact guide below follows the order of the original visualization storyboard.</div>
+
+<div class="journey-grid report-contents-grid">
+<a class="journey-card" href="#hiv-methods"><span>01</span><strong>HIV/AIDS methods</strong><small>NBD2 foundations, transition to NBD3, and the Version 1 R implementation</small></a>
+<a class="journey-card" href="#hiv-model-comparison"><span>02</span><strong>HIV/AIDS model comparison</strong><small>NBD2, NBD3-Stata, NBD3-R, THEMBISA, and GBD2023 together</small></a>
+<a class="journey-card" href="#injury-methods"><span>03</span><strong>Injury methods</strong><small>Survey-informed interpolation, fixed smoothing, and direct survey-to-estimate comparison</small></a>
+<a class="journey-card" href="#injury-model-comparison"><span>04</span><strong>Injury model comparison</strong><small>NBD2, NBD3-Stata, NBD3-R, and GBD2023 together</small></a>
+<a class="journey-card" href="#provincial-natural"><span>05</span><strong>Provincial natural deaths</strong><small>Final R estimates with exact uncertainty intervals where supported</small></a>
+<a class="journey-card" href="#provincial-injury"><span>06</span><strong>Provincial injury deaths</strong><small>Final R injury causes and broad injury groups</small></a>
+<a class="journey-card" href="#population-natural"><span>07</span><strong>Population-group natural deaths</strong><small>Final R population-group trends</small></a>
+<a class="journey-card" href="#population-injury"><span>08</span><strong>Population-group injury deaths</strong><small>Final R population-group injury trends with joint uncertainty</small></a>
+<a class="journey-card" href="#uncertainty-methods"><span>09</span><strong>Uncertainty methods</strong><small>Joint draws, evidence sources, propagation, interpretation, and current limitations</small></a>
+</div>
+
+# 1. HIV/AIDS methods {#hiv-methods}
+
+<div class="section-lead">The HIV/AIDS section follows the established analytical storyboard: the NBD2 formulation, the transition to NBD3, the Version 1 NBD3 formulation, and then one comparison panel containing the two NBD3 implementations, the preceding NBD2 series, and external benchmarks.</div>
+
+## NBD2 HIV/AIDS formulation
+
+For NBD2 (1997–2012), let $D(h,x,t)$ denote completeness-adjusted deaths for cause $h$, age $x$, and time $t$, and let $N(x,t)$ denote population counts.
+
+Mortality was related to antenatal HIV prevalence $p(t)$ by age:
+
+$$
+\frac{D(x,t)}{N(x,t)} =
+\begin{cases}
+\alpha(x) + \beta(x)p(t), & x \geq 5, \\
+\exp\{\alpha(x) + \beta(x)p(t)\}, & x < 5.
+\end{cases}
+$$
+
+A counterfactual background trend was estimated from deaths at ages 75–84:
+
+$$
+\frac{D(h,x,t)}{N(x,t)} = \mu_h + \gamma_h\log(1+t).
+$$
+
+The age-specific baseline was allocated to causes using the 1997 cause shares:
+
+$$
+\alpha(x,h)=\alpha(x)\frac{D(h,x,1997)}{D(x,1997)}.
+$$
+
+Misclassified AIDS deaths were estimated as the residual above the projected non-HIV background:
+
+$$
+\Omega(h,x,t)=D(h,x,t)-
+\alpha(x,h)\left(1+\frac{\gamma_h}{\mu_h}\log(1+t)\right)N(x,t).
+$$
+
+## Transition from NBD2 to NBD3 Version 1
+
+<div class="two-column-text">
+<div class="support-box">
+<strong>Core structure retained</strong>
+<ul>
+<li>Completeness-adjusted deaths by cause, age, and sex.</li>
+<li>Antenatal prevalence as the HIV exposure measure.</li>
+<li>Background mortality estimated from older ages.</li>
+<li>Cause-level allocation from the 1997 baseline distribution.</li>
+<li>Misclassified AIDS deaths treated as an accounting transfer, preserving total deaths.</li>
+</ul>
+</div>
+<div class="boundary-box">
+<strong>NBD3 Version 1 refinements</strong>
+<ul>
+<li>$\gamma_h$ and $\mu_h$ vary by province and sex.</li>
+<li>Counterfactual trends are fitted with Poisson models rather than OLS.</li>
+<li>Triangular age weights replace a flat step function.</li>
+<li>A combined-sex model is used below age five to stabilise sex-specific intercepts.</li>
+<li>No misclassified AIDS deaths are estimated at ages 75 years and older.</li>
+</ul>
+</div>
+</div>
+
+## NBD3 Version 1 HIV/AIDS formulation
+
+For 1997–2019, province- and sex-specific counterfactual trends are fitted at ages 75–84:
+
+$$
+D(h,x,t)\sim\operatorname{Poisson}\{\lambda(h,x,t)\},\qquad
+\log\lambda=\log N+\mu_h+\gamma_h\log(1+t).
+$$
+
+The age-specific baseline remains:
+
+$$
+\alpha(x,h)=\alpha(x)\frac{D(h,x,1997)}{D(x,1997)}.
+$$
+
+The time trend is applied with the triangular age weight:
+
+$$
+w(x)=
+\begin{cases}
+0, & x<1\text{ or }70\leq x<75,\\
+0.25, & x\in[1,4]\text{ or }x\in[65,69],\\
+0.50, & x\in[5,9]\text{ or }x\in[60,64],\\
+0.75, & x\in[10,14]\text{ or }x\in[55,59],\\
+1, & x\in[15,54].
+\end{cases}
+$$
+
+The projected non-HIV death rate and reallocated deaths are:
+
+$$
+R_{\mathrm{non-HIV}}(h,x,t)=
+\exp\{\alpha(x,h)+w(x)\gamma_h\log(1+t)\},
+$$
+
+$$
+\Omega(h,x,t)=D(h,x,t)-R_{\mathrm{non-HIV}}(h,x,t)N(x,t).
+$$
+
+The transfer is performed within province × sex × year × age × population-group cells, so the all-cause mortality envelope is preserved.
+
+## HIV/AIDS estimates across models {#hiv-model-comparison}
+
+<div class="section-lead">NBD3-Stata and NBD3-R represent the unpublished benchmark implementation and the reproducible R implementation of the same NBD3 Version 1 analysis. They are shown together with NBD2, THEMBISA, and GBD2023 so that replication and external comparison can be assessed in one place.</div>
+
+```{r register-hiv-comparison, include=FALSE}
+register_comparison_panel("hiv_compare", "hiv", "hiv_deaths")
+```
+
+```{r hiv-comparison-ui}
+comparison_panel_ui("hiv_compare", "hiv", "hiv_deaths")
+```
+
+# 2. Injury methods {#injury-methods}
+
+<div class="section-lead">The injury section follows the established storyboard—data sources, cause-fraction estimation, model-to-survey comparison, assumptions, and model comparison. NIMS 2000, IMS 2009, and FAMHIS 2017 are treated as informative but imperfect measurements of an underlying smooth injury composition. The fitted trajectory is therefore allowed to differ from every survey observation, including in the three survey years.</div>
+
+## Injury cause-fraction data sources
+
+Three mortality surveys provide weighted evidence for the 15 final injury causes:
+
+<div class="anchor-grid">
+<div class="anchor-card"><span class="anchor-year">2000</span><h3>NIMS</h3><p>National injury composition by sex, age, and cause. IMS 2009 supplies the province × population-group allocation pattern used to place the national NIMS composition on the complete analytical grid.</p></div>
+<div class="anchor-card"><span class="anchor-year">2009</span><h3>IMS</h3><p>Province × population group × sex × age × cause observations, used both as a survey input and as the spatial donor for NIMS.</p></div>
+<div class="anchor-card"><span class="anchor-year">2017</span><h3>FAMHIS</h3><p>Later forensic mortality observations harmonised to the common analytical cause set and demographic grid.</p></div>
+</div>
+
+```{r injury-source-table}
+if (nrow(injury_source_table)) {
+  nbd_kable_html(
+    injury_source_table,
+    caption = paste(
+      "Observed weighted injury deaths by source.",
+      "Each survey cell gives the weighted deaths and its share of that survey's injury total."
+    ),
+    align = c("r", "l", rep("r", ncol(injury_source_table) - 2L)),
+    escape = FALSE,
+    table_class = "nbd-kable injury-survey-table",
+    wrap_class = "nbd-kable-wrap injury-survey-table-wrap"
+  )
+}
+```
+
+## Fast survey-informed cause-fraction trajectory
+
+The 15 injury fractions form a closed composition, so the annual trajectory is constructed in a hierarchical additive-log-ratio space rather than by smoothing each fraction independently. Four broad groups are represented first—transport injuries, other unintentional injuries, self-harm, and interpersonal violence—followed by the detailed causes within each broad group.
+
+For survey observation $s$, demographic stratum $j$, non-reference component $h$, and reference component $r$:
+
+$$
+z_{hjs}=
+\log\left(\frac{p_{hjs}}{p_{rjs}}\right).
+$$
+
+The annual path is calculated in five transparent steps:
+
+1. derive the hierarchical log ratios from NIMS 2000, IMS 2009, and FAMHIS 2017;
+2. linearly interpolate from 2000 to 2009 and from 2009 to 2017;
+3. hold the raw log-ratio path flat before 2000 and after 2017;
+4. apply a centred five-year triangular moving average with weights $1,2,3,2,1$, equivalent to applying a centred three-year moving average twice; and
+5. transform broad and within-group log ratios back through hierarchical softmax functions.
+
+The fixed moving average spreads survey-year changes over neighbouring years. The survey-year estimates are **not** inserted again after smoothing, so the final series does not jump back to an exact survey fraction. The complete calculation is matrix based and does not fit iterative GAMs.
+
+<div class="report-callout callout-info">
+<div class="callout-title">Survey observations are evidence, not exact constraints</div>
+<div class="callout-body">The survey systems do not define every detailed injury cause identically, particularly analysis causes 132, 136, and 138. The final curve therefore follows one common interpolation and smoothing rule rather than reproducing each survey exactly. Historical correction formulas remain in the Stage 03 audit fields but are not imposed as survey truths.</div>
+</div>
+
+<div class="report-callout callout-info">
+<div class="callout-title">How injury uncertainty is propagated</div>
+<div class="callout-body">For every joint mortality draw, each survey composition is sampled from a Dirichlet distribution centred on the prepared fractions. The total information size is the observed NIMS count or the Kish count-equivalent information from the IMS and FAMHIS weights. The sampled compositions pass through the same linear interpolation, triangular moving average, and softmax calculation. No extra inter-survey variance parameter is introduced.</div>
+</div>
+
+```{r injury-composition-chart}
+output$injury_composition_chart <- highcharter::renderHighchart({
+  if (!nrow(injury_broad$model)) {
+    return(empty_nbd_chart(
+      "The injury model checkpoints are unavailable.",
+      height = 500
+    ))
+  }
+  hc_injury_composition(
+    injury_broad$source,
+    injury_broad$model,
+    config,
+    title = "National injury composition: surveys and smoothed interpolation",
+    subtitle = paste(
+      "Survey diamonds and the smoothed lines use the same national",
+      "injury-envelope weighting basis; the survey years are not forced back to the points."
+    ),
+    height = 500
+  )
+})
+highcharter::highchartOutput("injury_composition_chart", height = "500px")
+```
+
+### Survey observations compared with the final trajectory
+
+The table below quantifies the comparison at the four broad injury-group level. A non-zero difference is expected because the same five-year smoother is applied through the survey years rather than resetting the estimates to the observed points.
+
+```{r injury-broad-survey-model-table}
+if (nrow(injury_broad_fit_table)) {
+  injury_broad_display <- data.table::copy(injury_broad_fit_table)
+  numeric_columns <- names(injury_broad_display)[vapply(
+    injury_broad_display, is.numeric, logical(1)
+  )]
+  injury_broad_display[, (numeric_columns) := lapply(.SD, round, 2),
+                       .SDcols = numeric_columns]
+  nbd_kable_html(
+    injury_broad_display,
+    caption = paste(
+      "Broad injury composition in each survey year compared with the",
+      "final smoothed interpolation on the injury-envelope weighting basis."
+    )
+  )
+}
+```
+
+## Cause comparability and sparse survey cells
+
+Three detailed causes have known comparability concerns across the survey instruments. Historical extrapolation formulas are retained in the Stage 03 audit fields so the analytical history remains traceable, but those values are not imposed as observations and do not constrain the final trajectory.
+
+<div class="interpret-grid">
+<div class="support-box"><strong>Sparse cells</strong><p>Where a complete survey stratum has no injury deaths, its composition is borrowed from the most specific observed donor available: province × sex × age, national sex × age, national age, and finally the national composition. Cells sharing the same donor also share the same survey-composition draw in the uncertainty analysis.</p></div>
+<div class="boundary-box"><strong>Trajectory interpretation</strong><p>The final line is a deterministic smoothed interpolation of the three survey inputs. Differences between a survey point and the final estimate are shown directly and reflect the common smoothing rule rather than hidden calibration.</p></div>
+</div>
+
+```{r injury-flagged-survey-model-table}
+if (nrow(injury_flagged_fit_table)) {
+  injury_flagged_display <- data.table::copy(injury_flagged_fit_table)
+  numeric_columns <- names(injury_flagged_display)[vapply(
+    injury_flagged_display, is.numeric, logical(1)
+  )]
+  injury_flagged_display[, (numeric_columns) := lapply(.SD, round, 3),
+                         .SDcols = numeric_columns]
+  nbd_kable_html(
+    injury_flagged_display,
+    caption = paste(
+      "Survey inputs and final smoothed estimates for the three detailed",
+      "causes with known cross-survey comparability concerns."
+    )
+  )
+}
+```
+
+## Injury estimates across models {#injury-model-comparison}
+
+<div class="section-lead">The Stata and R implementations of NBD3 Version 1 are compared directly with the available NBD2 and GBD2023 injury series. GBD uncertainty limits are retained where supplied; exact matching R-implementation cells use the completed joint draws.</div>
+
+```{r register-injury-comparison, include=FALSE}
+register_comparison_panel("injury_compare", "injury", "injuries_deaths")
+```
+
+```{r injury-comparison-ui}
+comparison_panel_ui("injury_compare", "injury", "injuries_deaths")
+```
+
+# 3. Final NBD3 Version 1 cause estimates {#final-results}
+
+<div class="section-lead">The four final-results panels follow the established visualization order and present the NBD3 Version 1 estimates from the R implementation. The Stata implementation remains in the comparison panels as the replication benchmark. Shaded intervals appear only where the completed compact uncertainty outputs reproduce the selected cause, age, sex, and geography exactly.</div>
+
+<div class="report-callout callout-info">
+<div class="callout-title">What the uncertainty bands cover</div>
+<div class="callout-body">The joint-draw output reports Person estimates for provinces, South Africa, and the four national population groups at &lt;1 year, under 5 years, and all ages. It retains all 214 Stage 06 analysis causes, together with the total and injury envelopes. This allows changes in HIV/AIDS to appear as corresponding changes in donor causes and allows the expert-target redistribution draws to propagate into every mapped final ZA cause; the legal-intervention structural-zero row remains a deterministic zero. Crude-rate intervals use the deterministic population denominator. Sex-specific, ASR, YLL, and other age selections remain point estimates because those dimensions or measures are not stored in the current draw profile.</div>
+</div>
+
+## Provincial natural deaths {#provincial-natural}
+
+```{r register-provincial-natural, include=FALSE}
+register_final_panel("provincial_natural", c("province", "national"), "natural", "za_2")
+```
+
+```{r provincial-natural-ui}
+final_panel_ui("provincial_natural", c("province", "national"), "natural", "za_2")
+```
+
+## Provincial injury deaths {#provincial-injury}
+
+```{r register-provincial-injury, include=FALSE}
+register_final_panel("provincial_injury", c("province", "national"), "injury", "za_171")
+```
+
+```{r provincial-injury-ui}
+final_panel_ui("provincial_injury", c("province", "national"), "injury", "za_171")
+```
+
+## Population-group natural deaths {#population-natural}
+
+```{r register-population-natural, include=FALSE}
+register_final_panel("population_natural", "population_group", "natural", "za_2")
+```
+
+```{r population-natural-ui}
+final_panel_ui("population_natural", "population_group", "natural", "za_2")
+```
+
+## Population-group injury deaths {#population-injury}
+
+```{r register-population-injury, include=FALSE}
+register_final_panel("population_injury", "population_group", "injury", "za_171")
+```
+
+```{r population-injury-ui}
+final_panel_ui("population_injury", "population_group", "injury", "za_171")
+```
+
+# 4. Methods used to derive uncertainty {#uncertainty-methods}
+
+<div class="section-lead">Uncertainty is propagated through one joint simulation rather than calculated separately after the point estimates. Each draw begins with the validated Stage 04 mortality data, varies the evidence-supported components, reruns the injury, HIV/AIDS, and redistribution operations in their analytical order, and then constructs the same final cause hierarchy used for the deterministic database.</div>
+
+## Joint simulation framework
+
+For draw $b$, the complete final cause vector is denoted by $\mathbf{D}^{(b)}$. The reporting interval for a selected result is obtained from the empirical distribution across the completed joint draws:
+
+$$
+\left[
+Q_{0.025}\left\{D^{(b)}\right\},
+Q_{0.975}\left\{D^{(b)}\right\}
+\right].
+$$
+
+The draws are carried through as complete cause vectors. Therefore, aggregation to all causes, broad causes, final ZA causes, provinces, South Africa, or population groups preserves the covariance generated by the analytical reallocations. The current report uses `r uncertainty_draw_label`; the draw count is controlled in config/uncertainty_joint.yml.
+
+<div class="method-flow uncertainty-flow">
+<article><span>1</span><h3>Completeness</h3><p>Draw one shared national African natural-cause completeness factor.</p></article>
+<article><span>2</span><h3>Injuries</h3><p>Draw the three survey compositions and rerun the fixed interpolation and smoother.</p></article>
+<article><span>3</span><h3>HIV/AIDS</h3><p>Draw fitted coefficients jointly and rerun the complete Stage 05 reallocation.</p></article>
+<article><span>4</span><h3>Redistribution</h3><p>Draw an approved target subset for each multi-target expert rule and rerun Stage 06.</p></article>
+<article><span>5</span><h3>Aggregation</h3><p>Construct final causes and summarise the within-draw totals by geography and age.</p></article>
+</div>
+
+## Evidence and stochastic operations
+
+```{r uncertainty-drivers}
+uncertainty_drivers <- data.table::data.table(
+  Driver = c(
+    "African natural-cause completeness",
+    "Injury cause composition",
+    "HIV/AIDS statistical model",
+    "Garbage and ill-defined redistribution"
+  ),
+  `Evidence used` = c(
+    paste(
+      "Nine province-level aggregate S2 multipliers, calculated with",
+      "pre-adjustment African natural deaths as weights"
+    ),
+    paste(
+      "NIMS observed counts and Kish count-equivalent information from",
+      "IMS and FAMHIS weights"
+    ),
+    paste(
+      "Fitted Stage 05 coefficient vectors and their estimated",
+      "variance-covariance matrices"
+    ),
+    paste(
+      "The original expert-approved target lists in every multi-target",
+      "redistribution rule"
+    )
+  ),
+  `Operation in each draw` = c(
+    paste(
+      "Resample provinces as clusters, recalculate the national",
+      "death-weighted S2 mean, and apply one shared factor"
+    ),
+    paste(
+      "Draw each survey composition, then repeat the hierarchical ALR",
+      "interpolation and five-year triangular moving average"
+    ),
+    paste(
+      "Draw coefficients jointly from the fitted covariance matrices",
+      "after completeness scaling and rerun Stage 05"
+    ),
+    paste(
+      "Select one non-empty subset of the existing targets and rerun",
+      "the unchanged ordered proportional redistribution algorithm"
+    )
+  ),
+  `What changes` = c(
+    "The African natural mortality envelope, including HIV/AIDS",
+    "The division of a fixed total injury envelope among 15 injury causes",
+    "The division of deaths between HIV/AIDS and linked non-HIV causes",
+    "The recipient cause of redistributed deaths, not the cell total"
+  )
+)
+nbd_kable_html(
+  uncertainty_drivers,
+  caption = "Evidence and operations in the joint uncertainty model",
+  align = c("l", "l", "l", "l")
+)
+```
+
+### Completeness and under-reporting
+
+The S2 inputs are first collapsed to one death-weighted aggregate multiplier for each province. The nine provinces are treated as clusters in an exact ordinary bootstrap of the national weighted mean. A single factor is drawn and applied to all African natural-cause deaths before HIV/AIDS is re-estimated. This changes the natural-cause and all-cause envelopes while retaining the deterministic relative pattern between provinces.
+
+The same draw is inherited by every African natural cause. HIV/AIDS therefore receives both under-reporting uncertainty and uncertainty from the fitted HIV/AIDS model. Population-group estimates now retain the complete joint draw at national population-group level, so the African series reflects the completeness draw directly and all four population groups retain the subsequent HIV/AIDS and redistribution covariance.
+
+### Injury survey composition
+
+NIMS 2000, IMS 2009, and FAMHIS 2017 are sampled as closed cause compositions. NIMS uses its observed count information; IMS and FAMHIS use Kish count-equivalent information calculated from the available weights. Each sampled composition is passed through the same hierarchical additive-log-ratio interpolation and five-year triangular moving average used for the point estimate.
+
+<div class="report-callout callout-info">
+<div class="callout-title">Why some injury intervals are narrow</div>
+<div class="callout-body"><strong>Total injuries are largely deterministic in the current uncertainty model.</strong> The survey draws change how the injury envelope is divided among causes, but their effects cancel exactly when all injury causes are added together. The total injury envelope, including the NPR replacement component, is currently fixed because the supplied inputs do not provide a defensible variance model for it. Specific injury causes do include survey uncertainty, although national all-age aggregation, large count or Kish-equivalent information sizes, and the common interpolation-and-smoothing rule can make those intervals comparatively narrow. The pipeline does not widen them with an unsupported variance multiplier.</div>
+</div>
+
+### HIV/AIDS model uncertainty
+
+For each fitted Stage 05 model, the coefficient vector is sampled jointly:
+
+$$
+\boldsymbol{\beta}^{(b)}
+\sim
+N\left(
+\widehat{\boldsymbol{\beta}},
+\widehat{\operatorname{Var}}
+\left(\widehat{\boldsymbol{\beta}}\right)
+\right).
+$$
+
+The complete HIV/AIDS calculation is rerun after completeness scaling. More deaths allocated to HIV/AIDS imply fewer deaths retained by its donor causes in the same demographic cell; fewer HIV/AIDS deaths imply the converse. This creates negative covariance between HIV/AIDS and linked non-HIV causes while preserving the cell total. Antenatal HIV prevalence remains fixed because the supplied prevalence series does not contain an approved variance-covariance source.
+
+### Garbage and ill-defined redistribution
+
+For a rule with approved targets $\{a,b,c\}$, the uncertainty support consists of the non-empty target subsets:
+
+$$
+\{a\},\{b\},\{c\},\{a,b\},\{a,c\},\{b,c\},\{a,b,c\}.
+$$
+
+One subset is selected in each draw and the same deterministic proportional redistribution algorithm is applied within that subset. Single-target rules remain deterministic. This represents uncertainty in the expert-approved destination set without inventing new causes or an unsupported concentration parameter.
+
+## Interpretation by result type
+
+```{r uncertainty-by-result}
+uncertainty_by_result <- data.table::data.table(
+  Result = c(
+    "All causes",
+    "HIV/AIDS",
+    "Other natural causes",
+    "Total injuries",
+    "Specific injury causes",
+    "Population-group causes"
+  ),
+  `Uncertainty carried into the result` = c(
+    paste(
+      "Completeness changes the envelope. HIV/AIDS reallocation, injury",
+      "composition, and redistribution cancel when all causes are summed."
+    ),
+    paste(
+      "Completeness, fitted HIV/AIDS coefficients, and any subsequent",
+      "eligible redistribution."
+    ),
+    paste(
+      "Completeness, reciprocal HIV/AIDS reallocation where relevant,",
+      "and expert-target redistribution."
+    ),
+    paste(
+      "Survey composition cancels in the total; the current injury",
+      "envelope is fixed."
+    ),
+    paste(
+      "NIMS/IMS/FAMHIS composition draws, interpolation and smoothing,",
+      "plus eligible redistribution."
+    ),
+    paste(
+      "The same complete joint draw, aggregated nationally within each",
+      "population group; no proportional approximation is used."
+    )
+  ),
+  `Changes the all-cause total?` = c(
+    "Yes — through completeness",
+    "No — HIV/AIDS reallocation preserves the cell total",
+    "Only through the shared completeness envelope",
+    "No",
+    "No",
+    "Only through the completeness component affecting African natural deaths"
+  )
+)
+nbd_kable_html(
+  uncertainty_by_result,
+  caption = "How the joint uncertainty components appear in reported outcomes",
+  align = c("l", "l", "l")
+)
+```
+
+## Geography, aggregation, and covariance
+
+The province and South Africa intervals are generated from one set of per-draw files. National population-group intervals are retained in a separate compact per-draw table so the final hierarchy is constructed separately within each population group. The final report maps the complete analysis-cause vector to the final ZA hierarchy within each draw and only then calculates quantiles. It does not add independent cause-specific variances or allocate provincial intervals proportionally to population groups.
+
+All-cause mortality is recalculated within every draw:
+
+$$
+T^{(b)}=\sum_c D_c^{(b)}.
+$$
+
+Consequently,
+
+$$
+\operatorname{Var}(T)=
+\sum_c\operatorname{Var}(D_c)+
+2\sum_{c<k}\operatorname{Cov}(D_c,D_k).
+$$
+
+The covariance term explains why a cause-specific interval can be visible even when the corresponding all-cause total changes little: reallocation increases one cause while decreasing another.
+
+## Current scope and limitations
+
+```{r uncertainty-limitations}
+uncertainty_limitations <- data.table::data.table(
+  Quantity = c(
+    "Monte Carlo draw count",
+    "S1 completeness",
+    "NPR and total injury envelope",
+    "Antenatal HIV prevalence",
+    "Injury survey design",
+    "Reported measures"
+  ),
+  `Current treatment` = c(
+    paste(
+      uncertainty_draw_label,
+      "in the configured joint run; increase the draw count for more stable interval tails"
+    ),
+    "Fixed because no defensible sampling variance is supplied",
+    "Fixed because no defensible sampling variance is supplied",
+    "Fixed because no approved prevalence variance-covariance input is supplied",
+    paste(
+      "Observed counts and Kish-equivalent information are used; complete",
+      "PSU and stratum variables are unavailable"
+    ),
+    paste(
+      "Intervals are generated for deaths and corresponding crude rates;",
+      "ASRs and YLLs remain point estimates in the current draw profile"
+    )
+  )
+)
+nbd_kable_html(
+  uncertainty_limitations,
+  caption = "Current boundaries of the Version 1 uncertainty analysis",
+  align = c("l", "l")
+)
+```
+
+<div class="report-callout callout-warning">
+<div class="callout-title">Interpretation of the current intervals</div>
+<div class="callout-body">The current intervals are empirical estimates from `r uncertainty_draw_label`. They represent the uncertainty sources for which the pipeline has an explicit evidence-based stochastic operation. Quantities without a defensible variance source remain fixed rather than being assigned an arbitrary standard deviation. Increasing the draw count improves Monte Carlo stability but does not add uncertainty for quantities that remain fixed.</div>
+</div>
+
+<div class="report-footer"><div><strong>Third South African National Burden of Disease Study</strong><br/>Version 1: Reproducible mortality estimates for South Africa, 1997–2019</div><div>`r config$labels$project$analysis_period`</div></div>

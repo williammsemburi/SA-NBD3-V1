@@ -1,0 +1,179 @@
+za_code,za_label,source_file,source_line,generated_by_source
+1,Tuberculosis,Analysis to ZA codes.do,206,True
+2,HIV/AIDS,Analysis to ZA codes.do,207,True
+3,STIs excluding HIV,Analysis to ZA codes.do,208,True
+4,Diarrhoeal diseases,Analysis to ZA codes.do,209,True
+5,Vaccine preventable childhood,Analysis to ZA codes.do,210,True
+6,Meningitis/encephalitis,Analysis to ZA codes.do,211,True
+7,Hepatitis,Analysis to ZA codes.do,212,True
+8,Septicaemia,Analysis to ZA codes.do,213,True
+9,Malaria,Analysis to ZA codes.do,214,True
+10,Intestinal parasites and vector,Analysis to ZA codes.do,215,True
+11,Other infectious diseases,Analysis to ZA codes.do,216,True
+12,Lower respiratory infections,Analysis to ZA codes.do,217,True
+13,Upper respiratory infections,Analysis to ZA codes.do,218,True
+14,Otitis media,Analysis to ZA codes.do,219,True
+15,Maternal haemorrhage,Analysis to ZA codes.do,220,True
+16,Maternal sepsis,Analysis to ZA codes.do,221,True
+17,Hypertension in pregnancy,Analysis to ZA codes.do,222,True
+18,Obstructed labour,Analysis to ZA codes.do,223,True
+19,Abortion,Analysis to ZA codes.do,224,True
+20,Indirect maternal,Analysis to ZA codes.do,225,True
+21,Other maternal,Analysis to ZA codes.do,226,True
+22,Preterm birth complications,Analysis to ZA codes.do,227,True
+23,Birth asphyxia,Analysis to ZA codes.do,228,True
+24,Sepsis/other newborn infectious,Analysis to ZA codes.do,229,True
+25,Other perinatal conditions,Analysis to ZA codes.do,230,True
+26,Protein-energy malnutrition,Analysis to ZA codes.do,231,True
+27,Vitamin A deficiency,Analysis to ZA codes.do,232,True
+28,Iron deficiency anaemia,Analysis to ZA codes.do,233,True
+29,Other nutritional disorders,Analysis to ZA codes.do,234,True
+30,Mouth,Analysis to ZA codes.do,235,True
+31,Naso-oropharynx,Analysis to ZA codes.do,236,True
+32,Oesophagus,Analysis to ZA codes.do,237,True
+33,Stomach,Analysis to ZA codes.do,238,True
+34,Colo-rectal,Analysis to ZA codes.do,239,True
+35,Liver,Analysis to ZA codes.do,240,True
+36,Gallbladder and biliary tract,Analysis to ZA codes.do,241,True
+37,Pancreas,Analysis to ZA codes.do,242,True
+38,Larynx,Analysis to ZA codes.do,243,True
+39,Trachea/bronchi/lung,Analysis to ZA codes.do,244,True
+40,Melanoma,Analysis to ZA codes.do,245,True
+41,Other skin cancer,Analysis to ZA codes.do,246,True
+42,Breast,Analysis to ZA codes.do,247,True
+43,Cervix,Analysis to ZA codes.do,248,True
+44,Corpus uteri,Analysis to ZA codes.do,249,True
+45,Ovary,Analysis to ZA codes.do,250,True
+46,Prostate,Analysis to ZA codes.do,251,True
+47,Testis cancer,Analysis to ZA codes.do,252,True
+48,Bladder,Analysis to ZA codes.do,253,True
+49,Kidney,Analysis to ZA codes.do,254,True
+50,Brain,Analysis to ZA codes.do,255,True
+51,Thyroid,Analysis to ZA codes.do,256,True
+52,Hodgkin's lymphoma,Analysis to ZA codes.do,257,True
+53,Non-Hodgkins lymphoma,Analysis to ZA codes.do,258,True
+54,Multiple myeloma,Analysis to ZA codes.do,259,True
+55,Leukaemia,Analysis to ZA codes.do,260,True
+56,Other malignant neoplasms,Analysis to ZA codes.do,261,True
+57,Other neoplasms,Analysis to ZA codes.do,262,True
+58,Diabetes mellitus,Analysis to ZA codes.do,263,True
+59,"Endocrine nutritional,blood, immune",Analysis to ZA codes.do,264,True
+60,Unipolar depression,Analysis to ZA codes.do,265,True
+61,Bipolar affective,Analysis to ZA codes.do,266,True
+62,Schizophrenia,Analysis to ZA codes.do,267,True
+63,Alcohol dependence,Analysis to ZA codes.do,268,True
+64,Drug use,Analysis to ZA codes.do,269,True
+65,Anxiety disorders,Analysis to ZA codes.do,270,True
+66,Eating disorders,Analysis to ZA codes.do,271,True
+67,Development disorders,Analysis to ZA codes.do,272,True
+68,Childhood behaviour disorders,Analysis to ZA codes.do,273,True
+69,Mental retardation not included as sequelae elsewhere,Analysis to ZA codes.do,274,True
+70,Other mental and behavioural disorders,Analysis to ZA codes.do,275,True
+71,Alzheimer's,Analysis to ZA codes.do,277,True
+72,Parkinsons disease,Analysis to ZA codes.do,278,True
+73,Multiple sclerosis,Analysis to ZA codes.do,279,True
+74,Epilepsy,Analysis to ZA codes.do,280,True
+75,Migraine,Analysis to ZA codes.do,281,True
+76,Non-migraine headache,Analysis to ZA codes.do,282,True
+77,Other neurological conditions,Analysis to ZA codes.do,283,True
+78,Glaucoma,Analysis to ZA codes.do,284,True
+79,Cataracts,Analysis to ZA codes.do,285,True
+80,"Hearing loss, adult onset",Analysis to ZA codes.do,286,True
+81,Other vision loss,Analysis to ZA codes.do,287,True
+82,Other sense organ disorders,Analysis to ZA codes.do,288,True
+83,Rheumatic heart disease,Analysis to ZA codes.do,289,True
+84,Hypertensive heart disease,Analysis to ZA codes.do,290,True
+85,Ischaemic heart disease,Analysis to ZA codes.do,291,True
+86,"Pericarditis, endocarditis and myocarditis",Analysis to ZA codes.do,292,True
+87,Cardiomyopathy,Analysis to ZA codes.do,293,True
+88,Cerebrovascular disease,Analysis to ZA codes.do,294,True
+89,Conduction disorders and other dysrythmias,Analysis to ZA codes.do,295,True
+90,Aortic aneurism,Analysis to ZA codes.do,296,True
+91,Peripheral vascular disorders,Analysis to ZA codes.do,297,True
+92,Other circulatory diseases,Analysis to ZA codes.do,298,True
+93,COPD,Analysis to ZA codes.do,300,True
+94,Pneumoconiosis,Analysis to ZA codes.do,301,True
+95,Asthma,Analysis to ZA codes.do,302,True
+96,Other interstitial lung disease,Analysis to ZA codes.do,303,True
+97,Other respiratory,Analysis to ZA codes.do,304,True
+98,Peptic ulcer disease,Analysis to ZA codes.do,305,True
+99,Appendicitis,Analysis to ZA codes.do,306,True
+100,"Intestinal obstruction, strangulated hernia",Analysis to ZA codes.do,307,True
+101,Non-infective inflammatory bowel disease,Analysis to ZA codes.do,308,True
+102,Cirrhosis and liver disease,Analysis to ZA codes.do,309,True
+103,Gall bladder and bile duct disease,Analysis to ZA codes.do,310,True
+104,Pancreatitis,Analysis to ZA codes.do,311,True
+105,Other digestive diseases,Analysis to ZA codes.do,312,True
+106,Renal disease,Analysis to ZA codes.do,313,True
+107,Benign prostatic hypertrophy,Analysis to ZA codes.do,314,True
+108,Other urinary and gynaecological diseases,Analysis to ZA codes.do,315,True
+109,Skin diseases,Analysis to ZA codes.do,316,True
+110,Rheumatoid arthritis,Analysis to ZA codes.do,317,True
+111,Osteoarthritis,Analysis to ZA codes.do,318,True
+112,Back and neck pain,Analysis to ZA codes.do,319,True
+113,Other musculo-skeletal,Analysis to ZA codes.do,320,True
+114,Neural tube defects,Analysis to ZA codes.do,321,True
+115,Cleft lip/palate,Analysis to ZA codes.do,322,True
+116,Congenital heart anomalies,Analysis to ZA codes.do,323,True
+117,Congenital disorders of GIT,Analysis to ZA codes.do,324,True
+118,Urogenital malformations,Analysis to ZA codes.do,325,True
+119,Fetal alcohol syndrome,Analysis to ZA codes.do,326,True
+120,Down syndrome,Analysis to ZA codes.do,327,True
+121,Other chromosomal abnormalities,Analysis to ZA codes.do,328,True
+122,Other congenital abnormalities,Analysis to ZA codes.do,329,True
+123,Dental caries,Analysis to ZA codes.do,330,True
+124,Periodontal disease,Analysis to ZA codes.do,331,True
+125,Other oral diseases,Analysis to ZA codes.do,332,True
+126,Road injuries,Analysis to ZA codes.do,334,True
+127,Other transport injuries,Analysis to ZA codes.do,335,True
+128,Poisonings (including herbal),Analysis to ZA codes.do,336,True
+129,Falls,Analysis to ZA codes.do,337,True
+130,"Fires, hot substances",Analysis to ZA codes.do,338,True
+131,Drowning,Analysis to ZA codes.do,339,True
+132,"Hanging, strangulation",Analysis to ZA codes.do,340,True
+133,Mechanical forces,Analysis to ZA codes.do,341,True
+134,Exposure to natural forces,Analysis to ZA codes.do,342,True
+135,Adverse effects medical/surgical,Analysis to ZA codes.do,343,True
+136,Animal contact,Analysis to ZA codes.do,344,True
+137,Other unintentional injuries,Analysis to ZA codes.do,345,True
+138,Self-inflicted injuries,Analysis to ZA codes.do,346,True
+139,Interpersonal violence,Analysis to ZA codes.do,347,True
+141,Legal intervention,Analysis to ZA codes.do,348,False
+145,Infectious and parasitic diseases,Analysis to ZA codes.do,350,True
+146,Respiratory infections,Analysis to ZA codes.do,351,True
+147,Maternal conditions,Analysis to ZA codes.do,352,True
+148,Perinatal conditions,Analysis to ZA codes.do,353,True
+149,Nutritional deficiencies,Analysis to ZA codes.do,354,True
+150,HIV/AIDS and TB,Analysis to ZA codes.do,355,True
+151,Malignant neoplasms,Analysis to ZA codes.do,356,True
+152,Benign neoplasms,Analysis to ZA codes.do,357,True
+153,Diabetes mellitus,Analysis to ZA codes.do,358,True
+154,Endocrine and metabolic,Analysis to ZA codes.do,359,True
+155,Mental disorders,Analysis to ZA codes.do,360,True
+156,Nervous system disorders,Analysis to ZA codes.do,361,True
+157,Sense organs,Analysis to ZA codes.do,362,True
+158,Cardiovascular disease,Analysis to ZA codes.do,363,True
+159,Respiratory disease,Analysis to ZA codes.do,364,True
+160,Digestive diseases,Analysis to ZA codes.do,365,True
+161,Genito-urinary diseases,Analysis to ZA codes.do,366,True
+162,Skin diseases,Analysis to ZA codes.do,367,True
+163,Musculo-skeletal diseases,Analysis to ZA codes.do,368,True
+164,Congenital abnormalities,Analysis to ZA codes.do,369,True
+165,Oral diseases,Analysis to ZA codes.do,370,True
+166,Unintentional Injuries,Analysis to ZA codes.do,371,True
+167,Intentional Injuries,Analysis to ZA codes.do,372,True
+168,Comm/Mat/Peri/Nutr,Analysis to ZA codes.do,374,True
+169,HIV/AIDS and TB,Analysis to ZA codes.do,375,True
+170,Non-communicable,Analysis to ZA codes.do,376,True
+171,Injuries,Analysis to ZA codes.do,377,True
+172,Total,Analysis to ZA codes.do,378,True
+173,Inf/para,Analysis to ZA codes.do,380,True
+174,Other Type 1,Analysis to ZA codes.do,381,True
+175,HIV/AIDS and TB,Analysis to ZA codes.do,382,True
+176,Cancers,Analysis to ZA codes.do,383,True
+177,Diabetes,Analysis to ZA codes.do,384,True
+178,Cardiovascular,Analysis to ZA codes.do,385,True
+179,Other Type 2,Analysis to ZA codes.do,386,True
+180,Unintentional injuries,Analysis to ZA codes.do,387,True
+181,Intentional injuries,Analysis to ZA codes.do,388,True
+300,Other (non top 10),Analysis to ZA codes.do,390,False
