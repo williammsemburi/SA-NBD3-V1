@@ -105,3 +105,28 @@ testthat::test_that("population-group cause uncertainty preserves its report key
     "series_id", "series_sort_order", "value"
   ) %in% names(result)))
 })
+
+testthat::test_that("comparison uncertainty retains draws for exact interval repair", {
+  body_text <- paste(
+    deparse(body(nbd_build_uncertainty_intervals)),
+    collapse = "\n"
+  )
+  repair_position <- regexpr(
+    "nbd_recompute_invalid_interval_rows",
+    body_text,
+    fixed = TRUE
+  )[[1L]]
+  discard_position <- regexpr(
+    "rm(collected)",
+    body_text,
+    fixed = TRUE
+  )[[1L]]
+
+  testthat::expect_gt(repair_position, 0L)
+  testthat::expect_gt(discard_position, repair_position)
+  testthat::expect_match(
+    body_text,
+    "comparison_interval_repair.csv",
+    fixed = TRUE
+  )
+})

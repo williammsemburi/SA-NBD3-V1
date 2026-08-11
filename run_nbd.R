@@ -12,8 +12,8 @@
 # Normal use requires changing only the five controls below. Set completed
 # phases to FALSE to resume from existing outputs.
 
-RUN_POINT_ESTIMATES <- TRUE
-RUN_UNCERTAINTY     <- TRUE
+RUN_POINT_ESTIMATES <- FALSE
+RUN_UNCERTAINTY     <- FALSE
 RUN_REPORT          <- TRUE
 OPEN_REPORT         <- TRUE
 RUN_FULL_VALIDATION <- FALSE

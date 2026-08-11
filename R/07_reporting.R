@@ -973,6 +973,25 @@ nbd_build_uncertainty_intervals <- function(
     label = "comparison"
   )
   intervals <- nbd_summarise_uncertainty_draw_matrix(collected)
+
+  # The comparison table uses the same fast row-wise type-8 quantile
+  # summariser as the final-cause tables. Retain the draw matrix until the
+  # interval check is complete so that any platform-specific non-finite or
+  # reversed interval can be recomputed from the original 100 draw values
+  # with stats::quantile(type = 8). No draw is altered or discarded.
+  output_dir <- file.path(root, "output", "report-data")
+  comparison_repair_path <- file.path(
+    output_dir,
+    "comparison_interval_repair.csv"
+  )
+  comparison_repair <- nbd_recompute_invalid_interval_rows(
+    summary = intervals,
+    collected = collected,
+    key_columns = interval_keys,
+    label = "comparison",
+    diagnostic_path = comparison_repair_path
+  )
+  intervals <- comparison_repair$data
   rm(collected)
   invisible(gc(verbose = FALSE))
 
@@ -1015,7 +1034,6 @@ nbd_build_uncertainty_intervals <- function(
     )
   }
 
-  output_dir <- file.path(root, "output", "report-data")
   dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
   parquet_path <- file.path(output_dir, "nbd3_uncertainty_comparisons.parquet")
   csv_path <- file.path(output_dir, "nbd3_uncertainty_comparisons.csv")
