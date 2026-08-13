@@ -762,8 +762,246 @@ if (!is.null(cod_final) && !is.null(final_injuries)) {
 
 # Stage 04: completeness and NPR ----------------------------------------------
 completeness_scalars <- load_stage("04", "04_completeness_scalars")
+investigation_pre_injury_envelope <- load_stage(
+  "04", "04_investigation_subpopulation_pre_injury_envelope"
+)
+injury_envelope_anchors <- load_stage("04", "04_injury_envelope_anchors")
+injury_envelope_factors <- load_stage("04", "04_injury_envelope_factors")
+injury_envelope_adjustment <- load_stage("04", "04_injury_envelope_adjustment")
 investigation_national <- load_stage("04", "04_investigation_national")
 investigation_subpopulation <- load_stage("04", "04_investigation_subpopulation")
+
+
+if (!is.null(injury_envelope_anchors)) {
+  run_check("04", "injury level and profile survey anchors", function() {
+    key <- c("Death_Prov", "Sex", "age5", "survey_year")
+    check_unique(injury_envelope_anchors, key, "injury level/profile anchors")
+    check_finite_nonnegative(
+      injury_envelope_anchors,
+      c(
+        "routine_total", "routine_injury_total", "survey_total",
+        "survey_injury_total", "survey_effective_n", "profile_factor",
+        "survey_level_total", "routine_level_total",
+        "routine_adjustable_injury_total", "routine_fixed_injury_total",
+        "target_adjustable_injury_total", "maximum_adjustable_injury_total",
+        "derived_survey_level_total", "processed_survey_all_age_total",
+        "point_level_ratio"
+      ),
+      "injury level/profile anchors"
+    )
+    expect_true(
+      injury_envelope_anchors[
+        !is.finite(raw_log_profile_scalar) |
+          !is.finite(smoothed_log_profile_scalar) |
+          !is.finite(point_log_level_ratio),
+        .N
+      ] == 0L,
+      "the injury level/profile anchor log quantities contain non-finite values"
+    )
+    expect_true(
+      setequal(unique(injury_envelope_anchors$survey_year), c(2009L, 2017L)),
+      "injury anchors are not limited to IMS 2009 and FAMHIS 2017"
+    )
+    level <- unique(injury_envelope_anchors[, .(
+      survey_year,
+      survey_level_total,
+      derived_survey_level_total,
+      published_survey_level_total,
+      published_survey_level_lower,
+      published_survey_level_upper,
+      processed_survey_all_age_total,
+      processed_to_published_level_ratio,
+      point_level_ratio
+    )])
+    check_unique(level, "survey_year", "survey-derived injury-level anchors")
+    expect_true(
+      max(abs(level$survey_level_total - level$derived_survey_level_total)) <=
+        1e-10 * max(1, abs(level$derived_survey_level_total)),
+      "the injury-level point anchors do not equal the empirical survey totals"
+    )
+    reference <- level[
+      is.finite(published_survey_level_total) |
+        is.finite(published_survey_level_lower) |
+        is.finite(published_survey_level_upper)
+    ]
+    if (nrow(reference)) {
+      expect_true(
+        reference[
+          !is.finite(published_survey_level_total) |
+            !is.finite(published_survey_level_lower) |
+            !is.finite(published_survey_level_upper) |
+            published_survey_level_lower <= 0 |
+            published_survey_level_total <= published_survey_level_lower |
+            published_survey_level_upper <= published_survey_level_total,
+          .N
+        ] == 0L,
+        "an external injury-level validation reference is incomplete or invalid"
+      )
+    }
+    closure <- injury_envelope_anchors[calibration_active == TRUE, .(
+      survey_share_sum = sum(survey_share),
+      routine_share_sum = sum(routine_share)
+    ), by = survey_year]
+    expect_true(
+      max(abs(closure$survey_share_sum - 1)) <= 1e-8 &&
+        max(abs(closure$routine_share_sum - 1)) <= 1e-8,
+      "the injury relative profiles do not sum to one"
+    )
+    expect_true(
+      injury_envelope_anchors[
+        survey_year == 2009L & age5 %in% 1:2,
+        all(abs(profile_factor - 1) <= 1e-12)
+      ],
+      "the historical IMS infant relative profile is not fixed to one"
+    )
+    paste0(
+      format_number(nrow(injury_envelope_anchors)),
+      " anchor cells; empirical survey levels ",
+      paste(format_number(level$survey_level_total), collapse = " and "),
+      "; profile-factor range ",
+      format_number(min(injury_envelope_anchors$profile_factor)), "-",
+      format_number(max(injury_envelope_anchors$profile_factor))
+    )
+  })
+}
+
+if (!is.null(injury_envelope_factors)) {
+  run_check("04", "injury level/profile annual time policy", function() {
+    key <- c("Death_Prov", "Sex", "age5", "DeathYear")
+    check_unique(injury_envelope_factors, key, "injury annual factors")
+    check_finite_nonnegative(
+      injury_envelope_factors,
+      c("profile_factor", "point_level_ratio"),
+      "injury annual factors"
+    )
+    ids <- c("Death_Prov", "Sex", "age5")
+    ref09 <- injury_envelope_factors[DeathYear == 2009L, c(
+      ids, "profile_factor", "point_level_ratio"
+    ), with = FALSE]
+    data.table::setnames(
+      ref09,
+      c("profile_factor", "point_level_ratio"),
+      c("profile_2009", "level_2009")
+    )
+    ref17 <- injury_envelope_factors[DeathYear == 2017L, c(
+      ids, "profile_factor", "point_level_ratio"
+    ), with = FALSE]
+    data.table::setnames(
+      ref17,
+      c("profile_factor", "point_level_ratio"),
+      c("profile_2017", "level_2017")
+    )
+    pre <- merge(
+      injury_envelope_factors[DeathYear <= 2009L],
+      ref09,
+      by = ids,
+      all.x = TRUE,
+      sort = FALSE
+    )
+    post <- merge(
+      injury_envelope_factors[DeathYear >= 2017L],
+      ref17,
+      by = ids,
+      all.x = TRUE,
+      sort = FALSE
+    )
+    expect_true(
+      max(abs(pre$profile_factor - pre$profile_2009), na.rm = TRUE) <= 1e-12 &&
+        max(abs(pre$point_level_ratio - pre$level_2009), na.rm = TRUE) <= 1e-12,
+      "the pre-2009 injury level/profile does not reproduce IMS 2009"
+    )
+    expect_true(
+      max(abs(post$profile_factor - post$profile_2017), na.rm = TRUE) <= 1e-12 &&
+        max(abs(post$point_level_ratio - post$level_2017), na.rm = TRUE) <= 1e-12,
+      "the post-2017 injury level/profile does not reproduce FAMHIS 2017"
+    )
+    middle <- merge(
+      injury_envelope_factors[DeathYear > 2009L & DeathYear < 2017L],
+      ref09,
+      by = ids,
+      all.x = TRUE,
+      sort = FALSE
+    )
+    middle <- merge(middle, ref17, by = ids, all.x = TRUE, sort = FALSE)
+    middle[, weight_2017 := (DeathYear - 2009) / 8]
+    middle[, `:=`(
+      expected_profile = exp(
+        (1 - weight_2017) * log(profile_2009) +
+          weight_2017 * log(profile_2017)
+      ),
+      expected_level = exp(
+        (1 - weight_2017) * log(level_2009) +
+          weight_2017 * log(level_2017)
+      )
+    )]
+    expect_true(
+      max(abs(middle$profile_factor - middle$expected_profile), na.rm = TRUE) <= 1e-12 &&
+        max(abs(middle$point_level_ratio - middle$expected_level), na.rm = TRUE) <= 1e-12,
+      "the 2009-2017 injury level/profile is not log-linearly interpolated"
+    )
+    "IMS 2009 level/profile held through 2009; log transition; FAMHIS 2017 held thereafter"
+  })
+}
+
+if (!is.null(injury_envelope_adjustment)) {
+  run_check("04", "injury level/profile calibration and cell-total preservation", function() {
+    cell <- c("Death_Prov", "Sex", "DeathYear", "Popgroup", "age5")
+    check_unique(injury_envelope_adjustment, cell, "injury calibration audit")
+    check_finite_nonnegative(
+      injury_envelope_adjustment,
+      c(
+        "total_before", "total_after", "injury_before", "injury_after",
+        "natural_before", "natural_after", "profile_factor__",
+        "level_ratio__", "effective_profile_factor__"
+      ),
+      "injury calibration audit"
+    )
+    scale <- pmax(1, abs(injury_envelope_adjustment$total_before))
+    expect_true(
+      max(abs(injury_envelope_adjustment$total_error) / scale, na.rm = TRUE) <= 1e-10,
+      "injury calibration changes a population-group cell total"
+    )
+    annual <- injury_envelope_adjustment[, .(
+      injury_after = sum(injury_after),
+      target_total_injury = unique(target_total_injury_year)
+    ), by = DeathYear]
+    expect_true(
+      max(abs(annual$injury_after - annual$target_total_injury), na.rm = TRUE) <= 1e-7,
+      "the calibrated annual injury total does not reproduce the survey-level target"
+    )
+    expected_anchor <- unique(injury_envelope_anchors[, .(
+      DeathYear = survey_year,
+      expected_injury = survey_level_total
+    )])
+    anchor_check <- merge(
+      annual[DeathYear %in% expected_anchor$DeathYear],
+      expected_anchor,
+      by = "DeathYear",
+      all = TRUE,
+      sort = FALSE
+    )
+    expect_true(
+      nrow(anchor_check) == 2L &&
+        max(abs(anchor_check$injury_after - anchor_check$expected_injury),
+            na.rm = TRUE) <=
+          1e-8 * max(1, abs(anchor_check$expected_injury)),
+      "the calibrated 2009/2017 national injury totals do not reproduce the empirical survey anchors"
+    )
+    expect_true(
+      injury_envelope_adjustment[
+        injury_after < -1e-10 | natural_after < -1e-10 |
+          injury_after > total_after + 1e-10,
+        .N
+      ] == 0L,
+      "the injury level/profile calibration produced an invalid total"
+    )
+    paste0(
+      "population-group cell totals preserved; annual injury range ",
+      format_number(min(annual$injury_after)), "-",
+      format_number(max(annual$injury_after))
+    )
+  })
+}
 
 if (!is.null(completeness_scalars)) {
   scalar_key <- c("Death_Prov", "Sex", "DeathYear", "age5")

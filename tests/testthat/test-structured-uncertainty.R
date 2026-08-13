@@ -1,19 +1,22 @@
-testthat::test_that("completeness support is the exact cluster bootstrap of the national S2 mean", {
+testthat::test_that("completeness dispersion uses annual province totals over time", {
   scalars <- data.table::CJ(
     Death_Prov = 1:9,
     Sex = 1:2,
-    DeathYear = 2000:2001,
-    age5 = 2:3,
+    DeathYear = 2000:2002,
+    age5 = 2:4,
     sorted = TRUE
   )
-  province_effect <- seq(-0.25, 0.25, length.out = 9)
+  province_level <- seq(-0.20, 0.20, length.out = 9)
+  province_time_scale <- seq(0.03, 0.19, length.out = 9)
+  # The age term is deliberately large. It must disappear when the estimator
+  # collapses age before measuring temporal dispersion.
   scalars[, S2 := exp(
-    province_effect[Death_Prov] +
-      0.03 * (Sex - 1L) +
-      0.01 * (DeathYear - 2000L) +
-      0.02 * (age5 - 2L)
+    province_level[Death_Prov] +
+      province_time_scale[Death_Prov] * (DeathYear - 2001L) +
+      0.60 * (age5 - 3L) +
+      0.02 * (Sex - 1L)
   )]
-  scalars[, pre_deaths := 100 + 5 * Sex + 2 * age5]
+  scalars[, pre_deaths := 100 + 8 * age5 + 5 * Sex]
 
   stage04 <- scalars[, .(
     Death_Prov,
@@ -27,9 +30,9 @@ testthat::test_that("completeness support is the exact cluster bootstrap of the 
 
   copied_neonatal <- data.table::copy(scalars[age5 == 2L])
   copied_neonatal[, age5 := 1L]
-  post_freeze <- data.table::copy(scalars[DeathYear == 2001L])
-  post_freeze[, DeathYear := 2002L]
-  scalars <- data.table::rbindlist(
+  post_freeze <- data.table::copy(scalars[DeathYear == 2002L])
+  post_freeze[, DeathYear := 2003L]
+  scalar_input <- data.table::rbindlist(
     list(
       scalars[, .(Death_Prov, Sex, DeathYear, age5, S2)],
       copied_neonatal[, .(Death_Prov, Sex, DeathYear, age5, S2)],
@@ -38,53 +41,58 @@ testthat::test_that("completeness support is the exact cluster bootstrap of the 
     use.names = TRUE
   )
 
-  cfg <- list(settings = list(completeness_freeze_year = 2001L))
+  cfg <- list(settings = list(completeness_freeze_year = 2002L))
   distribution <- uc_estimate_completeness_distribution(
-    scalars,
+    scalar_input,
     stage04,
     cfg
   )
 
-  province_aggregate <- stage04[, .(
-    adjusted = sum(Deaths),
-    pre = sum(Deaths / exp(
-      province_effect[Death_Prov] +
-        0.03 * (Sex - 1L) +
-        0.01 * (DeathYear - 2000L) +
-        0.02 * (age5 - 2L)
-    ))
-  ), by = Death_Prov]
-  province_aggregate[, aggregate_s2 := adjusted / pre]
-  national_s2 <- sum(province_aggregate$adjusted) /
-    sum(province_aggregate$pre)
+  expected_cells <- scalars[, .(
+    adjusted = sum(pre_deaths * S2),
+    pre = sum(pre_deaths)
+  ), by = .(Death_Prov, DeathYear)]
+  expected_cells[, `:=`(
+    S2 = adjusted / pre,
+    log_s2 = log(adjusted / pre)
+  )]
+  expected <- expected_cells[, {
+    weighted_mean <- sum(pre * log_s2) / sum(pre)
+    list(
+      aggregate_s2 = sum(adjusted) / sum(pre),
+      log_sd = sqrt(sum(pre * (log_s2 - weighted_mean)^2) / sum(pre))
+    )
+  }, by = Death_Prov]
 
   testthat::expect_equal(
     distribution$province_summary$aggregate_s2,
-    province_aggregate$aggregate_s2,
+    expected$aggregate_s2,
     tolerance = 1e-12
   )
   testthat::expect_equal(
-    distribution$national_aggregate_s2,
-    national_s2,
+    distribution$province_summary$log_sd,
+    expected$log_sd,
     tolerance = 1e-12
   )
-  testthat::expect_equal(nrow(distribution$factor_support), 24310L)
-  testthat::expect_equal(sum(distribution$factor_support$probability), 1,
-                         tolerance = 1e-12)
+  testthat::expect_gt(
+    data.table::uniqueN(round(distribution$province_summary$log_sd, 10)),
+    1L
+  )
   testthat::expect_equal(
-    sum(
-      distribution$factor_support$probability *
-        distribution$factor_support$factor
-    ),
-    1,
+    distribution$province_summary$factor_mean,
+    rep(1, 9),
     tolerance = 1e-12
   )
-  testthat::expect_lt(
-    distribution$q975 - distribution$q025,
-    diff(range(distribution$province_summary$relative_to_national))
+  testthat::expect_true(all(
+    distribution$province_summary$factor_q025 < 1 &
+      distribution$province_summary$factor_q975 > 1
+  ))
+  testthat::expect_equal(distribution$eligible_rows, 162L)
+  testthat::expect_equal(distribution$eligible_strata, 27L)
+  testthat::expect_equal(
+    distribution$province_summary$eligible_time_cells,
+    rep(3L, 9)
   )
-  testthat::expect_equal(distribution$eligible_strata, 8L)
-  testthat::expect_equal(distribution$eligible_rows, 72L)
   testthat::expect_identical(distribution$provinces, 1:9)
 })
 
@@ -100,15 +108,17 @@ make_completeness_draw_input <- function() {
   )[, Deaths := 100]
 }
 
-testthat::test_that("completeness draws apply one shared national factor", {
-  support <- data.table::data.table(
-    bootstrap_id = 1:3,
-    factor = c(0.9, 1.0, 1.1),
-    probability = c(0.25, 0.50, 0.25)
+testthat::test_that("completeness draws apply one province-specific factor", {
+  province_summary <- data.table::data.table(
+    Death_Prov = 1:9,
+    log_sd = seq(0.02, 0.18, length.out = 9)
   )
   distribution <- list(
-    log_sd = stats::sd(log(support$factor)),
-    factor_support = support
+    log_sd = sqrt(mean(province_summary$log_sd^2)),
+    log_sd_min = min(province_summary$log_sd),
+    log_sd_median = stats::median(province_summary$log_sd),
+    log_sd_max = max(province_summary$log_sd),
+    province_summary = province_summary
   )
   input <- make_completeness_draw_input()
 
@@ -117,15 +127,11 @@ testthat::test_that("completeness draws apply one shared national factor", {
 
   testthat::expect_equal(draw_a$data, draw_b$data)
   testthat::expect_equal(draw_a$factors, draw_b$factors)
-  testthat::expect_length(unique(draw_a$factors$factor), 1L)
-  testthat::expect_true(unique(draw_a$factors$factor) %in% support$factor)
-
-  sampled_factors <- vapply(1:50, function(seed) {
-    unique(uc_draw_completeness(
-      input, distribution, TRUE, seed = seed
-    )$factors$factor)
-  }, numeric(1))
-  testthat::expect_gt(data.table::uniqueN(sampled_factors), 1L)
+  testthat::expect_equal(nrow(draw_a$factors), 9L)
+  testthat::expect_gt(
+    data.table::uniqueN(round(draw_a$factors$factor, 12)),
+    1L
+  )
 
   comparison <- merge(
     input,
@@ -134,7 +140,13 @@ testthat::test_that("completeness draws apply one shared national factor", {
     suffixes = c("_point", "_draw"),
     sort = FALSE
   )
-  shared_factor <- unique(draw_a$factors$factor)
+  comparison <- merge(
+    comparison,
+    draw_a$factors[, .(Death_Prov, factor)],
+    by = "Death_Prov",
+    all.x = TRUE,
+    sort = FALSE
+  )
   testthat::expect_equal(
     comparison[
       Popgroup == 1L & !nbdcode %in% UC_INJURY_CODES,
@@ -142,7 +154,7 @@ testthat::test_that("completeness draws apply one shared national factor", {
     ],
     comparison[
       Popgroup == 1L & !nbdcode %in% UC_INJURY_CODES,
-      Deaths_point * shared_factor
+      Deaths_point * factor
     ],
     tolerance = 1e-12
   )
@@ -156,10 +168,12 @@ testthat::test_that("completeness draws apply one shared national factor", {
     .(ratio = Deaths_draw / Deaths_point),
     by = .(Death_Prov, nbdcode)
   ]
-  testthat::expect_lte(diff(range(african_natural$ratio)), 1e-12)
+  testthat::expect_true(african_natural[, .(
+    identical_within_province = diff(range(ratio)) <= 1e-12
+  ), by = Death_Prov][, all(identical_within_province)])
 })
 
-testthat::test_that("redistribution uncertainty uses only non-empty expert-target subsets", {
+testthat::test_that("redistribution uncertainty uses continuous approved-target weights", {
   rules <- list(
     list(
       rule_id = "three_targets",
@@ -175,45 +189,48 @@ testthat::test_that("redistribution uncertainty uses only non-empty expert-targe
     )
   )
 
-  draw_a <- stage06_draw_target_overrides(123L, rules)
-  draw_b <- stage06_draw_target_overrides(123L, rules)
-
+  draw_a <- stage06_draw_target_weight_overrides(123L, rules)
+  draw_b <- stage06_draw_target_weight_overrides(123L, rules)
   testthat::expect_identical(draw_a, draw_b)
   testthat::expect_true("three_targets" %in% names(draw_a))
   testthat::expect_false("one_target" %in% names(draw_a))
-  testthat::expect_gt(length(draw_a$three_targets), 0L)
-  testthat::expect_length(
-    setdiff(draw_a$three_targets, c(10L, 20L, 30L)),
-    0L
-  )
-  subset_keys <- vapply(1:200, function(seed) {
-    paste(
-      stage06_draw_target_overrides(seed, rules)$three_targets,
-      collapse = ","
-    )
-  }, character(1))
-  expected_keys <- c("10", "20", "30", "10,20", "10,30", "20,30", "10,20,30")
-  testthat::expect_setequal(unique(subset_keys), expected_keys)
+  testthat::expect_length(draw_a$three_targets, 3L)
+  testthat::expect_true(all(is.finite(draw_a$three_targets)))
+  testthat::expect_true(all(draw_a$three_targets > 0))
+  testthat::expect_equal(mean(draw_a$three_targets), 1, tolerance = 1e-12)
+  testthat::expect_setequal(names(draw_a$three_targets), c("10", "20", "30"))
 
-  validated <- stage06_validate_target_overrides(rules, draw_a)
-  testthat::expect_identical(validated, draw_a)
+  validated <- stage06_validate_target_weight_overrides(rules, draw_a)
+  testthat::expect_equal(validated, draw_a)
   testthat::expect_error(
-    stage06_validate_target_overrides(
+    stage06_validate_target_weight_overrides(
       rules,
-      list(three_targets = integer())
+      list(three_targets = c(1, -1, 1))
     ),
-    "non-empty subset"
+    "strictly positive multiplier"
   )
-  testthat::expect_error(
-    stage06_validate_target_overrides(
-      rules,
-      list(three_targets = 99L)
-    ),
-    "non-empty subset"
+  testthat::expect_equal(
+    stage06_subset_allocation_gamma_shape(2L),
+    0.25,
+    tolerance = 1e-12
+  )
+  testthat::expect_equal(
+    stage06_subset_allocation_gamma_shape(3L),
+    0.2888888888888889,
+    tolerance = 1e-12
   )
 })
 
-testthat::test_that("joint uncertainty configuration contains no free scale parameters", {
+testthat::test_that("injury uncertainty uses one joint survey-design replicate", {
+  testthat::expect_identical(NBD3_UNCERTAINTY_VERSION, "1.7.1")
+  draw_text <- paste(deparse(body(uc_run_one_draw)), collapse = " ")
+  testthat::expect_match(draw_text, "injury_survey_design_draw", fixed = TRUE)
+  testthat::expect_match(draw_text, "survey_draw$envelope_surveys", fixed = TRUE)
+  testthat::expect_match(draw_text, "survey_draw$cause_surveys", fixed = TRUE)
+  testthat::expect_match(draw_text, "stage06_draw_target_weight_overrides", fixed = TRUE)
+})
+
+testthat::test_that("joint uncertainty configuration records the structured models", {
   config <- yaml::read_yaml(file.path(
     .test_root,
     "config",
@@ -225,15 +242,15 @@ testthat::test_that("joint uncertainty configuration contains no free scale para
   )
   testthat::expect_identical(
     config$components$completeness$distribution,
-    "cluster_bootstrap_national_mean"
+    "province_specific_time_log_sd"
   )
   testthat::expect_identical(
     config$components$completeness$draw_level,
-    "national_shared"
+    "province"
   )
   testthat::expect_identical(
-    config$components$redistribution$target_subset_distribution,
-    "uniform_nonempty"
+    config$components$redistribution$target_weight_distribution,
+    "subset_allocation_variance_matched_gamma"
   )
   testthat::expect_identical(
     config$components$injury$model_file,
@@ -241,24 +258,42 @@ testthat::test_that("joint uncertainty configuration contains no free scale para
   )
   testthat::expect_identical(
     config$components$injury$sampling_distribution,
-    "dirichlet_effective_n"
+    "stratified_psu_bootstrap_joint"
   )
   testthat::expect_identical(
     config$components$injury$inter_survey_path,
     "deterministic_linear_plus_smoother"
   )
+  testthat::expect_identical(
+    config$components$injury$envelope_model_file,
+    "04_injury_envelope_model.rds"
+  )
+  testthat::expect_identical(
+    config$components$injury$envelope_sampling_distribution,
+    "stratified_psu_bootstrap_joint_level_profile"
+  )
+  testthat::expect_identical(
+    config$components$injury$survey_design_file,
+    "03_injury_survey_design.rds"
+  )
+  testthat::expect_identical(
+    config$components$injury$pre_2009_policy,
+    "hold_ims_2009"
+  )
+  testthat::expect_identical(
+    config$components$injury$between_surveys_policy,
+    "log_linear"
+  )
+  testthat::expect_identical(
+    config$components$injury$post_2017_policy,
+    "hold_famhis_2017"
+  )
   testthat::expect_identical(config$reporting$top_n_causes, 214L)
 
-  forbidden <- c(
-    "log_sd", "sigma", "concentration", "multiplier", "bridge",
-    "correlation"
+  testthat::expect_equal(
+    config$components$redistribution$point_multiplier,
+    1
   )
-  flattened_names <- names(unlist(config, recursive = TRUE, use.names = TRUE))
-  testthat::expect_false(any(vapply(
-    forbidden,
-    function(term) any(grepl(term, flattened_names, ignore.case = TRUE)),
-    logical(1)
-  )))
 })
 
 testthat::test_that("the full cause catalogue retains every Stage 06 analysis cause", {

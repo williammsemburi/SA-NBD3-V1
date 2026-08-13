@@ -1,5 +1,10 @@
 # ==============================================================================
 # 06_uncertainty: Joint uncertainty propagation
+#
+# Draw order: African natural completeness -> one joint IMS/FAMHIS survey-
+# design replicate for injury level, demographic profile and specified cause
+# fractions -> NIMS count uncertainty -> HIV/AIDS coefficient covariance ->
+# continuous weights on the expert-approved redistribution targets.
 # ==============================================================================
 #
 # This file groups related functions so the analytical sequence can be taught
@@ -15,23 +20,24 @@
 # This module starts from the validated Stage 03-06 checkpoints and propagates
 # four evidence-based sources of uncertainty in one joint draw:
 #
-#   1. African natural-cause completeness, using the observed cross-province
-#      variation in the deterministic S2 completeness inputs;
-#   2. injury cause composition, using survey-composition draws based on the
-#      available count/Kish-equivalent information and rerunning the same fast
-#      Stage 03 interpolation and moving-average smoother;
+#   1. African natural-cause completeness, using province-specific temporal
+#      variation in annual aggregate S2 after age and sex are collapsed;
+#   2. injury completeness and cause composition: one stratified PSU bootstrap
+#      replicate from each of IMS 2009 and FAMHIS 2017 jointly determines the
+#      national injury total, province-sex-age profile and well-specified cause
+#      counts. NIMS 2000 contributes count-based cause-fraction uncertainty;
 #   3. HIV/AIDS reallocation, using the fitted Stage 05 coefficient
 #      variance-covariance matrices; and
-#   4. garbage/ill-defined redistribution, using uniformly sampled non-empty
-#      subsets of the same expert-approved target lists used by Stage 06.
+#   4. garbage/ill-defined redistribution, using continuous positive random
+#      multipliers on the same expert-approved targets used by Stage 06.
 #
-# The injury component introduces no free concentration multiplier and no
-# between-survey bridge variance. Conditional on each survey draw, the annual
-# path is the deterministic linear-ALR interpolation plus triangular smoother.
-# Components without an empirical variance source (S1, the NPR envelope, ANC
-# prevalence) remain fixed and are listed explicitly in the run manifest.
+# The injury component introduces no published-total substitution, free
+# concentration multiplier or between-survey bridge variance. Conditional on
+# the survey replicates and NIMS composition draw, the annual paths are fixed.
+# Components without an empirical variance source (S1 and ANC prevalence)
+# remain fixed and are listed explicitly in the run manifest.
 
-NBD3_UNCERTAINTY_VERSION <- "1.0.0"
+NBD3_UNCERTAINTY_VERSION <- "1.7.1"
 
 UC_KEY <- c(
   "Death_Prov", "Sex", "DeathYear", "Popgroup", "age5", "nbdcode"
@@ -235,6 +241,7 @@ uc_file_signature <- function(path) {
 
 UC_COMPONENT_SEED_OFFSETS <- c(
   completeness = 101L,
+  injury_envelope = 173L,
   injury = 211L,
   hiv_model = 307L,
   redistribution = 401L,
@@ -328,7 +335,7 @@ uc_default_config <- function() {
   list(
     run = list(
       profile = "analysis",
-      output_name = "nbd3_v1_joint",
+      output_name = "nbd3_v1_joint_survey_injury_weighted_redist",
       n_draws = 100L,
       base_seed = 20260810L,
       scenarios = "joint",
@@ -344,14 +351,21 @@ uc_default_config <- function() {
         source_scalar = "S2",
         target_population_group = 1L,
         target_envelope = "natural",
-        distribution = "cluster_bootstrap_national_mean",
-        draw_level = "national_shared"
+        distribution = "province_specific_time_log_sd",
+        draw_level = "province"
       ),
       injury = list(
         enabled = TRUE,
         model_file = "03_injury_fraction_model.rds",
-        sampling_distribution = "dirichlet_effective_n",
-        inter_survey_path = "deterministic_linear_plus_smoother"
+        survey_design_file = "03_injury_survey_design.rds",
+        sampling_distribution = "stratified_psu_bootstrap_joint",
+        inter_survey_path = "deterministic_linear_plus_smoother",
+        envelope_model_file = "04_injury_envelope_model.rds",
+        envelope_sampling_distribution =
+          "stratified_psu_bootstrap_joint_level_profile",
+        pre_2009_policy = "hold_ims_2009",
+        between_surveys_policy = "log_linear",
+        post_2017_policy = "hold_famhis_2017"
       ),
       hiv = list(
         enabled = TRUE,
@@ -361,8 +375,10 @@ uc_default_config <- function() {
       ),
       redistribution = list(
         enabled = TRUE,
-        target_subset_distribution = "uniform_nonempty",
-        target_scope = "rule"
+        target_weight_distribution =
+          "subset_allocation_variance_matched_gamma",
+        target_weight_scope = "rule",
+        point_multiplier = 1
       )
     ),
     reporting = list(
@@ -465,30 +481,43 @@ uc_validate_config <- function(config) {
   }
   if (!identical(
     as.character(completeness$distribution),
-    "cluster_bootstrap_national_mean"
+    "province_specific_time_log_sd"
   )) {
     stop(
-      "Completeness uncertainty must use the cluster bootstrap of the national S2 mean.",
+      "Completeness uncertainty must use province-specific temporal log-S2 dispersion after age and sex are collapsed.",
       call. = FALSE
     )
   }
-  if (!identical(as.character(completeness$draw_level), "national_shared")) {
-    stop("Completeness uncertainty must use one shared national factor per draw.", call. = FALSE)
+  if (!identical(as.character(completeness$draw_level), "province")) {
+    stop(
+      "Completeness uncertainty must draw one factor for each province.",
+      call. = FALSE
+    )
   }
   config$components$completeness <- completeness
 
   injury <- config$components$injury
-  injury$model_file <- trimws(as.character(injury$model_file))
-  if (length(injury$model_file) != 1L || !nzchar(injury$model_file) ||
-      grepl("[/\\\\]", injury$model_file)) {
-    stop("components.injury.model_file must be one filename.", call. = FALSE)
+  for (field in c("model_file", "survey_design_file", "envelope_model_file")) {
+    injury[[field]] <- trimws(as.character(injury[[field]]))
+    if (length(injury[[field]]) != 1L || !nzchar(injury[[field]]) ||
+        grepl("[/\\\\]", injury[[field]])) {
+      stop("components.injury.", field, " must be one filename.",
+           call. = FALSE)
+    }
   }
   injury$sampling_distribution <- tolower(trimws(as.character(
     injury$sampling_distribution
   )))
-  if (!identical(injury$sampling_distribution, "dirichlet_effective_n")) {
+  if (!identical(
+    injury$sampling_distribution,
+    "stratified_psu_bootstrap_joint"
+  )) {
     stop(
-      "Injury uncertainty must use the survey count/Kish effective-N Dirichlet draw.",
+      paste(
+        "Injury uncertainty must use one stratified PSU bootstrap replicate",
+        "per survey for the injury level, demographic profile and specified",
+        "cause counts."
+      ),
       call. = FALSE
     )
   }
@@ -500,9 +529,41 @@ uc_validate_config <- function(config) {
     "deterministic_linear_plus_smoother"
   )) {
     stop(
-      "The injury inter-survey path must rerun the deterministic linear interpolation and smoother.",
+      "The injury inter-survey path must rerun the deterministic ALR interpolation and smoother.",
       call. = FALSE
     )
+  }
+  injury$envelope_sampling_distribution <- tolower(trimws(as.character(
+    injury$envelope_sampling_distribution
+  )))
+  if (!identical(
+    injury$envelope_sampling_distribution,
+    "stratified_psu_bootstrap_joint_level_profile"
+  )) {
+    stop(
+      paste(
+        "Injury-envelope uncertainty must use the same stratified PSU",
+        "bootstrap replicate for the survey-derived national level and",
+        "relative province-sex-age profile."
+      ),
+      call. = FALSE
+    )
+  }
+  policy_expectations <- c(
+    pre_2009_policy = "hold_ims_2009",
+    between_surveys_policy = "log_linear",
+    post_2017_policy = "hold_famhis_2017"
+  )
+  for (name in names(policy_expectations)) {
+    value <- tolower(trimws(as.character(injury[[name]])))
+    if (!identical(value, policy_expectations[[name]])) {
+      stop(
+        "components.injury.", name, " must be '",
+        policy_expectations[[name]], "'.",
+        call. = FALSE
+      )
+    }
+    injury[[name]] <- value
   }
   config$components$injury <- injury
 
@@ -525,17 +586,35 @@ uc_validate_config <- function(config) {
   config$components$hiv <- hiv
 
   redistribution <- config$components$redistribution
+  redistribution$target_weight_distribution <- tolower(trimws(as.character(
+    redistribution$target_weight_distribution
+  )))
   if (!identical(
-    as.character(redistribution$target_subset_distribution),
-    "uniform_nonempty"
+    redistribution$target_weight_distribution,
+    "subset_allocation_variance_matched_gamma"
   )) {
     stop(
-      "Redistribution uncertainty must sample uniformly from non-empty target subsets.",
+      paste(
+        "Redistribution uncertainty must use continuous positive Gamma",
+        "multipliers on the approved target vector."
+      ),
       call. = FALSE
     )
   }
-  if (!identical(as.character(redistribution$target_scope), "rule")) {
-    stop("One redistribution target subset is drawn per expert rule.",
+  redistribution$target_weight_scope <- tolower(trimws(as.character(
+    redistribution$target_weight_scope
+  )))
+  if (!identical(redistribution$target_weight_scope, "rule")) {
+    stop("One redistribution target-weight vector is drawn per expert rule.",
+         call. = FALSE)
+  }
+  redistribution$point_multiplier <- suppressWarnings(as.numeric(
+    redistribution$point_multiplier
+  ))
+  if (length(redistribution$point_multiplier) != 1L ||
+      !is.finite(redistribution$point_multiplier) ||
+      redistribution$point_multiplier != 1) {
+    stop("The deterministic redistribution target multiplier must equal one.",
          call. = FALSE)
   }
   config$components$redistribution <- redistribution
@@ -630,11 +709,11 @@ uc_estimate_completeness_distribution <- function(scalars, stage04, cfg) {
     stop("settings.completeness_freeze_year is required.", call. = FALSE)
   }
 
-  # Estimate one aggregate S2 multiplier for each province using the
-  # pre-adjustment African natural deaths as weights. The nine province values
-  # are evidence about the uncertainty of the national completeness level;
-  # they are not nine interchangeable errors to multiply back onto the nine
-  # already-adjusted province estimates independently.
+  # The stochastic draw is one multiplier per province. Its uncertainty scale
+  # should therefore reflect variation in the province-wide reporting level,
+  # rather than systematic differences between age groups. Collapse sex and age
+  # within each province-year using implied pre-adjustment African natural deaths
+  # as weights, then estimate the death-weighted SD of log S2 across years.
   african_natural <- x[
     Popgroup == 1L & !nbdcode %in% UC_INJURY_CODES,
     .(adjusted_african_natural = sum(Deaths)),
@@ -653,105 +732,116 @@ uc_estimate_completeness_distribution <- function(scalars, stage04, cfg) {
   ]
   if (!nrow(eligible)) {
     stop(
-      "No positive pre-freeze African natural deaths are available to weight S2.",
+      "No positive pre-freeze African natural deaths are available to estimate province-specific temporal S2 dispersion.",
       call. = FALSE
     )
   }
   if (!identical(sort(unique(eligible$Death_Prov)), 1:9)) {
     stop(
-      "The completeness bootstrap requires all nine provinces.",
+      "Province-specific completeness uncertainty requires all nine provinces.",
       call. = FALSE
     )
   }
 
-  province_summary <- eligible[, .(
-    eligible_cells = .N,
-    pre_adjustment_deaths = sum(pre_adjustment_african_natural),
-    adjusted_deaths = sum(adjusted_african_natural),
-    aggregate_s2 = sum(adjusted_african_natural) /
-      sum(pre_adjustment_african_natural),
-    minimum_s2 = min(S2),
-    median_s2 = stats::median(S2),
-    maximum_s2 = max(S2)
-  ), by = Death_Prov]
+  time_cells <- eligible[, .(
+    contributing_sex_age_cells = .N,
+    contributing_sexes = data.table::uniqueN(Sex),
+    contributing_age_groups = data.table::uniqueN(age5),
+    adjusted_african_natural = sum(adjusted_african_natural),
+    pre_adjustment_african_natural = sum(pre_adjustment_african_natural)
+  ), by = .(Death_Prov, DeathYear)]
+  time_cells[, S2 := adjusted_african_natural /
+    pre_adjustment_african_natural]
+  time_cells <- time_cells[
+    is.finite(S2) & S2 > 0 &
+      is.finite(pre_adjustment_african_natural) &
+      pre_adjustment_african_natural > 0
+  ]
+  time_cells[, log_s2 := log(S2)]
+
+  province_summary <- time_cells[, {
+    weights <- as.numeric(pre_adjustment_african_natural)
+    values <- as.numeric(log_s2)
+    weight_total <- sum(weights)
+    weighted_mean <- sum(weights * values) / weight_total
+    weighted_variance <- sum(
+      weights * (values - weighted_mean)^2
+    ) / weight_total
+    log_sd <- sqrt(max(0, weighted_variance))
+    factor_quantiles <- exp(
+      -0.5 * log_sd^2 +
+        stats::qnorm(c(0.025, 0.5, 0.975)) * log_sd
+    )
+    list(
+      eligible_time_cells = .N,
+      eligible_years = data.table::uniqueN(DeathYear),
+      contributing_sex_age_cells = sum(contributing_sex_age_cells),
+      pre_adjustment_deaths = sum(pre_adjustment_african_natural),
+      adjusted_deaths = sum(adjusted_african_natural),
+      aggregate_s2 = sum(adjusted_african_natural) /
+        sum(pre_adjustment_african_natural),
+      weighted_mean_log_s2 = weighted_mean,
+      log_sd = log_sd,
+      minimum_annual_s2 = min(S2),
+      median_annual_s2 = stats::median(S2),
+      maximum_annual_s2 = max(S2),
+      factor_q025 = factor_quantiles[[1L]],
+      factor_median = factor_quantiles[[2L]],
+      factor_mean = 1,
+      factor_q975 = factor_quantiles[[3L]]
+    )
+  }, by = Death_Prov]
   data.table::setorder(province_summary, Death_Prov)
-  if (province_summary[
+
+  invalid_province <- province_summary[
     !is.finite(aggregate_s2) | aggregate_s2 <= 0 |
-      !is.finite(pre_adjustment_deaths) | pre_adjustment_deaths <= 0,
-    .N
-  ]) {
+      !is.finite(log_sd) | log_sd < 0 |
+      !is.finite(factor_q025) | factor_q025 <= 0 |
+      !is.finite(factor_q975) | factor_q975 <= 0
+  ]
+  if (nrow(invalid_province)) {
     stop(
-      "A province-level aggregate S2 multiplier or weight is invalid.",
+      "At least one province has invalid temporal completeness dispersion.",
+      call. = FALSE
+    )
+  }
+  if (!any(province_summary$log_sd > 0)) {
+    stop(
+      "The province-specific temporal completeness distributions contain no dispersion.",
       call. = FALSE
     )
   }
 
-  national_aggregate_s2 <- sum(province_summary$adjusted_deaths) /
-    sum(province_summary$pre_adjustment_deaths)
-  province_summary[, relative_to_national := aggregate_s2 / national_aggregate_s2]
-
-  # Exact ordinary nonparametric bootstrap support. Resampling nine provinces
-  # with replacement has C(17, 8) = 24,310 unique count patterns. Enumerating
-  # those patterns avoids a user-selected bootstrap simulation size and gives
-  # each pattern its exact multinomial probability.
-  province_count <- nrow(province_summary)
-  bootstrap_counts <- uc_weak_compositions(province_count, province_count)
-  adjusted_bootstrap <- as.numeric(
-    bootstrap_counts %*% province_summary$adjusted_deaths
+  time_cells <- merge(
+    time_cells,
+    province_summary[, .(Death_Prov, weighted_mean_log_s2, log_sd)],
+    by = "Death_Prov",
+    all.x = TRUE,
+    sort = FALSE
   )
-  pre_adjustment_bootstrap <- as.numeric(
-    bootstrap_counts %*% province_summary$pre_adjustment_deaths
-  )
-  bootstrap_s2 <- adjusted_bootstrap / pre_adjustment_bootstrap
+  time_cells[, log_s2_residual := log_s2 - weighted_mean_log_s2]
 
-  log_probability <- lgamma(province_count + 1) -
-    rowSums(lgamma(bootstrap_counts + 1)) -
-    province_count * log(province_count)
-  probability <- exp(log_probability)
-  probability <- probability / sum(probability)
-
-  raw_factor <- bootstrap_s2 / national_aggregate_s2
-  probability_mean <- sum(probability * raw_factor)
-  factor <- raw_factor / probability_mean
-  if (any(!is.finite(factor) | factor <= 0) ||
-      abs(sum(probability * factor) - 1) > 1e-12) {
-    stop(
-      "The national completeness bootstrap did not produce valid mean-one factors.",
-      call. = FALSE
-    )
-  }
-
-  factor_support <- data.table::data.table(
-    bootstrap_id = seq_along(factor),
-    aggregate_s2 = bootstrap_s2,
-    factor = factor,
-    probability = probability
+  province_weights <- province_summary$pre_adjustment_deaths
+  diagnostic_log_sd <- sqrt(
+    sum(province_weights * province_summary$log_sd^2) /
+      sum(province_weights)
   )
-  count_table <- data.table::as.data.table(bootstrap_counts)
-  data.table::setnames(
-    count_table,
-    paste0("province_", province_summary$Death_Prov, "_count")
-  )
-  factor_support <- cbind(factor_support, count_table)
-
-  factor_quantiles <- uc_weighted_quantile(
-    factor_support$factor,
-    factor_support$probability,
-    c(0.025, 0.5, 0.975)
-  )
-  log_factor <- log(factor_support$factor)
-  weighted_log_mean <- sum(factor_support$probability * log_factor)
-  diagnostic_log_sd <- sqrt(sum(
-    factor_support$probability * (log_factor - weighted_log_mean)^2
-  ))
   if (!is.finite(diagnostic_log_sd) || diagnostic_log_sd <= 0) {
     stop(
-      "The national completeness bootstrap has no finite dispersion.",
+      "The death-weighted summary of province-specific temporal log-S2 dispersion is invalid.",
       call. = FALSE
     )
   }
 
-  eligible_strata <- nrow(unique(eligible[, .(Sex, DeathYear, age5)]))
+  factor_support <- province_summary[, .(
+    Death_Prov,
+    log_sd,
+    factor_q025,
+    factor_median,
+    factor_mean,
+    factor_q975
+  )]
+
   excluded <- data.table::data.table(
     reason = c(
       "post_freeze_repetition",
@@ -774,23 +864,35 @@ uc_estimate_completeness_distribution <- function(scalars, stage04, cfg) {
 
   list(
     method = paste(
-      "exact cluster bootstrap of the death-weighted national",
-      "aggregate S2 multiplier"
+      "death-weighted within-province log-S2 standard deviation",
+      "across time after sex and age are collapsed"
     ),
-    draw_level = "one shared national factor",
+    draw_level = "one independent mean-one factor per province",
     freeze_year = freeze_year,
-    national_aggregate_s2 = national_aggregate_s2,
     log_sd = diagnostic_log_sd,
-    q025 = factor_quantiles[[1L]],
-    median = factor_quantiles[[2L]],
-    q975 = factor_quantiles[[3L]],
+    log_sd_min = min(province_summary$log_sd),
+    log_sd_median = stats::median(province_summary$log_sd),
+    log_sd_max = max(province_summary$log_sd),
+    q025 = min(province_summary$factor_q025),
+    median = stats::median(province_summary$factor_median),
+    q975 = max(province_summary$factor_q975),
     eligible_rows = nrow(eligible),
-    eligible_strata = eligible_strata,
+    eligible_strata = nrow(time_cells),
     provinces = sort(unique(eligible$Death_Prov)),
     factor_support = factor_support,
-    weighted_cells = eligible[, .(
-      Death_Prov, Sex, DeathYear, age5, S2,
-      adjusted_african_natural, pre_adjustment_african_natural
+    weighted_cells = time_cells[, .(
+      Death_Prov,
+      DeathYear,
+      contributing_sex_age_cells,
+      contributing_sexes,
+      contributing_age_groups,
+      S2,
+      log_s2,
+      pre_adjustment_african_natural,
+      adjusted_african_natural,
+      weighted_mean_log_s2,
+      log_s2_residual,
+      log_sd
     )],
     province_summary = province_summary,
     excluded = excluded
@@ -798,43 +900,53 @@ uc_estimate_completeness_distribution <- function(scalars, stage04, cfg) {
 }
 
 uc_completeness_distribution_summary <- function(distribution) {
-  support <- distribution$factor_support
-  quantiles <- uc_weighted_quantile(
-    support$factor,
-    support$probability,
-    c(0.025, 0.5, 0.975)
-  )
+  province_rows <- data.table::rbindlist(lapply(
+    seq_len(nrow(distribution$province_summary)),
+    function(index) {
+      row <- distribution$province_summary[index]
+      data.table::data.table(
+        section = paste0("province_", row$Death_Prov),
+        metric = c(
+          "aggregate_s2", "log_sd", "factor_q025",
+          "factor_median", "factor_mean", "factor_q975",
+          "eligible_time_cells", "eligible_years"
+        ),
+        value = as.character(c(
+          signif(row$aggregate_s2, 12),
+          signif(row$log_sd, 12),
+          signif(row$factor_q025, 12),
+          signif(row$factor_median, 12),
+          1,
+          signif(row$factor_q975, 12),
+          row$eligible_time_cells,
+          row$eligible_years
+        ))
+      )
+    }
+  ))
+
   data.table::rbindlist(list(
     data.table::data.table(
       section = "method",
       metric = c(
-        "method", "draw_level", "freeze_year", "support_patterns",
-        "national_aggregate_s2", "diagnostic_log_sd",
-        "eligible_rows", "eligible_strata"
+        "method", "draw_level", "freeze_year",
+        "death_weighted_rms_log_sd", "minimum_province_log_sd",
+        "median_province_log_sd", "maximum_province_log_sd",
+        "eligible_rows", "eligible_time_strata"
       ),
       value = as.character(c(
         distribution$method,
         distribution$draw_level,
         distribution$freeze_year,
-        nrow(support),
-        signif(distribution$national_aggregate_s2, 12),
         signif(distribution$log_sd, 12),
+        signif(distribution$log_sd_min, 12),
+        signif(distribution$log_sd_median, 12),
+        signif(distribution$log_sd_max, 12),
         distribution$eligible_rows,
         distribution$eligible_strata
       ))
     ),
-    data.table::data.table(
-      section = "national_factor_distribution",
-      metric = c("minimum", "q025", "median", "mean", "q975", "maximum"),
-      value = as.character(signif(c(
-        min(support$factor),
-        quantiles[[1L]],
-        quantiles[[2L]],
-        sum(support$probability * support$factor),
-        quantiles[[3L]],
-        max(support$factor)
-      ), 12))
-    ),
+    province_rows,
     distribution$excluded[, .(
       section = "excluded_rows",
       metric = reason,
@@ -854,16 +966,42 @@ uc_draw_completeness <- function(
     stop("Stage 04 data do not contain all nine provinces.", call. = FALSE)
   }
 
+  province_parameters <- uc_as_dt(distribution$province_summary)
+  uc_assert_columns(
+    province_parameters,
+    c("Death_Prov", "log_sd"),
+    "province-specific completeness parameters"
+  )
+  province_parameters <- province_parameters[, .(
+    Death_Prov = as.integer(Death_Prov),
+    log_sd = as.numeric(log_sd)
+  )]
+  data.table::setorder(province_parameters, Death_Prov)
+  if (!identical(province_parameters$Death_Prov, provinces) ||
+      province_parameters[
+        !is.finite(log_sd) | log_sd < 0,
+        .N
+      ] > 0L) {
+    stop(
+      "Province-specific completeness parameters are invalid.",
+      call. = FALSE
+    )
+  }
+
   if (!isTRUE(stochastic)) {
     return(list(
       data = x,
-      factors = data.table::data.table(
-        Death_Prov = provinces,
-        bootstrap_id = NA_integer_,
+      factors = province_parameters[, .(
+        Death_Prov,
+        log_sd,
+        standard_normal = 0,
         factor = 1
-      ),
+      )],
       diagnostics = list(
         log_sd = distribution$log_sd,
+        log_sd_min = distribution$log_sd_min,
+        log_sd_median = distribution$log_sd_median,
+        log_sd_max = distribution$log_sd_max,
         total_before = sum(x$Deaths),
         total_after = sum(x$Deaths),
         affected_before = x[
@@ -881,42 +1019,49 @@ uc_draw_completeness <- function(
     ))
   }
 
-  support <- uc_as_dt(distribution$factor_support)
-  uc_assert_columns(
-    support,
-    c("bootstrap_id", "factor", "probability"),
-    "national completeness bootstrap support"
-  )
-  if (!nrow(support) ||
-      support[
-        !is.finite(factor) | factor <= 0 |
-          !is.finite(probability) | probability <= 0,
-        .N
-      ] > 0L ||
-      abs(sum(support$probability) - 1) > 1e-10) {
-    stop("National completeness bootstrap support is invalid.", call. = FALSE)
+  set.seed(as.integer(seed))
+  factors <- data.table::copy(province_parameters)
+  factors[, standard_normal := stats::rnorm(.N)]
+  factors[, factor := exp(
+    -0.5 * log_sd^2 + log_sd * standard_normal
+  )]
+  if (factors[!is.finite(factor) | factor <= 0, .N]) {
+    stop("A province-specific completeness factor is invalid.", call. = FALSE)
   }
 
-  set.seed(as.integer(seed))
-  selected_index <- sample.int(
-    nrow(support),
-    size = 1L,
-    prob = support$probability
+  affected_before_by_province <- x[
+    Popgroup == 1L & !nbdcode %in% UC_INJURY_CODES,
+    .(affected_before = sum(Deaths)),
+    by = Death_Prov
+  ]
+  factors <- merge(
+    factors,
+    affected_before_by_province,
+    by = "Death_Prov",
+    all.x = TRUE,
+    sort = FALSE
   )
-  selected <- support[selected_index]
-  shared_factor <- as.numeric(selected$factor[[1L]])
-  factors <- data.table::data.table(
-    Death_Prov = provinces,
-    bootstrap_id = as.integer(selected$bootstrap_id[[1L]]),
-    factor = shared_factor
-  )
+  factors[is.na(affected_before), affected_before := 0]
+
+  x[, completeness_factor__ := factors$factor[
+    match(Death_Prov, factors$Death_Prov)
+  ]]
+  if (x[!is.finite(completeness_factor__) |
+          completeness_factor__ <= 0, .N]) {
+    stop("Completeness factors could not be matched to all provinces.",
+         call. = FALSE)
+  }
 
   before_total <- sum(x$Deaths)
-  affected <- x[Popgroup == 1L & !nbdcode %in% UC_INJURY_CODES, sum(Deaths)]
+  affected <- x[
+    Popgroup == 1L & !nbdcode %in% UC_INJURY_CODES,
+    sum(Deaths)
+  ]
   x[
     Popgroup == 1L & !nbdcode %in% UC_INJURY_CODES,
-    Deaths := Deaths * shared_factor
+    Deaths := Deaths * completeness_factor__
   ]
+  x[, completeness_factor__ := NULL]
   affected_after <- x[
     Popgroup == 1L & !nbdcode %in% UC_INJURY_CODES,
     sum(Deaths)
@@ -924,18 +1069,34 @@ uc_draw_completeness <- function(
   out <- x[, .(Deaths = sum(Deaths)), by = eval(UC_KEY)]
   uc_assert_finite_nonnegative(out, "Deaths", "completeness draw")
 
+  weighted_factor_mean <- if (sum(factors$affected_before) > 0) {
+    sum(factors$affected_before * factors$factor) /
+      sum(factors$affected_before)
+  } else {
+    mean(factors$factor)
+  }
+
   list(
     data = out[],
-    factors = factors[],
+    factors = factors[, .(
+      Death_Prov,
+      log_sd,
+      standard_normal,
+      factor,
+      affected_before
+    )],
     diagnostics = list(
       log_sd = distribution$log_sd,
+      log_sd_min = distribution$log_sd_min,
+      log_sd_median = distribution$log_sd_median,
+      log_sd_max = distribution$log_sd_max,
       total_before = before_total,
       total_after = sum(out$Deaths),
       affected_before = affected,
       affected_after = affected_after,
-      factor_min = shared_factor,
-      factor_max = shared_factor,
-      factor_mean = shared_factor
+      factor_min = min(factors$factor),
+      factor_max = max(factors$factor),
+      factor_mean = weighted_factor_mean
     )
   )
 }
@@ -1000,17 +1161,97 @@ uc_validate_injury_artifact <- function(artifact) {
   invisible(TRUE)
 }
 
-uc_draw_injury_fraction_panel <- function(artifact, seed, stochastic = TRUE) {
+
+uc_draw_injury_envelope <- function(
+    data,
+    point_artifact,
+    survey_draw = NULL,
+    cfg,
+    stochastic = TRUE) {
+  validate_injury_envelope_artifact(point_artifact)
+
+  fitted <- if (isTRUE(stochastic)) {
+    if (is.null(survey_draw) || is.null(survey_draw$envelope_surveys)) {
+      stop("A joint IMS/FAMHIS survey-design draw is required.", call. = FALSE)
+    }
+    fit_injury_envelope_model(
+      baseline = data,
+      envelope_surveys = survey_draw$envelope_surveys,
+      cfg = cfg
+    )
+  } else {
+    list(
+      anchors = point_artifact$anchors,
+      annual_factors = point_artifact$annual_point,
+      artifact = point_artifact
+    )
+  }
+
+  factors <- uc_as_dt(fitted$annual_factors)
+  factors[, `:=`(
+    draw_log_profile_factor = log_profile_factor,
+    draw_profile_factor = profile_factor,
+    draw_log_level_ratio = point_log_level_ratio,
+    draw_level_ratio = point_level_ratio
+  )]
+  adjustment <- apply_injury_envelope_adjustment(
+    data,
+    factors,
+    profile_column = "draw_profile_factor",
+    level_column = "draw_level_ratio",
+    profile_log_column = "draw_log_profile_factor",
+    level_log_column = "draw_log_level_ratio"
+  )
+  out <- uc_aggregate_counts(adjustment$data)
+  before <- uc_aggregate_counts(data)
+  conservation <- uc_max_cell_error(before, out, UC_CELL_KEY)
+  anchor_draws <- unique(uc_as_dt(fitted$anchors)[, .(
+    survey,
+    survey_year,
+    survey_level_total,
+    derived_survey_level_total,
+    routine_level_total,
+    point_level_ratio,
+    outside_reference_interval
+  )])
+
+  list(
+    data = out,
+    factors = factors,
+    level_anchor_draws = anchor_draws,
+    audit = adjustment$audit,
+    diagnostics = list(
+      maximum_total_absolute_error = conservation$max_abs,
+      maximum_total_relative_error = conservation$max_rel,
+      minimum_profile_factor = min(factors$draw_profile_factor, na.rm = TRUE),
+      maximum_profile_factor = max(factors$draw_profile_factor, na.rm = TRUE),
+      minimum_level_ratio = min(factors$draw_level_ratio, na.rm = TRUE),
+      maximum_level_ratio = max(factors$draw_level_ratio, na.rm = TRUE),
+      injury_before = adjustment$diagnostics$injury_before,
+      injury_after = adjustment$diagnostics$injury_after
+    )
+  )
+}
+
+uc_draw_injury_fraction_panel <- function(
+    artifact,
+    seed,
+    stochastic = TRUE,
+    survey_counts = NULL) {
   uc_validate_injury_artifact(artifact)
   panel <- if (isTRUE(stochastic)) {
-    injury_draw_fraction_panel(artifact, seed = seed)
+    injury_draw_fraction_panel(
+      artifact,
+      seed = seed,
+      survey_counts = survey_counts
+    )
   } else {
     injury_compose_fraction_panel(artifact)
   }
   uc_standardize_injury_fraction_panel(
     panel,
     if (isTRUE(stochastic)) {
-      "Stage 03 survey-propagated injury fraction draw"
+      "Stage 03 survey-design injury fraction draw"
     } else {
       "Stage 03 deterministic injury fraction panel"
     }
@@ -1075,7 +1316,7 @@ uc_replace_injury_composition <- function(data, fractions) {
 uc_run_stage06 <- function(
     data = NULL,
     wide = NULL,
-    target_overrides = NULL) {
+    target_weight_overrides = NULL) {
   required <- c(
     "long_to_wide_causes",
     "wide_to_long_causes",
@@ -1106,23 +1347,11 @@ uc_run_stage06 <- function(
 
   if (isTRUE(supplied[["long"]])) {
     stage05_long <- uc_as_dt(data)
-    uc_assert_columns(
-      stage05_long,
-      c(UC_KEY, "Deaths"),
-      "Stage 06 long input"
-    )
+    uc_assert_columns(stage05_long, c(UC_KEY, "Deaths"), "Stage 06 long input")
     stage05_long[, Deaths := as.numeric(Deaths)]
-    uc_assert_finite_nonnegative(
-      stage05_long,
-      "Deaths",
-      "Stage 06 long input"
-    )
+    uc_assert_finite_nonnegative(stage05_long, "Deaths", "Stage 06 long input")
     uc_assert_unique(stage05_long, UC_KEY, "Stage 06 long input")
-    wide <- long_to_wide_causes(
-      stage05_long,
-      value = "Deaths",
-      codes = 1:214
-    )
+    wide <- long_to_wide_causes(stage05_long, value = "Deaths", codes = 1:214)
   } else {
     wide <- uc_as_dt(wide)
     uc_assert_columns(wide, UC_CELL_KEY, "Stage 06 wide input")
@@ -1133,7 +1362,7 @@ uc_run_stage06 <- function(
   redistributed <- redistribute_garbage_codes(
     wide,
     cfg = NULL,
-    target_overrides = target_overrides
+    target_weight_overrides = target_weight_overrides
   )
   target_audit <- attr(redistributed, "redistribution_target_audit")
   long <- wide_to_long_causes(
@@ -1142,10 +1371,7 @@ uc_run_stage06 <- function(
     codes = 1:214,
     drop_zero = FALSE
   )
-  list(
-    data = uc_aggregate_counts(long),
-    target_audit = target_audit
-  )
+  list(data = uc_aggregate_counts(long), target_audit = target_audit)
 }
 
 uc_redistribution_audit_summary <- function(audit) {
@@ -1153,27 +1379,24 @@ uc_redistribution_audit_summary <- function(audit) {
     return(list(
       rules = 0L,
       stochastic_rules = 0L,
-      mean_selected_fraction = 1,
-      min_selected_fraction = 1,
-      max_selected_fraction = 1,
-      selected_targets = 0L,
-      full_targets = 0L
+      mean_multiplier_cv = 0,
+      min_multiplier = 1,
+      max_multiplier = 1,
+      mean_multiplier = 1,
+      target_count = 0L
     ))
   }
   x <- uc_as_dt(audit)
-  x[, selected_fraction := selected_target_count / full_target_count]
   list(
     rules = nrow(x),
-    stochastic_rules = x[stochastic_subset == TRUE, .N],
-    mean_selected_fraction = mean(x$selected_fraction),
-    min_selected_fraction = min(x$selected_fraction),
-    max_selected_fraction = max(x$selected_fraction),
-    selected_targets = sum(x$selected_target_count),
-    full_targets = sum(x$full_target_count)
+    stochastic_rules = x[stochastic_weights == TRUE, .N],
+    mean_multiplier_cv = mean(x$multiplier_cv, na.rm = TRUE),
+    min_multiplier = min(x$multiplier_min, na.rm = TRUE),
+    max_multiplier = max(x$multiplier_max, na.rm = TRUE),
+    mean_multiplier = mean(x$multiplier_mean, na.rm = TRUE),
+    target_count = sum(x$target_count, na.rm = TRUE)
   )
 }
-
-# Reporting tables -------------------------------------------------------------
 
 uc_optional_cause_labels <- function(root, codes) {
   path <- file.path(root, "data", "lookups", "analysis_codes.csv")
@@ -1641,8 +1864,23 @@ uc_load_inputs <- function(root, cfg, uncertainty_config) {
     injury_survey_comparison = uc_derived_path(
       root, cfg, "03_injury_survey_model_comparison.parquet"
     ),
+    injury_survey_design = uc_derived_path(
+      root,
+      cfg,
+      uncertainty_config$components$injury$survey_design_file
+    ),
+    injury_envelope_model_artifact = uc_derived_path(
+      root,
+      cfg,
+      uncertainty_config$components$injury$envelope_model_file
+    ),
     completeness_scalars = uc_derived_path(
       root, cfg, "04_completeness_scalars.parquet"
+    ),
+    stage04_pre_injury_envelope = uc_derived_path(
+      root,
+      cfg,
+      "04_investigation_subpopulation_pre_injury_envelope.parquet"
     ),
     stage04 = uc_derived_path(
       root, cfg, "04_investigation_subpopulation.parquet"
@@ -1676,6 +1914,53 @@ uc_load_inputs <- function(root, cfg, uncertainty_config) {
 
   injury_artifact <- readRDS(paths$injury_model_artifact)
   uc_validate_injury_artifact(injury_artifact)
+  injury_envelope_artifact <- readRDS(paths$injury_envelope_model_artifact)
+  validate_injury_envelope_artifact(injury_envelope_artifact)
+
+  injury_survey_design <- readRDS(paths$injury_survey_design)
+  if (!is.list(injury_survey_design) || is.null(injury_survey_design$ims) ||
+      is.null(injury_survey_design$famhis)) {
+    stop("The Stage 03 injury survey-design artifact is incomplete.",
+         call. = FALSE)
+  }
+
+  # Point anchors must be reproducible from the supplied survey microdata.
+  # Published estimates remain external audit fields and do not replace or
+  # gate the empirical values.
+  level_audit <- unique(uc_as_dt(injury_envelope_artifact$anchors)[, .(
+    survey_year,
+    survey_level_total,
+    derived_survey_level_total,
+    published_survey_level_total,
+    published_survey_level_lower,
+    published_survey_level_upper,
+    outside_reference_interval
+  )])
+  uc_assert_unique(level_audit, "survey_year", "injury-level point anchors")
+  design_totals <- data.table::data.table(
+    survey_year = c(2009L, 2017L),
+    design_total = c(
+      injury_survey_design$ims$weighted_level_total,
+      injury_survey_design$famhis$weighted_level_total
+    )
+  )
+  level_audit <- merge(level_audit, design_totals, by = "survey_year", all.x = TRUE)
+  if (level_audit[
+    !is.finite(survey_level_total) | survey_level_total <= 0 |
+      !is.finite(derived_survey_level_total) |
+      !is.finite(design_total) |
+      abs(survey_level_total - derived_survey_level_total) >
+        1e-10 * pmax(1, abs(derived_survey_level_total)) |
+      abs(survey_level_total - design_total) >
+        1e-10 * pmax(1, abs(design_total)),
+    .N
+  ]) {
+    stop(
+      "The deterministic injury-level anchors do not reproduce the supplied survey microdata.",
+      call. = FALSE
+    )
+  }
+
   injury_point_fractions <- uc_standardize_injury_fraction_panel(
     uc_read_parquet(
       paths$injury_point_fractions,
@@ -1688,13 +1973,20 @@ uc_load_inputs <- function(root, cfg, uncertainty_config) {
     paths$completeness_scalars,
     "Stage 04 completeness scalars"
   )
+  stage04_pre_injury_envelope <- uc_standardize_count_input(
+    uc_read_parquet(
+      paths$stage04_pre_injury_envelope,
+      "Stage 04 pre-injury-envelope subpopulation output"
+    ),
+    "Stage 04 pre-injury-envelope output"
+  )
   stage04 <- uc_standardize_count_input(
     uc_read_parquet(paths$stage04, "Stage 04 subpopulation output"),
     "Stage 04"
   )
   completeness_distribution <- uc_estimate_completeness_distribution(
     completeness_scalars,
-    stage04,
+    stage04_pre_injury_envelope,
     cfg
   )
 
@@ -1729,8 +2021,11 @@ uc_load_inputs <- function(root, cfg, uncertainty_config) {
     paths = paths,
     cfg = cfg,
     injury_artifact = injury_artifact,
+    injury_survey_design = injury_survey_design,
+    injury_envelope_artifact = injury_envelope_artifact,
     injury_point_fractions = injury_point_fractions,
     completeness_scalars = completeness_scalars,
+    stage04_pre_injury_envelope = stage04_pre_injury_envelope,
     completeness_distribution = completeness_distribution,
     prevalence = prevalence,
     hiv_model_covariance = hiv_model_covariance,
@@ -1772,6 +2067,23 @@ uc_point_reconstruction <- function(
     absolute_tolerance
   )
 
+  # Reconstruct the deterministic IMS/FAMHIS level-plus-profile calibration
+  # from the exact Stage 04 boundary at which it was fitted. This verifies the
+  # national survey-weighted injury totals, the relative province-sex-age
+  # profiles and the time interpolation before stochastic factors are added.
+  envelope_point <- apply_injury_envelope_adjustment(
+    inputs$stage04_pre_injury_envelope,
+    inputs$injury_envelope_artifact$annual_point,
+    profile_column = "profile_factor",
+    level_column = "point_level_ratio"
+  )$data
+  injury_envelope_error <- uc_max_table_error(
+    envelope_point,
+    inputs$stage04,
+    tolerance,
+    absolute_tolerance
+  )
+
   injury_rebuilt <- uc_replace_injury_composition(
     inputs$stage04,
     injury_fractions
@@ -1808,7 +2120,7 @@ uc_point_reconstruction <- function(
   # zero-denominator fallback branch.
   garbage_point <- uc_run_stage06(
     wide = inputs$stage05_wide,
-    target_overrides = NULL
+    target_weight_overrides = NULL
   )
   garbage_error <- uc_max_table_error(
     garbage_point$data,
@@ -1821,6 +2133,9 @@ uc_point_reconstruction <- function(
     injury_model_max_abs_error = injury_model_error$max_abs,
     injury_model_max_relative_error = injury_model_error$max_rel,
     injury_model_cells_over_tolerance = injury_model_error$n_over,
+    injury_envelope_point_max_abs_error = injury_envelope_error$max_abs,
+    injury_envelope_point_max_relative_error = injury_envelope_error$max_rel,
+    injury_envelope_point_cells_over_tolerance = injury_envelope_error$n_over,
     injury_stage04_max_abs_error = injury_stage04_error$max_abs,
     injury_stage04_max_relative_error = injury_stage04_error$max_rel,
     injury_stage04_cells_over_tolerance = injury_stage04_error$n_over,
@@ -1831,6 +2146,7 @@ uc_point_reconstruction <- function(
     redistribution_max_relative_error = garbage_error$max_rel,
     redistribution_cells_over_tolerance = garbage_error$n_over,
     valid = injury_model_error$n_over == 0L &&
+      injury_envelope_error$n_over == 0L &&
       injury_stage04_error$n_over == 0L &&
       hiv_error$n_over == 0L &&
       garbage_error$n_over == 0L
@@ -1850,8 +2166,12 @@ uc_run_one_draw <- function(inputs, config, scenario, draw_id, catalog) {
   names(seeds) <- names(UC_COMPONENT_SEED_OFFSETS)
   started <- proc.time()[["elapsed"]]
 
+  # Start at the exact Stage 04 boundary before deterministic injury
+  # calibration. Completeness is perturbed first, then one joint survey-design
+  # replicate supplies the IMS/FAMHIS injury level, demographic profile and
+  # specified cause counts. This avoids applying the point calibration twice.
   completeness <- uc_draw_completeness(
-    inputs$stage04,
+    inputs$stage04_pre_injury_envelope,
     inputs$completeness_distribution,
     stochastic = TRUE,
     seed = seeds$completeness
@@ -1859,10 +2179,25 @@ uc_run_one_draw <- function(inputs, config, scenario, draw_id, catalog) {
   current <- completeness$data
   total_after_completeness <- sum(current$Deaths)
 
+  survey_draw <- injury_survey_design_draw(
+    inputs$injury_survey_design,
+    seed = seeds$injury_envelope,
+    stochastic = TRUE
+  )
+  injury_envelope <- uc_draw_injury_envelope(
+    data = current,
+    point_artifact = inputs$injury_envelope_artifact,
+    survey_draw = survey_draw,
+    cfg = inputs$cfg,
+    stochastic = TRUE
+  )
+  current <- injury_envelope$data
+
   fractions <- uc_draw_injury_fraction_panel(
     inputs$injury_artifact,
     seed = seeds$injury,
-    stochastic = TRUE
+    stochastic = TRUE,
+    survey_counts = survey_draw$cause_surveys
   )
   injury <- uc_replace_injury_composition(current, fractions)
   current <- injury$data
@@ -1876,21 +2211,19 @@ uc_run_one_draw <- function(inputs, config, scenario, draw_id, catalog) {
     seed = seeds$hiv_model,
     stochastic = TRUE
   )
-  # Preserve the exact Stage 05 long output through the Stage 06 boundary.
-  # The HIV constructor already returns a unique, finite, non-negative table;
-  # an additional thresholding aggregation here can turn numerical traces into
-  # structural zeros (or vice versa) before biological fallback allocation.
   current <- uc_as_dt(hiv_draw$data)
   uc_assert_columns(current, c(UC_KEY, "Deaths"), "drawn Stage 05 output")
   uc_assert_finite_nonnegative(current, "Deaths", "drawn Stage 05 output")
   uc_assert_unique(current, UC_KEY, "drawn Stage 05 output")
   hiv_conservation <- uc_max_cell_error(before_hiv, current, UC_CELL_KEY)
 
-  target_overrides <- stage06_draw_target_overrides(seeds$redistribution)
+  target_weight_overrides <- stage06_draw_target_weight_overrides(
+    seeds$redistribution
+  )
   before_redistribution <- uc_add_envelope(current)
   redistribution <- uc_run_stage06(
     current,
-    target_overrides = target_overrides
+    target_weight_overrides = target_weight_overrides
   )
   final <- redistribution$data
   after_redistribution <- uc_add_envelope(final)
@@ -1902,6 +2235,12 @@ uc_run_one_draw <- function(inputs, config, scenario, draw_id, catalog) {
   redistribution_summary <- uc_redistribution_audit_summary(
     redistribution$target_audit
   )
+
+  survey_diag <- uc_as_dt(survey_draw$diagnostics)
+  ims_level <- survey_diag[survey_year == 2009L, level_total]
+  famhis_level <- survey_diag[survey_year == 2017L, level_total]
+  ims_selected <- survey_diag[survey_year == 2009L, distinct_selected_psus]
+  famhis_selected <- survey_diag[survey_year == 2017L, distinct_selected_psus]
 
   total_final <- sum(final$Deaths)
   total_propagation_error <- abs(total_final - total_after_completeness)
@@ -1920,20 +2259,29 @@ uc_run_one_draw <- function(inputs, config, scenario, draw_id, catalog) {
     draw_id = as.integer(draw_id),
     seed = seeds$draw,
     seed_completeness = seeds$completeness,
-    seed_injury = seeds$injury,
+    seed_injury_survey_design = seeds$injury_envelope,
+    seed_nims_composition = seeds$injury,
     seed_hiv_model = seeds$hiv_model,
     seed_redistribution = seeds$redistribution,
     seconds = elapsed,
     stochastic_completeness = TRUE,
-    stochastic_injury = TRUE,
+    stochastic_injury_survey_design = TRUE,
+    stochastic_nims_composition = TRUE,
     stochastic_hiv = TRUE,
     stochastic_redistribution = TRUE,
     completeness_empirical_log_sd = completeness$diagnostics$log_sd,
+    completeness_province_log_sd_min = completeness$diagnostics$log_sd_min,
+    completeness_province_log_sd_median = completeness$diagnostics$log_sd_median,
+    completeness_province_log_sd_max = completeness$diagnostics$log_sd_max,
     completeness_factor_min = completeness$diagnostics$factor_min,
     completeness_factor_max = completeness$diagnostics$factor_max,
     completeness_factor_mean = completeness$diagnostics$factor_mean,
     completeness_affected_before = completeness$diagnostics$affected_before,
     completeness_affected_after = completeness$diagnostics$affected_after,
+    survey_ims_2009_level_total = ims_level,
+    survey_famhis_2017_level_total = famhis_level,
+    survey_ims_distinct_selected_psus = ims_selected,
+    survey_famhis_distinct_selected_psus = famhis_selected,
     total_stage04_point = sum(inputs$stage04$Deaths),
     total_after_completeness = total_after_completeness,
     total_final = total_final,
@@ -1942,6 +2290,14 @@ uc_run_one_draw <- function(inputs, config, scenario, draw_id, catalog) {
     nonreportable_relative = nonreportable_relative,
     total_propagation_error = total_propagation_error,
     total_propagation_relative_error = total_propagation_relative_error,
+    injury_level_total_max_abs_error = injury_envelope$diagnostics$maximum_total_absolute_error,
+    injury_level_total_max_relative_error = injury_envelope$diagnostics$maximum_total_relative_error,
+    injury_level_profile_factor_min = injury_envelope$diagnostics$minimum_profile_factor,
+    injury_level_profile_factor_max = injury_envelope$diagnostics$maximum_profile_factor,
+    injury_level_ratio_min = injury_envelope$diagnostics$minimum_level_ratio,
+    injury_level_ratio_max = injury_envelope$diagnostics$maximum_level_ratio,
+    injury_level_deaths_before = injury_envelope$diagnostics$injury_before,
+    injury_level_deaths_after = injury_envelope$diagnostics$injury_after,
     injury_envelope_max_abs_error = injury$diagnostics$max_envelope_abs_error,
     injury_envelope_max_relative_error = injury$diagnostics$max_envelope_relative_error,
     hiv_conservation_max_abs_error = hiv_conservation$max_abs,
@@ -1951,16 +2307,17 @@ uc_run_one_draw <- function(inputs, config, scenario, draw_id, catalog) {
     hiv_draw_modelled_deaths = hiv_draw$modelled_hiv_deaths,
     redistribution_rules = redistribution_summary$rules,
     redistribution_stochastic_rules = redistribution_summary$stochastic_rules,
-    redistribution_mean_selected_fraction = redistribution_summary$mean_selected_fraction,
-    redistribution_min_selected_fraction = redistribution_summary$min_selected_fraction,
-    redistribution_max_selected_fraction = redistribution_summary$max_selected_fraction,
-    redistribution_selected_targets = redistribution_summary$selected_targets,
-    redistribution_full_targets = redistribution_summary$full_targets,
+    redistribution_mean_multiplier_cv = redistribution_summary$mean_multiplier_cv,
+    redistribution_min_multiplier = redistribution_summary$min_multiplier,
+    redistribution_max_multiplier = redistribution_summary$max_multiplier,
+    redistribution_mean_multiplier = redistribution_summary$mean_multiplier,
+    redistribution_target_count = redistribution_summary$target_count,
     final_nonnegative = nonnegative
   )
 
   tolerance <- config$run$conservation_tolerance
   valid <- nonnegative &&
+    injury_envelope$diagnostics$maximum_total_relative_error <= tolerance &&
     injury$diagnostics$max_envelope_relative_error <= tolerance &&
     hiv_conservation$max_rel <= tolerance &&
     redistribution_conservation$max_rel <= tolerance &&
@@ -1984,11 +2341,10 @@ uc_run_one_draw <- function(inputs, config, scenario, draw_id, catalog) {
     },
     diagnostics = diagnostics,
     completeness_factors = completeness$factors,
+    injury_envelope_factors = injury_envelope$factors,
     redistribution_audit = redistribution$target_audit
   )
 }
-
-# Run metadata -----------------------------------------------------------------
 
 uc_preflight_table <- function(inputs, reconstruction, config) {
   multi_target_rules <- stage06_redistribution_rules()
@@ -1997,15 +2353,30 @@ uc_preflight_table <- function(inputs, reconstruction, config) {
     function(rule) length(rule$targets) > 1L,
     logical(1)
   ))
+  envelope_anchors <- uc_as_dt(inputs$injury_envelope_artifact$anchors)
+  envelope_annual <- uc_as_dt(inputs$injury_envelope_artifact$annual_point)
   info <- data.table::data.table(
     section = "checkpoint",
     metric = c(
       "stage03_injury_fraction_rows",
       "stage03_injury_method",
       "stage03_injury_trajectories",
-      "completeness_diagnostic_log_sd",
-      "completeness_factor_support_min",
-      "completeness_factor_support_max",
+      "injury_envelope_method",
+      "injury_envelope_anchor_rows",
+      "injury_envelope_pre_2009_policy",
+      "injury_envelope_between_policy",
+      "injury_envelope_post_2017_policy",
+      "injury_envelope_point_profile_factor_min",
+      "injury_envelope_point_profile_factor_max",
+      "injury_envelope_point_level_ratio_min",
+      "injury_envelope_point_level_ratio_max",
+      "stage04_pre_injury_envelope_rows",
+      "completeness_death_weighted_rms_log_sd",
+      "completeness_minimum_province_log_sd",
+      "completeness_median_province_log_sd",
+      "completeness_maximum_province_log_sd",
+      "completeness_factor_q025_min",
+      "completeness_factor_q975_max",
       "completeness_eligible_rows",
       "completeness_eligible_strata",
       "stage04_rows",
@@ -2019,9 +2390,22 @@ uc_preflight_table <- function(inputs, reconstruction, config) {
       nrow(inputs$injury_point_fractions),
       inputs$injury_artifact$parameters$method,
       inputs$injury_artifact$trajectory_count,
+      inputs$injury_envelope_artifact$method,
+      nrow(envelope_anchors),
+      inputs$injury_envelope_artifact$parameters$pre_2009_policy,
+      inputs$injury_envelope_artifact$parameters$between_policy,
+      inputs$injury_envelope_artifact$parameters$post_2017_policy,
+      signif(min(envelope_annual$profile_factor), 12),
+      signif(max(envelope_annual$profile_factor), 12),
+      signif(min(envelope_annual$point_level_ratio), 12),
+      signif(max(envelope_annual$point_level_ratio), 12),
+      nrow(inputs$stage04_pre_injury_envelope),
       signif(inputs$completeness_distribution$log_sd, 12),
-      signif(min(inputs$completeness_distribution$factor_support$factor), 12),
-      signif(max(inputs$completeness_distribution$factor_support$factor), 12),
+      signif(inputs$completeness_distribution$log_sd_min, 12),
+      signif(inputs$completeness_distribution$log_sd_median, 12),
+      signif(inputs$completeness_distribution$log_sd_max, 12),
+      signif(min(inputs$completeness_distribution$province_summary$factor_q025), 12),
+      signif(max(inputs$completeness_distribution$province_summary$factor_q975), 12),
       inputs$completeness_distribution$eligible_rows,
       inputs$completeness_distribution$eligible_strata,
       nrow(inputs$stage04),
@@ -2084,6 +2468,7 @@ uc_run_signature <- function(root, inputs, config) {
       paste(
         signif(c(
           inputs$completeness_distribution$province_summary$aggregate_s2,
+          inputs$completeness_distribution$province_summary$log_sd,
           inputs$completeness_distribution$province_summary$pre_adjustment_deaths,
           inputs$completeness_distribution$province_summary$adjusted_deaths
         ), 17),
@@ -2106,16 +2491,17 @@ uc_write_manifest <- function(
     config) {
   drivers <- c(
     paste0(
-      "under_reporting=one shared national factor sampled from the exact nine-province cluster-bootstrap distribution of the death-weighted aggregate S2 mean; the factor is centred to probability-weighted mean one and applied to all African natural-cause cells; central 95% range ",
-      signif(inputs$completeness_distribution$q025, 8),
+      "under_reporting=one independent mean-one factor per province; each province-specific log standard deviation is the death-weighted dispersion of annual aggregate log S2 across time after sex and age are collapsed; province log-SD range ",
+      signif(inputs$completeness_distribution$log_sd_min, 8),
       "-",
-      signif(inputs$completeness_distribution$q975, 8)
+      signif(inputs$completeness_distribution$log_sd_max, 8)
     ),
-    "injury=Dirichlet draws of the NIMS 2000, IMS 2009 and FAMHIS 2017 compositions using their available count/Kish effective sample sizes; each draw reruns the same hierarchical ALR linear interpolation, flat boundary tails and fixed triangular moving average; no additional path-variance parameter is introduced; preserves the injury envelope",
-    "hiv=fitted Stage 05 coefficient draws from model variance-covariance matrices after the completeness draw; ANC prevalence fixed because no variance input is supplied; preserves deaths within demographic cells",
-    "redistribution=one uniformly sampled non-empty subset of each multi-target expert rule per draw; selected targets use the unchanged deterministic proportional redistribution algorithm; preserves natural and injury envelopes",
+    "injury_level_and_profile=published-compatible IMS 2009 and later-cleaned FAMHIS 2017 eligibility rules and supplied weights determine empirical national and province-sex-age anchors; one stratified PSU bootstrap replicate per survey jointly propagates level and profile uncertainty; the IMS correction is held through 2009, log components are interpolated to 2017, and FAMHIS is held thereafter",
+    "injury_composition=well-specified IMS 2009 and FAMHIS 2017 cause counts come from the same stratified PSU replicate used for injury level/profile; the national NIMS 2000 sex-age composition is sampled from count information before IMS-based spatial expansion; causes 132, 136 and 138 are then harmonised before hierarchical ALR interpolation and the triangular moving average; no additional path-variance parameter is introduced",
+    "hiv=fitted Stage 05 coefficient draws from model variance-covariance matrices after completeness and injury-envelope draws; ANC prevalence fixed because no variance input is supplied; preserves deaths within demographic cells",
+    "redistribution=one continuous positive Gamma multiplier vector per multi-target expert rule; multipliers are centred on the deterministic all-one expert vector and marginal variance is moment-matched to the former non-empty-subset support; the weighted proportional algorithm preserves natural and injury envelopes",
     "reporting=province, national and national population-group Person estimates are retained in separate per-draw files so final cause intervals preserve the full within-draw covariance",
-    "fixed_without_variance_source=S1 completeness, NPR envelope, ANC prevalence and the total injury envelope"
+    "fixed_without_variance_source=S1 completeness, independent NPR-specific variance, ANC prevalence, and additional injury path variance"
   )
   rows <- data.table::rbindlist(list(
     data.table::data.table(
@@ -2182,22 +2568,26 @@ run_nbd3_uncertainty <- function(
   message("Loading validated Stage 03-06 checkpoints...")
   inputs <- uc_load_inputs(root, cfg, config)
   message(
-    "Completeness: drawing one shared national factor from the exact nine-province cluster bootstrap of the death-weighted S2 mean (central 95% range ",
-    signif(inputs$completeness_distribution$q025, 6),
+    "Completeness: drawing one mean-one factor per province. Each province-specific log SD is estimated from death-weighted annual aggregate S2 variation across time after age and sex are collapsed (log-SD range ",
+    signif(inputs$completeness_distribution$log_sd_min, 6),
     "-",
-    signif(inputs$completeness_distribution$q975, 6),
-    "); the relative provincial point pattern is retained."
+    signif(inputs$completeness_distribution$log_sd_max, 6),
+    ")."
   )
   message(
-    "Injuries: drawing the three survey compositions from their count/Kish ",
-    "effective sample sizes and rerunning the fixed interpolation and smoother; ",
-    "the total injury envelope remains fixed."
+    "Injuries: using published-compatible IMS 2009 and later-cleaned ",
+    "FAMHIS 2017 eligibility rules and supplied weights. One stratified PSU ",
+    "bootstrap replicate per survey jointly determines the national injury ",
+    "level, province-sex-age profile and well-specified cause counts; NIMS ",
+    "contributes count-based cause-fraction uncertainty."
   )
   message(
-    "HIV/AIDS: drawing fitted Stage 05 coefficients from their variance-covariance matrices after completeness scaling."
+    "HIV/AIDS: drawing fitted Stage 05 coefficients from their variance-covariance matrices after completeness and injury level/profile calibration."
   )
   message(
-    "Redistribution: drawing non-empty subsets of the same expert-approved target lists and applying the unchanged proportional algorithm."
+    "Redistribution: drawing continuous positive multiplier vectors on the ",
+    "same expert-approved target lists and applying weighted proportional ",
+    "redistribution."
   )
   if (isTRUE(config$reporting$include_population_groups)) {
     message(
@@ -2236,6 +2626,14 @@ run_nbd3_uncertainty <- function(
     inputs$completeness_distribution$province_summary,
     file.path(output_root, "completeness_by_province.csv")
   )
+  uc_write_csv_atomic(
+    inputs$injury_envelope_artifact$anchors,
+    file.path(output_root, "injury_envelope_anchors.csv")
+  )
+  uc_write_parquet_atomic(
+    inputs$injury_envelope_artifact$annual_point,
+    file.path(output_root, "injury_envelope_point_factors.parquet")
+  )
 
   preflight <- uc_preflight_table(inputs, reconstruction, config)
   uc_write_csv_atomic(
@@ -2253,6 +2651,8 @@ run_nbd3_uncertainty <- function(
   message(
     "Point reconstruction passed: deterministic injury interpolation max relative error ",
     signif(reconstruction$injury_model_max_relative_error, 4),
+    "; injury-envelope calibration max relative error ",
+    signif(reconstruction$injury_envelope_point_max_relative_error, 4),
     "; Stage 04 injury max relative error ",
     signif(reconstruction$injury_stage04_max_relative_error, 4),
     "; HIV max relative error ",
@@ -2324,6 +2724,7 @@ run_nbd3_uncertainty <- function(
     population_draw_paths <- character(n_draws)
     diagnostic_paths <- character(n_draws)
     completeness_factor_paths <- character(n_draws)
+    injury_envelope_factor_paths <- character(n_draws)
     redistribution_audit_paths <- character(n_draws)
 
     for (draw_id in seq_len(n_draws)) {
@@ -2348,15 +2749,21 @@ run_nbd3_uncertainty <- function(
         "diagnostics",
         paste0(draw_name, "_completeness_factors.csv")
       )
+      injury_envelope_factor_path <- file.path(
+        scenario_path,
+        "diagnostics",
+        paste0(draw_name, "_injury_envelope_factors.csv")
+      )
       redistribution_audit_path <- file.path(
         scenario_path,
         "diagnostics",
-        paste0(draw_name, "_redistribution_targets.csv")
+        paste0(draw_name, "_redistribution_target_weights.csv")
       )
       draw_paths[[draw_id]] <- draw_path
       population_draw_paths[[draw_id]] <- population_draw_path
       diagnostic_paths[[draw_id]] <- diagnostic_path
       completeness_factor_paths[[draw_id]] <- completeness_factor_path
+      injury_envelope_factor_paths[[draw_id]] <- injury_envelope_factor_path
       redistribution_audit_paths[[draw_id]] <- redistribution_audit_path
 
       complete_files <- c(
@@ -2366,6 +2773,7 @@ run_nbd3_uncertainty <- function(
         },
         diagnostic_path,
         completeness_factor_path,
+        injury_envelope_factor_path,
         redistribution_audit_path
       )
       if (all(file.exists(complete_files)) && !config$run$overwrite) {
@@ -2393,6 +2801,10 @@ run_nbd3_uncertainty <- function(
         completeness_factor_path
       )
       uc_write_csv_atomic(
+        result$injury_envelope_factors,
+        injury_envelope_factor_path
+      )
+      uc_write_csv_atomic(
         result$redistribution_audit,
         redistribution_audit_path
       )
@@ -2411,6 +2823,7 @@ run_nbd3_uncertainty <- function(
       },
       diagnostic_paths,
       completeness_factor_paths,
+      injury_envelope_factor_paths,
       redistribution_audit_paths
     )
     if (any(!file.exists(required_outputs))) {
@@ -2434,6 +2847,15 @@ run_nbd3_uncertainty <- function(
         x[, draw_id := as.integer(draw_id)]
         x
       }, completeness_factor_paths, seq_along(completeness_factor_paths)),
+      use.names = TRUE,
+      fill = TRUE
+    )
+    injury_envelope_factors <- data.table::rbindlist(
+      Map(function(path, draw_id) {
+        x <- data.table::fread(path)
+        x[, draw_id := as.integer(draw_id)]
+        x
+      }, injury_envelope_factor_paths, seq_along(injury_envelope_factor_paths)),
       use.names = TRUE,
       fill = TRUE
     )
@@ -2475,9 +2897,13 @@ run_nbd3_uncertainty <- function(
       completeness_factors,
       file.path(scenario_path, "completeness_factors.csv")
     )
+    uc_write_parquet_atomic(
+      injury_envelope_factors,
+      file.path(scenario_path, "injury_envelope_factors.parquet")
+    )
     uc_write_csv_atomic(
       redistribution_audit,
-      file.path(scenario_path, "redistribution_target_subsets.csv")
+      file.path(scenario_path, "redistribution_target_weights.csv")
     )
     uc_write_csv_atomic(
       hiv_cause_covariance,
@@ -2491,6 +2917,7 @@ run_nbd3_uncertainty <- function(
       n_draws = n_draws,
       mean_seconds = mean(diagnostics$seconds),
       max_validation_abs_error = max(
+        diagnostics$injury_level_total_max_abs_error,
         diagnostics$injury_envelope_max_abs_error,
         diagnostics$hiv_conservation_max_abs_error,
         diagnostics$redistribution_conservation_max_abs_error,
@@ -2498,6 +2925,7 @@ run_nbd3_uncertainty <- function(
         na.rm = TRUE
       ),
       max_validation_relative_error = max(
+        diagnostics$injury_level_total_max_relative_error,
         diagnostics$injury_envelope_max_relative_error,
         diagnostics$hiv_conservation_max_relative_error,
         diagnostics$redistribution_conservation_max_relative_error,
@@ -2515,6 +2943,7 @@ run_nbd3_uncertainty <- function(
       summary,
       convergence,
       completeness_factors,
+      injury_envelope_factors,
       redistribution_audit,
       hiv_cause_covariance
     )

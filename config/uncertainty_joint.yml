@@ -5,7 +5,7 @@
 # final Monte Carlo run without changing the statistical model.
 run:
   profile: analysis
-  output_name: nbd3_v1_joint
+  output_name: nbd3_v1_joint_survey_injury_weighted_redist
   n_draws: 100
   base_seed: 20260810
   scenarios:
@@ -19,33 +19,42 @@ run:
 components:
   completeness:
     enabled: true
-    # Positive pre-freeze S2 values are collapsed to one death-weighted
-    # aggregate multiplier per province. The nine provinces are then treated
-    # as clusters in an exact ordinary bootstrap of the national weighted mean.
-    # Each draw applies one shared factor to all African natural-cause deaths,
-    # retaining the deterministic relative pattern between provinces. This
-    # estimates uncertainty in the national completeness level rather than
-    # reassigning the full observed between-province heterogeneity as error.
+    # Each province receives its own uncertainty scale. Positive pre-freeze S2
+    # values are collapsed across sex and age within each province-year using
+    # implied pre-adjustment African natural deaths as weights. The weighted
+    # standard deviation of annual aggregate log S2 across time is then
+    # calculated separately for each province. Every draw samples one
+    # independent mean-one lognormal factor per province and applies it to all
+    # African natural-cause deaths in that province before the HIV/AIDS model is
+    # rerun. No pooled cross-province SD, age-pattern dispersion, user-selected
+    # multiplier, or truncation is introduced.
     source_scalar: S2
     target_population_group: 1
     target_envelope: natural
-    distribution: cluster_bootstrap_national_mean
-    draw_level: national_shared
+    distribution: province_specific_time_log_sd
+    draw_level: province
 
   injury:
     enabled: true
-    # Each survey composition is sampled with a Dirichlet distribution whose
-    # total concentration is the available count/Kish-equivalent information
-    # size. The same linear ALR interpolation and triangular moving average are
-    # rerun for every draw. No extra between-survey variance is introduced.
+    # One stratified PSU bootstrap replicate is drawn from IMS 2009 and one
+    # from FAMHIS 2017. Within each survey, that same replicate jointly
+    # determines the empirical national injury level, province-sex-age
+    # profile and well-specified cause counts. NIMS 2000 cause fractions use
+    # count-based uncertainty because its full survey design is not available.
     model_file: 03_injury_fraction_model.rds
-    sampling_distribution: dirichlet_effective_n
+    survey_design_file: 03_injury_survey_design.rds
+    sampling_distribution: stratified_psu_bootstrap_joint
     inter_survey_path: deterministic_linear_plus_smoother
+    envelope_model_file: 04_injury_envelope_model.rds
+    envelope_sampling_distribution: stratified_psu_bootstrap_joint_level_profile
+    pre_2009_policy: hold_ims_2009
+    between_surveys_policy: log_linear
+    post_2017_policy: hold_famhis_2017
 
   hiv:
     enabled: true
     # Coefficients are drawn jointly from the variance-covariance matrix of each
-    # fitted Stage 05 model after the completeness draw. ANC prevalence remains
+    # fitted Stage 05 model after the completeness and injury-envelope draws. ANC prevalence remains
     # fixed because no variance input is supplied.
     coefficient_covariance: true
     covariance_file: 05_hiv_model_covariance.rds
@@ -53,11 +62,15 @@ components:
 
   redistribution:
     enabled: true
-    # For every expert rule with more than one approved target, one non-empty
-    # target subset is selected uniformly. The unchanged deterministic
-    # proportional redistribution algorithm is then applied to that subset.
-    target_subset_distribution: uniform_nonempty
-    target_scope: rule
+    # The deterministic point rule uses multiplier vector (1,...,1) on the
+    # expert-approved targets. Each uncertainty draw replaces that vector with
+    # continuous positive Gamma multipliers, normalised to mean one. The
+    # symmetric allocation-share variance under equal target counts is
+    # matched to the former uniform non-empty-subset support. No approved target
+    # is switched off, so uncertainty is continuous rather than combinatorial.
+    target_weight_distribution: subset_allocation_variance_matched_gamma
+    target_weight_scope: rule
+    point_multiplier: 1
 
 reporting:
   # Retain the full Stage 06 analysis-cause vector so HIV donor causes and

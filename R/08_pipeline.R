@@ -2,9 +2,13 @@
 # 08_pipeline: Stage wrappers and comparison helpers
 # ==============================================================================
 #
-# This file groups related functions so the analytical sequence can be taught
-# and reviewed as a small number of coherent modules. Function bodies are
-# retained from the validated Version 1 implementation.
+# This file contains thin disk-oriented wrappers for the cached target graph.
+# The scientific model is explained in six steps: COD cleaning, African natural
+# completeness, total injury calibration, HIV/AIDS estimation, detailed injury
+# allocation and redistribution. Stage 03 prepares the injury profile before
+# Stage 04 for efficiency; Stage 04 applies one common envelope adjustment to
+# every detailed injury cause, which is algebraically equivalent to applying the
+# profile after total injury calibration.
 
 # ------------------------------------------------------------------------------
 # Disk-oriented Stage 01-08 wrappers
@@ -357,13 +361,82 @@ stage_clean_cod <- function(cfg) {
 }
 
 stage_prepare_injury_surveys <- function(cfg) {
-  surveys <- prepare_injury_surveys(cfg)
-  write_stage_data(surveys, cfg, "03_injury_surveys", stata_export = TRUE)
+  bundle <- prepare_injury_survey_bundle(cfg)
+  bootstrap_audit <- injury_survey_bootstrap_audit(
+    bundle$design_artifact,
+    cfg = cfg
+  )
+
+  design_path <- derived_file(cfg, "03_injury_survey_design.rds")
+  dir.create(dirname(design_path), recursive = TRUE, showWarnings = FALSE)
+  temporary_design <- paste0(design_path, ".tmp-", Sys.getpid())
+  saveRDS(bundle$design_artifact, temporary_design, version = 3)
+  if (file.exists(design_path)) unlink(design_path)
+  if (!file.rename(temporary_design, design_path)) {
+    stop("Could not finalise the injury survey-design artifact: ", design_path,
+         call. = FALSE)
+  }
+
+  point_audit <- data.table::as.data.table(bundle$audit)
+  for (row in seq_len(nrow(point_audit))) {
+    message(sprintf(
+      paste0(
+        "[Stage 03 injury survey] %d %s: empirical weighted total %s; ",
+        "external reference %s; difference %s (%.3f%%); ",
+        "well-specified cause mass %.2f%%."
+      ),
+      as.integer(point_audit$survey_year[[row]]),
+      as.character(point_audit$survey[[row]]),
+      format(round(point_audit$empirical_level_estimate[[row]], 1), big.mark = ","),
+      format(round(point_audit$reference_estimate[[row]], 1), big.mark = ","),
+      format(round(point_audit$difference[[row]], 1), big.mark = ","),
+      100 * point_audit$relative_difference[[row]],
+      100 * point_audit$well_specified_share[[row]]
+    ))
+  }
+
+  c(
+    cause_surveys = write_stage_data(
+      bundle$cause_surveys,
+      cfg,
+      "03_injury_surveys",
+      stata_export = TRUE
+    ),
+    envelope_surveys = write_stage_data(
+      bundle$envelope_surveys,
+      cfg,
+      "03_injury_envelope_surveys",
+      stata_export = FALSE
+    ),
+    survey_design = design_path,
+    survey_reference_audit = write_csv_table(
+      point_audit,
+      cfg,
+      "03_injury_survey_reference_audit.csv"
+    ),
+    survey_level_uncertainty = write_csv_table(
+      bootstrap_audit$national,
+      cfg,
+      "03_injury_survey_level_uncertainty.csv"
+    ),
+    survey_province_uncertainty = write_csv_table(
+      bootstrap_audit$province,
+      cfg,
+      "03_injury_survey_province_uncertainty.csv"
+    ),
+    survey_cause_uncertainty = write_csv_table(
+      bootstrap_audit$cause,
+      cfg,
+      "03_injury_survey_cause_uncertainty.csv"
+    )
+  )
 }
 
 stage_estimate_injuries <- function(cfg, cod_path, survey_path) {
   cod <- read_tabular(cod_path)
-  surveys <- read_tabular(survey_path)
+  surveys <- read_tabular(
+    select_stage_file(survey_path, "03_injury_surveys.parquet")
+  )
   injury_cod <- split_cod_by_injury(cod)$injury
   model <- fit_injury_fraction_model(surveys, cfg)
   fractions <- model$fractions
@@ -436,20 +509,174 @@ stage_estimate_injuries <- function(cfg, cod_path, survey_path) {
   )
 }
 
-stage_adjust_completeness <- function(cfg, cod_path, injury_path) {
+stage_adjust_completeness <- function(
+    cfg,
+    cod_path,
+    injury_outputs,
+    injury_survey_outputs) {
   cod <- read_tabular(cod_path)
   natural <- split_cod_by_injury(cod)$natural
-  injury <- read_tabular(injury_path)
+  injury <- read_tabular(
+    select_stage_file(injury_outputs, "03_final_injuries.parquet")
+  )
+  envelope_surveys <- read_tabular(
+    select_stage_file(
+      injury_survey_outputs,
+      "03_injury_envelope_surveys.parquet"
+    )
+  )
   adjusted <- read_adjusted_deaths_by_province(cfg)
   scales <- derive_completeness_scalars(natural, injury, adjusted, cfg)
   complete <- apply_completeness_scalars(natural, injury, scales, cfg)
   npr <- prepare_npr(cfg)
-  subpopulation <- apply_npr_adjustment(complete, npr, cfg)
+  pre_envelope <- apply_npr_adjustment(complete, npr, cfg)
+
+  envelope_model <- fit_injury_envelope_model(
+    pre_envelope,
+    envelope_surveys,
+    cfg
+  )
+  envelope_adjustment <- apply_injury_envelope_adjustment(
+    pre_envelope,
+    envelope_model$annual_factors,
+    profile_column = "profile_factor",
+    level_column = "point_level_ratio",
+    profile_log_column = "log_profile_factor",
+    level_log_column = "point_log_level_ratio"
+  )
+
+  # Make the two survey-derived national level anchors visible in every
+  # point-estimate run. Configured published values are shown only as external
+  # references. The fitted adjustment must reproduce the data-derived annual
+  # target exactly.
+  level_check <- envelope_adjustment$audit[, .(
+    routine_injury_total = sum(injury_before, na.rm = TRUE),
+    modelled_injury_total = sum(injury_after, na.rm = TRUE),
+    target_injury_total = unique(target_total_injury_year)
+  ), by = DeathYear]
+  anchor_check <- unique(envelope_model$anchors[, .(
+    survey_year,
+    derived_injury_total = survey_level_total,
+    derived_injury_source = derived_survey_level_source,
+    reference_injury_total = published_survey_level_total,
+    reference_lower = published_survey_level_lower,
+    reference_upper = published_survey_level_upper,
+    active_age_target = survey_level_total,
+    routine_active_age_total = routine_level_total,
+    point_level_ratio
+  )])
+  anchor_check <- merge(
+    anchor_check,
+    level_check,
+    by.x = "survey_year",
+    by.y = "DeathYear",
+    all.x = TRUE,
+    sort = FALSE
+  )
+  if (anchor_check[
+    !is.finite(modelled_injury_total) |
+      !is.finite(target_injury_total) |
+      abs(modelled_injury_total - target_injury_total) >
+        1e-8 * pmax(1, abs(target_injury_total)),
+    .N
+  ]) {
+    stop(
+      "The point-estimate injury calibration did not reproduce its national ",
+      "survey-level target.",
+      call. = FALSE
+    )
+  }
+  for (row in seq_len(nrow(anchor_check))) {
+    reference_text <- if (
+      is.finite(anchor_check$reference_injury_total[[row]]) &&
+        is.finite(anchor_check$reference_lower[[row]]) &&
+        is.finite(anchor_check$reference_upper[[row]])
+    ) {
+      paste0(
+        "; external reference ",
+        format(round(anchor_check$reference_injury_total[[row]]), big.mark = ","),
+        " (",
+        format(round(anchor_check$reference_lower[[row]]), big.mark = ","),
+        "-",
+        format(round(anchor_check$reference_upper[[row]]), big.mark = ","),
+        ")"
+      )
+    } else {
+      "; no external level reference configured"
+    }
+    message(sprintf(
+      paste0(
+        "[Stage 04 injury level] %d: survey-derived weighted estimate %s%s; ",
+        "completed routine injuries %s; calibrated model target %s; ",
+        "modelled %s."
+      ),
+      as.integer(anchor_check$survey_year[[row]]),
+      format(round(anchor_check$derived_injury_total[[row]]), big.mark = ","),
+      reference_text,
+      format(round(anchor_check$routine_injury_total[[row]]), big.mark = ","),
+      format(round(anchor_check$target_injury_total[[row]]), big.mark = ","),
+      format(round(anchor_check$modelled_injury_total[[row]]), big.mark = ",")
+    ))
+  }
+
+  subpopulation <- envelope_adjustment$data
   national <- build_national_investigation(subpopulation, cfg)
 
-  write_stage_data(scales, cfg, "04_completeness_scalars", stata_export = TRUE)
-  write_stage_data(national, cfg, "04_investigation_national", stata_export = TRUE)
-  write_stage_data(subpopulation, cfg, "04_investigation_subpopulation", stata_export = TRUE)
+  model_path <- derived_file(cfg, "04_injury_envelope_model.rds")
+  dir.create(dirname(model_path), recursive = TRUE, showWarnings = FALSE)
+  temporary_model <- paste0(model_path, ".tmp-", Sys.getpid())
+  saveRDS(envelope_model$artifact, temporary_model, version = 3)
+  if (file.exists(model_path)) unlink(model_path)
+  if (!file.rename(temporary_model, model_path)) {
+    stop("Could not finalise the injury-envelope model artifact: ", model_path,
+         call. = FALSE)
+  }
+
+  c(
+    completeness_scalars = write_stage_data(
+      scales,
+      cfg,
+      "04_completeness_scalars",
+      stata_export = TRUE
+    ),
+    pre_injury_envelope = write_stage_data(
+      pre_envelope,
+      cfg,
+      "04_investigation_subpopulation_pre_injury_envelope",
+      stata_export = FALSE
+    ),
+    injury_envelope_anchors = write_stage_data(
+      envelope_model$anchors,
+      cfg,
+      "04_injury_envelope_anchors",
+      stata_export = FALSE
+    ),
+    injury_envelope_factors = write_stage_data(
+      envelope_model$annual_factors,
+      cfg,
+      "04_injury_envelope_factors",
+      stata_export = FALSE
+    ),
+    injury_envelope_adjustment = write_stage_data(
+      envelope_adjustment$audit,
+      cfg,
+      "04_injury_envelope_adjustment",
+      stata_export = FALSE
+    ),
+    injury_envelope_model = model_path,
+    investigation_national = write_stage_data(
+      national,
+      cfg,
+      "04_investigation_national",
+      stata_export = TRUE
+    ),
+    investigation_subpopulation = write_stage_data(
+      subpopulation,
+      cfg,
+      "04_investigation_subpopulation",
+      stata_export = TRUE
+    )
+  )
 }
 
 stage_prepare_prevalence_population <- function(cfg, population_path) {
@@ -460,7 +687,12 @@ stage_prepare_prevalence_population <- function(cfg, population_path) {
 }
 
 stage_reallocate_hiv <- function(cfg, subpopulation_path, prevalence_path) {
-  subpopulation <- read_tabular(subpopulation_path)
+  subpopulation <- read_tabular(
+    select_stage_file(
+      subpopulation_path,
+      "04_investigation_subpopulation.parquet"
+    )
+  )
   prevalence <- read_prevalence_population(prevalence_path, cfg)
   result <- run_hiv_reallocation(subpopulation, prevalence, cfg)
 

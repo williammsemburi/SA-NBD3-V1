@@ -1,83 +1,42 @@
-# Methods and analytical pipeline
+# Methods
 
 ## Purpose
 
-The Third South African National Burden of Disease Study develops consistent and coherent estimates of mortality by cause, year, age, sex, province, and population group. Version 1 covers 1997–2019 and focuses on mortality and premature mortality measured through years of life lost.
+NBD3 Version 1 derives internally coherent mortality estimates for South Africa from 1997 to 2019. The analysis addresses under-registration, HIV/AIDS misclassification, incomplete injury information, and invalid or ill-defined underlying causes.
 
-The analysis addresses four principal limitations of the source mortality data: under-registration of deaths, misclassification of HIV/AIDS deaths, incomplete information on specific injury causes, and causes coded to ill-defined or invalid underlying causes.
+## Population and registered mortality
 
-## Stage 01 — Population denominators
+Population denominators are harmonised to the analytical province, population-group, sex, age, and year grid. Registered death records undergo ICD verification, NBD classification, plausibility rules, targeted corrections, exclusions, and aggregation. Unknown demographic categories are redistributed conservatively.
 
-The population module standardises the supplied population estimates to a complete panel by population group, sex, year, age group, and province. These denominators support crude and age-standardised rates and the population-group outputs.
+## African natural-cause completeness
 
-Code: `R/01_population_cod.R`
+The deterministic point estimate applies the established all-cause completeness and NPR adjustments. The uncertainty scale is estimated separately within each province from annual aggregate S2 values across time after sex and age are collapsed using implied pre-adjustment African natural deaths as weights.
 
-## Stage 02 — Registered cause-of-death data
+## Total injury mortality
 
-The cause-of-death module:
+IMS 2009 and FAMHIS 2017 are used directly from their supplied analytic records and weights.
 
-1. reads the required microdata fields;
-2. standardises certificate and demographic variables;
-3. applies record-level ICD-10 verification and the final NBD analysis classification;
-4. applies age, sex, perinatal, cancer, and multiple-cause rules;
-5. aggregates to restartable checkpoints; and
-6. redistributes unknown sex, age, and population group while preserving totals.
+- IMS level eligibility: `Cause_of_death == 1`.
+- FAMHIS level eligibility: nonblank injury mechanism and not explicitly excluded by `non_nat_undert == 0`.
 
-The record-level verification checkpoint is cached separately because it is the most expensive deterministic operation.
+All eligible records contribute to the injury level and profile. The published estimates are audit references only.
 
-Code: `R/01_population_cod.R`
+The national survey-to-routine level ratio and the normalised survey-to-routine province–sex–age profile are estimated at 2009 and 2017. The IMS correction is held before and through 2009, log components are interpolated between 2009 and 2017, and the FAMHIS correction is held thereafter. A bounded calibration preserves every completed all-cause cell.
 
-## Stage 03 — Injury cause estimation
+## Specific injury causes
 
-NIMS 2000, IMS 2009, and FAMHIS 2017 provide the injury composition inputs. The 15 final injury causes are represented as a closed hierarchical composition:
+Cause fractions use only directly mapped, well-specified injury mechanisms. Generic and unresolved survey injuries are excluded from the cause-fraction denominator but retained in the total injury envelope.
 
-- transport injuries;
-- other unintentional injuries;
-- self-harm; and
-- interpersonal violence.
+The 15 causes form a hierarchical composition: transport, other unintentional injury, self-harm, and interpersonal violence, followed by detailed causes within the first two groups. Causes 132, 136, and 138 are harmonised using the documented cross-survey formulas before interpolation. Annual fractions are generated in additive-log-ratio space and smoothed with a fixed five-year triangular moving average.
 
-Broad and within-group additive log ratios are linearly interpolated between the three surveys. A centred five-year triangular moving average smooths changes in slope around the survey years. The survey-year values are not inserted again after smoothing. The inverse hierarchical softmax transformation guarantees positive fractions that sum to one. These fractions divide the existing injury envelope without changing total injury deaths.
+## HIV/AIDS
 
-Code: `R/02_injuries.R`
+Stage 05 estimates background mortality and misclassified HIV/AIDS deaths using the established regression formulation. The model is rerun after completeness and injury calibration. Fitted coefficient vectors and variance-covariance matrices are retained for joint uncertainty propagation.
 
-## Stage 04 — Completeness and NPR adjustment
+## Ill-defined and garbage causes
 
-Child and adult completeness inputs are converted to the S1 and S2 scalars used by the established analysis. The scalars are applied to the appropriate demographic and cause envelopes. The post-freeze period reproduces the configured freeze-year completeness values, and the National Population Register transition is applied from its configured start year.
+Stage 06 applies the ordered expert rules through the `redist()` helper. The deterministic point estimate allocates each source proportionally across all approved targets. Biological fallback distributions are used where current target denominators are zero. Natural, injury, and all-cause envelopes are preserved.
 
-Code: `R/03_completeness_hiv.R`
+## YLLs and reporting
 
-## Stage 05 — HIV/AIDS reallocation
-
-Antenatal prevalence is combined with the population panel. The HIV/AIDS analysis estimates counterfactual background mortality, zero-prevalence intercepts, age patterns, and the number of deaths misclassified to HIV-indicator causes. Misclassified deaths are transferred to HIV/AIDS, with residual non-HIV deaths returned to their designated destination causes. Every demographic-cell total is preserved.
-
-The fitted coefficient vectors and variance-covariance matrices are retained for joint uncertainty propagation.
-
-Code: `R/03_completeness_hiv.R`
-
-## Stage 06 — Ill-defined and garbage-code redistribution
-
-The redistribution module applies the ordered expert rules used to move deaths from invalid underlying causes to approved targets. The `redist()` helper provides proportional redistribution, while the stage-specific rule sequence handles exclusions, zero-denominator biological reference allocations, and envelope preservation.
-
-Code: `R/04_redistribution.R`
-
-## Stage 07 — Cause hierarchy and YLLs
-
-Analysis causes are mapped to the South African NBD cause hierarchy using the approved many-to-many lookup. Deaths are combined with the supplied remaining-life-expectancy schedules to calculate undiscounted and discounted YLL measures.
-
-Code: `R/05_yll_database.R`
-
-## Stage 08 — Final database
-
-The final database contains detailed and aggregate age groups, male, female and person estimates, provincial and national estimates, population-group estimates, deaths, YLLs, crude rates and age-standardised rates.
-
-Code: `R/05_yll_database.R`
-
-## Reproducible execution
-
-`_targets.R` expresses Stages 01–08 as a dependency graph. Each stage reads canonical inputs and writes canonical outputs. Cached targets allow interrupted runs to resume without repeating completed upstream work. `run_nbd.R` is the collaborator-facing entry point and adds joint uncertainty and the interactive report after the deterministic database has been created.
-
-## Study references
-
-- Bradshaw D, Groenewald P, Laubscher R, et al. *Initial burden of disease estimates for South Africa, 2000.* South African Medical Journal. 2003;93:682–688.
-- Msemburi W, Pillay-van Wyk V, Dorrington RE, et al. *Second national burden of disease study for South Africa: Cause-of-death profile for South Africa, 1997–2012.* South African Medical Research Council; 2016.
-- Awotiwon OF, Pillay-van Wyk V, Groenewald P, et al. *SA NBD–GBD and SA NBD–WHO cause-list mappings for the second South African National Burden of Disease.* South African Medical Research Council; 2017.
+Deaths are mapped to the final South African NBD hierarchy and combined with standard YLL weights and population denominators. The report compares NBD3-R with NBD2, NBD3-Stata, THEMBISA, and GBD where equivalent series are available, and presents NBD3-R detailed cause estimates with propagated uncertainty.

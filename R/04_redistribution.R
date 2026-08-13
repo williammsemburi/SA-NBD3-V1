@@ -186,6 +186,10 @@ redist_numeric_matrix <- function(data, rows, columns, missing_counts, tolerance
 #' @param data A data.frame, tibble, or data.table.
 #' @param source_vars Character vector of source column names.
 #' @param target_vars Character vector of target column names.
+#' @param target_multipliers Optional non-negative numeric vector with one
+#'   multiplier per target. The deterministic point estimate uses a vector of
+#'   ones. In uncertainty draws, multipliers perturb only the allocation of the
+#'   source mass; existing target counts themselves are not rescaled.
 #' @param condition Optional logical vector of length 1 or `nrow(data)`. `NULL`
 #'   selects all rows.
 #' @param source_action What to do with selected source values after
@@ -207,6 +211,7 @@ redistribute_columns <- function(
     source_vars,
     target_vars,
     condition = NULL,
+    target_multipliers = NULL,
     source_action = c("zero", "drop"),
     copy = TRUE,
     missing_counts = c("zero", "error"),
@@ -231,6 +236,23 @@ redistribute_columns <- function(
 
   source_vars <- redist_column_names(source_vars, "source_vars")
   target_vars <- redist_column_names(target_vars, "target_vars")
+  if (is.null(target_multipliers)) {
+    target_multipliers <- rep(1, length(target_vars))
+  }
+  target_multipliers <- suppressWarnings(as.numeric(target_multipliers))
+  if (length(target_multipliers) != length(target_vars) ||
+      any(!is.finite(target_multipliers)) ||
+      any(target_multipliers < 0) ||
+      sum(target_multipliers) <= 0) {
+    stop(
+      "`target_multipliers` must contain one finite non-negative value per ",
+      "target, with at least one positive value.",
+      call. = FALSE
+    )
+  }
+  # A common scale cancels from the weighted allocation. Normalising to mean
+  # one makes audits comparable across rules and draws without changing results.
+  target_multipliers <- target_multipliers / mean(target_multipliers)
   x <- redist_copy_input(data, copy = copy)
 
   missing_columns <- setdiff(c(source_vars, target_vars), names(x))
@@ -296,20 +318,35 @@ redistribute_columns <- function(
   if (any(!is.finite(source_total)) || any(!is.finite(target_total))) {
     stop("Redistribution row totals overflowed numeric range.", call. = FALSE)
   }
-  zero_target <- target_total == 0
-  positive_target <- target_total > 0
 
-  target_scale <- rep(1, length(rows))
-  target_scale[positive_target] <-
-    1 + source_total[positive_target] / target_total[positive_target]
-
-  equal_addition <- numeric(length(rows))
-  equal_addition[zero_target] <- source_total[zero_target] / length(target_vars)
-
-  # R stores matrices column-major. A vector of nrow(matrix) values is recycled
-  # once per column, yielding the intended row-specific scale/addition. Because
-  # counts are non-negative, a zero target total implies every target is zero.
-  new_target_matrix <- target_matrix * target_scale + equal_addition
+  # The multiplier vector changes only the shares used to allocate the source
+  # mass. For row i and target j:
+  #
+  #   addition_ij = source_i * (target_ij * multiplier_j) /
+  #                              sum_l(target_il * multiplier_l).
+  #
+  # If all target counts are zero, the same multiplier vector supplies the
+  # fallback shares. With all multipliers equal to one this is exactly the
+  # deterministic redist.ado operation.
+  weighted_target_matrix <- sweep(
+    target_matrix,
+    2L,
+    target_multipliers,
+    `*`
+  )
+  weighted_target_total <- rowSums(weighted_target_matrix)
+  positive_weighted_target <- weighted_target_total > 0
+  allocation_share <- matrix(
+    rep(target_multipliers / sum(target_multipliers), each = length(rows)),
+    nrow = length(rows),
+    ncol = length(target_vars)
+  )
+  if (any(positive_weighted_target)) {
+    allocation_share[positive_weighted_target, ] <-
+      weighted_target_matrix[positive_weighted_target, , drop = FALSE] /
+      weighted_target_total[positive_weighted_target]
+  }
+  new_target_matrix <- target_matrix + allocation_share * source_total
   if (any(!is.finite(new_target_matrix))) {
     stop("Redistribution produced non-finite target values.", call. = FALSE)
   }
@@ -353,8 +390,9 @@ redistribute_columns <- function(
     message(
       context, ": ", length(source_vars), " source column(s) -> ",
       length(target_vars), " target column(s); ", length(rows), " row(s), ",
-      sum(positive_target), " proportional and ", sum(zero_target),
-      " equal-split; total source mass ", signif(sum(source_total), 12)
+      sum(positive_weighted_target), " weighted proportional and ",
+      sum(!positive_weighted_target), " multiplier-fallback; total source mass ",
+      signif(sum(source_total), 12)
     )
   }
   x
@@ -370,6 +408,8 @@ redistribute_columns <- function(
 #' @param source_vars Character vector of source column names.
 #' @param target_vars Character vector of target column names.
 #' @param condition Optional unquoted logical expression evaluated in `data`.
+#' @param target_multipliers Optional non-negative allocation multipliers, one
+#'   per target. Equal values reproduce the deterministic proportional rule.
 #' @param copy Return a copy. Set to `FALSE` only for deliberate data.table
 #'   by-reference mutation.
 #' @param missing_counts Treat missing counts as zero or stop.
@@ -378,11 +418,14 @@ redistribute_columns <- function(
 #' @param quiet Suppress the summary message.
 #'
 #' @details Let `S` be the row sum of source columns and `T` the row sum of
-#' target columns. For every selected row, each target `j` becomes
-#' `target_j + target_j * S / T` when `T > 0`; when `T == 0`, each target
-#' becomes `target_j + S / length(target_vars)`. This is the executable rule in
-#' `redist.ado`. The R implementation rejects negative/non-finite counts and
-#' overlapping source/target sets rather than allowing silent loss of mass.
+#' target columns. With equal multipliers, every selected row has target `j`
+#' updated to `target_j + target_j * S / T` when `T > 0`; when `T == 0`, each
+#' target receives `S / length(target_vars)`. This is the executable rule in
+#' `redist.ado`. With multipliers `W_j`, source mass is allocated in proportion
+#' to `target_j * W_j`; when all target counts are zero, normalised `W_j` values
+#' are the fallback shares. The implementation rejects negative/non-finite
+#' counts and overlapping source/target sets rather than allowing silent loss
+#' of mass.
 #'
 #' @return Modified data in the same class as `data`.
 redist <- function(
@@ -390,6 +433,7 @@ redist <- function(
     source_vars,
     target_vars,
     condition,
+    target_multipliers = NULL,
     copy = TRUE,
     missing_counts = c("zero", "error"),
     condition_na = c("error", "exclude", "include"),
@@ -420,6 +464,7 @@ redist <- function(
     data = data,
     source_vars = source_vars,
     target_vars = target_vars,
+    target_multipliers = target_multipliers,
     condition = condition_value,
     source_action = if (has_condition) "zero" else "drop",
     copy = copy,
@@ -771,6 +816,7 @@ redistribute_cause_columns <- function(
     sources,
     targets,
     condition = NULL,
+    target_multipliers = NULL,
     tolerance = 1e-8,
     copy = TRUE) {
   require_package("data.table")
@@ -783,6 +829,7 @@ redistribute_cause_columns <- function(
     data = x,
     source_vars = source_cols,
     target_vars = target_cols,
+    target_multipliers = target_multipliers,
     condition = condition,
     source_action = "zero",
     copy = FALSE,
@@ -878,89 +925,193 @@ stage06_redistribution_rules <- function() {
   })
 }
 
-stage06_validate_target_overrides <- function(rules, target_overrides = NULL) {
-  if (is.null(target_overrides)) return(list())
-  if (!is.list(target_overrides) || is.null(names(target_overrides)) ||
-      any(!nzchar(names(target_overrides)))) {
-    stop("Redistribution target overrides must be a named list.", call. = FALSE)
+stage06_validate_target_weight_overrides <- function(
+    rules,
+    target_weight_overrides = NULL) {
+  if (is.null(target_weight_overrides)) return(list())
+  if (!is.list(target_weight_overrides) ||
+      is.null(names(target_weight_overrides)) ||
+      any(!nzchar(names(target_weight_overrides)))) {
+    stop("Redistribution target-weight overrides must be a named list.",
+         call. = FALSE)
   }
   known <- vapply(rules, `[[`, character(1), "rule_id")
-  unknown <- setdiff(names(target_overrides), known)
+  unknown <- setdiff(names(target_weight_overrides), known)
   if (length(unknown)) {
-    stop("Unknown redistribution rule override(s): ",
+    stop("Unknown redistribution rule weight override(s): ",
          paste(unknown, collapse = ", "), ".", call. = FALSE)
   }
+
   for (rule in rules) {
-    if (!rule$rule_id %in% names(target_overrides)) next
-    selected <- sort(unique(as.integer(target_overrides[[rule$rule_id]])))
-    if (!length(selected) || anyNA(selected) ||
-        length(setdiff(selected, rule$targets))) {
+    if (!rule$rule_id %in% names(target_weight_overrides)) next
+    value <- target_weight_overrides[[rule$rule_id]]
+    if (!is.null(names(value)) && all(nzchar(names(value)))) {
+      target_names <- as.character(rule$targets)
+      if (length(setdiff(target_names, names(value))) ||
+          length(setdiff(names(value), target_names))) {
+        stop(
+          "Rule ", rule$rule_id,
+          " target-weight names must match its expert-approved target codes.",
+          call. = FALSE
+        )
+      }
+      value <- value[target_names]
+    }
+    value <- suppressWarnings(as.numeric(value))
+    if (length(value) != length(rule$targets) ||
+        any(!is.finite(value)) || any(value <= 0)) {
       stop(
         "Rule ", rule$rule_id,
-        " must use a non-empty subset of its expert-specified targets.",
+        " must supply one finite strictly positive multiplier per approved target.",
         call. = FALSE
       )
     }
-    target_overrides[[rule$rule_id]] <- selected
+    value <- value / mean(value)
+    names(value) <- as.character(rule$targets)
+    target_weight_overrides[[rule$rule_id]] <- value
   }
-  target_overrides
+  target_weight_overrides
 }
 
-stage06_draw_target_overrides <- function(seed, rules = stage06_redistribution_rules()) {
+# Translate the former uniform non-empty-subset model into a continuous
+# symmetric Gamma/Dirichlet perturbation. For J equally sized targets, the old
+# model gave a selected target share of 1/K where K was the size of a uniformly
+# sampled non-empty subset, and zero otherwise. The alpha below makes the
+# marginal variance of a symmetric Dirichlet allocation share equal to the
+# marginal variance under that old structural model. This retains its overall
+# uncertainty scale without exact 0/1 switches or arbitrary tuning.
+stage06_subset_allocation_gamma_shape <- function(n_targets) {
+  n_targets <- suppressWarnings(as.integer(n_targets))
+  if (length(n_targets) != 1L || is.na(n_targets) || n_targets < 2L) {
+    stop("At least two targets are required to derive a redistribution Gamma shape.",
+         call. = FALSE)
+  }
+  k <- seq_len(n_targets)
+  subset_probability <- stats::dbinom(k, size = n_targets, prob = 0.5) /
+    (1 - 2^(-n_targets))
+  expected_inverse_size <- sum(subset_probability / k)
+  old_share_variance <- expected_inverse_size / n_targets -
+    1 / n_targets^2
+  alpha <- (
+    (n_targets - 1) / (n_targets^2 * old_share_variance) - 1
+  ) / n_targets
+  if (!is.finite(alpha) || alpha <= 0) {
+    stop("Could not derive a positive redistribution Gamma shape.",
+         call. = FALSE)
+  }
+  as.numeric(alpha)
+}
+
+stage06_positive_gamma_draw <- function(n, shape) {
+  draw <- stats::rgamma(n, shape = shape, rate = shape)
+  bad <- !is.finite(draw) | draw <= 0
+  if (any(bad)) {
+    probability <- stats::runif(
+      sum(bad), min = .Machine$double.xmin, max = 1
+    )
+    replacement <- stats::qgamma(
+      probability,
+      shape = shape,
+      rate = shape,
+      lower.tail = TRUE,
+      log.p = FALSE
+    )
+    replacement[!is.finite(replacement) | replacement <= 0] <-
+      .Machine$double.xmin
+    draw[bad] <- replacement
+  }
+  if (any(!is.finite(draw)) || any(draw <= 0)) {
+    stop("The redistribution Gamma draw did not remain strictly positive.",
+         call. = FALSE)
+  }
+  draw
+}
+
+# Draw one continuous positive multiplier vector per expert redistribution rule.
+# The vector is shared by all demographic cells in that draw. Multipliers are
+# normalised to mean one; their common scale therefore cannot change the result.
+stage06_draw_target_weight_overrides <- function(
+    seed,
+    rules = stage06_redistribution_rules()) {
   if (length(seed) != 1L || !is.finite(as.numeric(seed))) {
-    stop("A finite redistribution subset seed is required.", call. = FALSE)
+    stop("A finite redistribution target-weight seed is required.",
+         call. = FALSE)
   }
   set.seed(as.integer(seed))
   out <- list()
   for (rule in rules) {
     targets <- as.integer(rule$targets)
-    if (length(targets) <= 1L) next
-    selected <- integer()
-    while (!length(selected)) {
-      selected <- targets[stats::runif(length(targets)) < 0.5]
-    }
-    out[[rule$rule_id]] <- sort(unique(selected))
+    n_targets <- length(targets)
+    if (n_targets <= 1L) next
+
+    shape <- stage06_subset_allocation_gamma_shape(n_targets)
+    multiplier <- stage06_positive_gamma_draw(n_targets, shape)
+    multiplier <- multiplier / mean(multiplier)
+    names(multiplier) <- as.character(targets)
+    out[[rule$rule_id]] <- multiplier
   }
   out
 }
 
 stage06_apply_sequential_redistribution <- function(
     data,
-    target_overrides = NULL) {
+    target_weight_overrides = NULL) {
   x <- ensure_cause_columns(data, 1:214)
   rules <- stage06_redistribution_rules()
-  target_overrides <- stage06_validate_target_overrides(
-    rules, target_overrides
+  target_weight_overrides <- stage06_validate_target_weight_overrides(
+    rules,
+    target_weight_overrides
   )
   audit <- vector("list", length(rules))
 
   for (index in seq_along(rules)) {
     rule <- rules[[index]]
-    targets <- if (rule$rule_id %in% names(target_overrides)) {
-      target_overrides[[rule$rule_id]]
+    multipliers <- if (rule$rule_id %in% names(target_weight_overrides)) {
+      target_weight_overrides[[rule$rule_id]]
     } else {
-      rule$targets
+      value <- rep(1, length(rule$targets))
+      names(value) <- as.character(rule$targets)
+      value
     }
     condition <- rule$condition(x)
     x <- redistribute_cause_columns(
       x,
       rule$sources,
-      targets,
-      condition,
+      rule$targets,
+      target_multipliers = multipliers,
+      condition = condition,
       copy = FALSE
     )
     audit[[index]] <- data.table::data.table(
       rule_id = rule$rule_id,
       source_codes = paste(rule$sources, collapse = ","),
-      full_target_count = length(rule$targets),
-      selected_target_count = length(targets),
-      selected_targets = paste(targets, collapse = ","),
-      stochastic_subset = rule$rule_id %in% names(target_overrides)
+      target_count = length(rule$targets),
+      target_codes = paste(rule$targets, collapse = ","),
+      target_multipliers = paste(
+        paste0(names(multipliers), "=", signif(multipliers, 8)),
+        collapse = ";"
+      ),
+      stochastic_weights = rule$rule_id %in% names(target_weight_overrides),
+      gamma_shape = if (length(rule$targets) > 1L) {
+        stage06_subset_allocation_gamma_shape(length(rule$targets))
+      } else {
+        NA_real_
+      },
+      multiplier_min = min(multipliers),
+      multiplier_mean = mean(multipliers),
+      multiplier_max = max(multipliers),
+      multiplier_cv = if (length(multipliers) > 1L) {
+        stats::sd(multipliers) / mean(multipliers)
+      } else {
+        0
+      }
     )
   }
 
   attr(x, "redistribution_target_audit") <- data.table::rbindlist(
-    audit, use.names = TRUE, fill = TRUE
+    audit,
+    use.names = TRUE,
+    fill = TRUE
   )
   x[]
 }
@@ -1216,7 +1367,7 @@ stage06_exclusion_reason <- function(code, sex, age5) {
   if (!length(reasons)) "not identified" else paste(reasons, collapse = "; ")
 }
 
-redistribute_garbage_codes <- function(data, cfg = NULL, target_overrides = NULL) {
+redistribute_garbage_codes <- function(data, cfg = NULL, target_weight_overrides = NULL) {
   require_package("data.table")
 
   # Remove diagnostics from a previous run so audit files always describe the
@@ -1233,7 +1384,7 @@ redistribute_garbage_codes <- function(data, cfg = NULL, target_overrides = NULL
   }
 
   x <- stage06_apply_sequential_redistribution(
-    data, target_overrides = target_overrides
+    data, target_weight_overrides = target_weight_overrides
   )
   target_audit <- attr(x, "redistribution_target_audit")
 
@@ -1337,9 +1488,9 @@ redistribute_garbage_codes <- function(data, cfg = NULL, target_overrides = NULL
   x[]
 }
 
-run_garbage_redistribution <- function(hiv_wide, cfg, target_overrides = NULL) {
+run_garbage_redistribution <- function(hiv_wide, cfg, target_weight_overrides = NULL) {
   wide <- redistribute_garbage_codes(
-    hiv_wide, cfg, target_overrides = target_overrides
+    hiv_wide, cfg, target_weight_overrides = target_weight_overrides
   )
   long <- wide_to_long_causes(
     wide,

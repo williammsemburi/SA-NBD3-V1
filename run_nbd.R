@@ -2,6 +2,9 @@
 
 # Third South African National Burden of Disease Study -------------------------
 # Version 1: reproducible mortality estimates for South Africa, 1997-2019.
+# The scientific model follows six operations: COD cleaning, African natural
+# completeness, total injury calibration, HIV/AIDS estimation, detailed injury
+# allocation and redistribution of ill-defined causes.
 #
 # Run from the repository root:
 #   Rscript run_nbd.R
@@ -13,14 +16,14 @@
 # phases to FALSE to resume from existing outputs.
 
 RUN_POINT_ESTIMATES <- FALSE
-RUN_UNCERTAINTY     <- FALSE
+RUN_UNCERTAINTY     <- TRUE
 RUN_REPORT          <- TRUE
 OPEN_REPORT         <- TRUE
 RUN_FULL_VALIDATION <- FALSE
 
 UNCERTAINTY_CONFIG   <- file.path("config", "uncertainty_joint.yml")
 UNCERTAINTY_SCENARIO <- "joint"
-OVERWRITE_UNCERTAINTY <- FALSE
+OVERWRITE_UNCERTAINTY <- TRUE
 
 nbd_start_directory <- function() {
   arguments <- commandArgs(trailingOnly = FALSE)

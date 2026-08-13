@@ -365,3 +365,36 @@ testthat::test_that("a no-match data.table condition does not mutate storage", {
   testthat::expect_type(x$target, "integer")
   testthat::expect_identical(out, x)
 })
+
+
+testthat::test_that("target multipliers continuously reweight approved destinations", {
+  x <- data.frame(source = 60, target_a = 30, target_b = 30, target_c = 0)
+  out <- redist(
+    x,
+    source_vars = "source",
+    target_vars = c("target_a", "target_b", "target_c"),
+    target_multipliers = c(2, 1, 1),
+    quiet = TRUE
+  )
+  weighted_before <- c(60, 30, 0)
+  expected_add <- 60 * weighted_before / sum(weighted_before)
+  testthat::expect_equal(
+    unlist(out[c("target_a", "target_b", "target_c")]),
+    c(30, 30, 0) + expected_add,
+    tolerance = 1e-12
+  )
+  testthat::expect_equal(sum(out), 120, tolerance = 1e-12)
+})
+
+testthat::test_that("all-one target multipliers reproduce deterministic redistribution", {
+  x <- data.frame(source = c(12, 8), target_a = c(3, 0), target_b = c(1, 0))
+  point <- redist(x, "source", c("target_a", "target_b"), quiet = TRUE)
+  weighted <- redist(
+    x,
+    "source",
+    c("target_a", "target_b"),
+    target_multipliers = c(1, 1),
+    quiet = TRUE
+  )
+  testthat::expect_equal(point, weighted)
+})

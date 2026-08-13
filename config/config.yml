@@ -51,6 +51,26 @@ settings:
   injury_bias_correction_floor: 1.0e-5
   injury_alr_reference_code: 139
   injury_smoothing_window: 5
+  # Total injury calibration separates the survey-derived national level from
+  # the relative province-sex-age profile. IMS uses Cause_of_death == 1 with
+  # the supplied survey weight; FAMHIS uses the later-cleaned published
+  # eligibility rule. Both level and profile are calculated from the raw files.
+  injury_envelope_method: "ims2009_famhis2017_empirical_level_plus_relative_profile"
+  injury_envelope_profile_floor: 1.0e-10
+  injury_envelope_alpha_floor: 1.0e-8
+  injury_envelope_age_smoothing_window: 5
+  injury_survey_bootstrap_replicates: 1000
+  injury_survey_bootstrap_seed: 20260812
+  # External published estimates are validation benchmarks only; they never
+  # replace the empirical values derived from the supplied microdata.
+  injury_ims_level_estimate: 52493
+  injury_ims_level_lower: 46930
+  injury_ims_level_upper: 58057
+  injury_ims_level_source: "External IMS 2009 validation benchmark"
+  injury_famhis_level_estimate: 53288
+  injury_famhis_level_lower: 49964
+  injury_famhis_level_upper: 56613
+  injury_famhis_level_source: "External later-cleaned FAMHIS 2017 validation benchmark"
   hiv_round_background_counts: true
   hiv_include_pseudo_234_in_background_model: false
   allow_identity_za_mapping: false

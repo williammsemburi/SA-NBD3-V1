@@ -6,7 +6,7 @@ The report is an interactive HTML document built from the final NBD3 Version 1 d
 
 1. Study overview and the development of the South African NBD studies.
 2. HIV/AIDS methods and comparison of NBD2, NBD3-Stata, NBD3-R, THEMBISA and GBD2023.
-3. Injury methods, survey inputs and comparison of NBD2, NBD3-Stata, NBD3-R and GBD2023.
+3. Injury methods, including survey-derived IMS/FAMHIS injury-level and relative-profile calibration, well-specified cause inputs, and comparison of NBD2, NBD3-Stata, NBD3-R and GBD2023.
 4. Final NBD3-R cause estimates for provinces and population groups.
 5. Methods used to derive uncertainty.
 
@@ -18,7 +18,7 @@ All displayed tables use a common `knitr::kable()` HTML style with captions, sti
 
 ## Uncertainty
 
-The report reads the individual per-draw files rather than one oversized consolidated Parquet file. Final cause and population-group results are mapped within each draw so covariance is retained. Intervals appear only where the draw output provides an exact match for the selected geography, sex, age, year and cause.
+The report reads the individual per-draw files rather than one oversized consolidated Parquet file. Final cause and population-group results are mapped within each draw so covariance from survey-design injury level/profile/cause draws, completeness, HIV/AIDS and continuous redistribution weights is retained. Intervals appear only where the draw output provides an exact match for the selected geography, sex, age, year and cause.
 
 ## Running the report
 

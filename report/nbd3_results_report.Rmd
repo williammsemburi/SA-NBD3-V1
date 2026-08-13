@@ -76,6 +76,14 @@ injury_broad_comparison <- data.table::as.data.table(data.table::copy(
 injury_detailed_comparison <- data.table::as.data.table(data.table::copy(
   injury_broad$detailed_comparison
 ))
+injury_level_audit_path <- file.path(
+  root, "output", "tables", "03_injury_survey_reference_audit.csv"
+)
+injury_level_audit <- if (file.exists(injury_level_audit_path)) {
+  data.table::fread(injury_level_audit_path)
+} else {
+  data.table::data.table()
+}
 
 uncertainty_draw_n <- if (nrow(cause_uncertainty) && "n_draws" %in% names(cause_uncertainty)) {
   values <- cause_uncertainty$n_draws[is.finite(cause_uncertainty$n_draws)]
@@ -668,8 +676,8 @@ register_final_panel <- function(prefix, geography_type_name, domain_name, defau
       htmltools::span(
         class = "provisional-note",
         paste(
-          "Intervals combine under-reporting, injury survey-composition,",
-          "HIV fitted-parameter, and redistribution uncertainty in one joint run."
+          "Intervals combine under-reporting, injury-envelope, injury",
+          "survey-composition, HIV fitted-parameter, and redistribution uncertainty in one joint run."
         )
       )
     )
@@ -823,25 +831,25 @@ if (nrow(injury_detailed_comparison)) {
 
 # Overview {#overview}
 
-<div class="section-lead">A national burden of disease study develops consistent and coherent estimates of the levels and underlying causes of death using the best available mortality, population, injury, and epidemiological information. It addresses deficiencies in registered cause-of-death data—including under-registration, HIV/AIDS misclassification, undetermined injury causes, and ill-defined or otherwise unusable underlying causes—and translates the corrected mortality profile into deaths, mortality rates, age-standardised rates, and years of life lost.</div>
+<div class="section-lead">A national burden of disease study develops consistent and coherent estimates of the levels and underlying causes of death using the best available epidemiological and demographic information. For South Africa this requires addressing deficiencies in the registered cause-of-death data and in particular, accounting for under-registration, correcting for HIV/AIDS misclassification, reallocating undetermined injury causes, as well as reclassifying ill-defined or otherwise unusable underlying causes.</div>
 
 ## Development of the South African NBD studies {#study-lineage}
 
 <div class="study-lineage-grid">
 <article class="study-generation-card generation-one"><span class="study-generation-label">Initial South African NBD</span><div class="study-generation-period">Reference year 2000</div><h3>National modelling foundation</h3><p>The first study was implemented through spreadsheet-based workflows. Total mortality and the HIV/AIDS epidemic were modelled using ASSA2000; the non-AIDS cause profile drew on registered mortality, Home Affairs data, and national injury surveillance. Its principal focus was premature mortality measured through YLLs, with initial YLD and DALY estimates.</p></article>
 <article class="study-generation-card generation-two"><span class="study-generation-label">Second South African NBD</span><div class="study-generation-period">1997–2012</div><h3>National and provincial time series</h3><p>NBD2 moved the analysis into Stata and produced annual national and provincial mortality profiles. It adjusted for incomplete registration, reallocated misclassified HIV/AIDS deaths, estimated specific injury causes from survey evidence, redistributed garbage and ill-defined causes, and reported coherent cause-specific deaths and YLLs.</p></article>
-<article class="study-generation-card generation-three"><span class="study-generation-label">Third South African NBD</span><div class="study-generation-period">Target: 1997–2022</div><h3>Reproducible, uncertainty-aware R system</h3><p>NBD3 is being built as a fully scripted R workflow. Version 1 covers 1997–2019 and reproduces the working unpublished NBD3 Stata analysis while incorporating NIMS 2000, IMS 2009, and FAMHIS 2017 in the injury model and quantifying uncertainty. The planned extension will add 2020–2022 and explicitly estimate COVID-19 mortality.</p></article>
+<article class="study-generation-card generation-three"><span class="study-generation-label">Third South African NBD</span><div class="study-generation-period">Target: 1997–2022</div><h3>Reproducible, uncertainty-aware R system</h3><p>NBD3 is being built as a fully scripted R workflow. Version 1 covers 1997–2019 and reproduces some of the working unpublished NBD3 Stata analysis while incorporating NIMS 2000, IMS 2009, and FAMHIS 2017 in the injury model and quantifying some of the uncertainty. The planned extension will add 2020–2022 and explicitly estimate COVID-19 mortality as well.</p></article>
 </div>
 
 <div class="report-callout callout-info study-scope-callout">
 <div class="callout-title">How to interpret the study and model labels</div>
-<div class="callout-body"><strong>NBD3-Stata</strong> and <strong>NBD3-R</strong> are two implementations of the third National Burden of Disease Study, not separate national study iterations. NBD3-Stata is the internal replication benchmark; NBD3-R is the reproducible implementation used for the final Version 1 cause estimates. <strong>NBD2</strong> is the preceding national study, while <strong>THEMBISA</strong> and <strong>GBD2023</strong> are external comparison series.</div>
+<div class="callout-body"><strong>NBD3-Stata</strong> and <strong>NBD3-R</strong> are two implementations of the third National Burden of Disease Study. NBD3-Stata is the working model to date; NBD3-R is the updated reproducible implementation used for Version 1 cause estimates. <strong>NBD2</strong> is the preceding national study, while <strong>THEMBISA</strong> and <strong>GBD2023</strong> are external comparison series.</div>
 </div>
 
 <div class="nbd-overview-grid">
 <article class="overview-panel"><span class="overview-eyebrow">Version 1 scope</span><h3>Annual mortality estimates, 1997–2019</h3><p>Estimate deaths and premature mortality by year, age, sex, province or population group, and cause. Years 2020–2022 and COVID-19 mortality are outside the present release and form the next extension of NBD3.</p></article>
 <article class="overview-panel"><span class="overview-eyebrow">Core evidence</span><h3>Combine complementary data sources</h3><p>Use registered cause-of-death records and population denominators together with NIMS 2000, IMS 2009, FAMHIS 2017, completeness estimates, National Population Register information, antenatal HIV prevalence, YLL schedules, and standard-population weights.</p></article>
-<article class="overview-panel"><span class="overview-eyebrow">Analytical sequence</span><h3>Correct data problems while preserving deaths</h3><p>Verify and aggregate causes, estimate injury composition, adjust for incompleteness, reallocate misclassified HIV/AIDS deaths, redistribute ill-defined and garbage causes, and construct the final South African cause hierarchy.</p></article>
+<article class="overview-panel"><span class="overview-eyebrow">Six-step analytical sequence</span><h3>Correct data problems while preserving the mortality envelope</h3><p>Clean and aggregate registered deaths; complete African natural mortality; calibrate the national injury level with weighted IMS 2009 and FAMHIS 2017 totals and distribute it with their relative province–sex–age profiles; estimate misclassified HIV/AIDS deaths; divide the calibrated injury envelope using the NIMS/IMS/FAMHIS cause profile; and redistribute ill-defined and garbage causes using the approved target rules.</p></article>
 <article class="overview-panel"><span class="overview-eyebrow">What this report provides</span><h3>Methods, comparisons, final estimates, and uncertainty</h3><p>Follow the established visualization order, compare the two NBD3 implementations with NBD2 and external benchmarks, and present the final Version 1 cause estimates from the R implementation with uncertainty wherever the completed draws support an exact result.</p></article>
 </div>
 
@@ -853,7 +861,7 @@ if (nrow(injury_detailed_comparison)) {
 
 <div class="report-callout callout-warning">
 <div class="callout-title">Current uncertainty status</div>
-<div class="callout-body">Version 1 uses one joint uncertainty model. The completeness component uses the nine death-weighted province-level S2 aggregates in an exact cluster bootstrap of the national weighted mean, then applies one shared factor to all African natural-cause deaths while retaining the deterministic relative pattern between provinces; injury uncertainty draws the NIMS, IMS, and FAMHIS compositions from their count or Kish-equivalent information and reruns the same fixed interpolation and smoother; HIV/AIDS parameters are sampled from the Stage 05 variance-covariance matrices after completeness scaling; and garbage redistribution samples among the non-empty subsets of the same expert-approved targets. Province, South Africa, and national population-group Person estimates are retained within each draw. The total injury envelope remains fixed because its inputs do not provide a defensible variance model. The report summarises `r uncertainty_draw_label`. The draw count can be increased in config/uncertainty_joint.yml when final interval precision is required.</div>
+<div class="callout-body">Version 1 uses one joint uncertainty model. For general completeness, each province receives its own mean-one factor estimated from death-weighted annual aggregate S2 variation across time after age and sex are collapsed. For injuries, the supplied IMS 2009 and later-cleaned FAMHIS 2017 records, eligibility rules, survey weights, mortuary/facility identifiers, and strata determine the national level, provincial profile, cause composition, and their joint sampling uncertainty. NIMS 2000 supplies count-based cause-composition uncertainty. The IMS correction is held through 2009, the IMS and FAMHIS log components are interpolated through 2017, and FAMHIS is held thereafter. HIV/AIDS parameters are sampled from the Stage 05 variance-covariance matrices. Garbage redistribution keeps every expert-approved target but draws a continuous positive target-weight vector for each multi-target rule. Province, South Africa, and national population-group Person estimates are retained within each draw. The report summarises `r uncertainty_draw_label`.</div>
 </div>
 
 <div class="historical-source-note"><strong>Historical basis.</strong> The study lineage summarises the initial South African NBD estimates for 2000 (Bradshaw et al., 2003), the Second National Burden of Disease cause-of-death profile for 1997–2012 (Msemburi et al., 2016), and the documented SA NBD cause-list mappings (Awotiwon et al., 2017).</div>
@@ -865,7 +873,7 @@ if (nrow(injury_detailed_comparison)) {
 <div class="journey-grid report-contents-grid">
 <a class="journey-card" href="#hiv-methods"><span>01</span><strong>HIV/AIDS methods</strong><small>NBD2 foundations, transition to NBD3, and the Version 1 R implementation</small></a>
 <a class="journey-card" href="#hiv-model-comparison"><span>02</span><strong>HIV/AIDS model comparison</strong><small>NBD2, NBD3-Stata, NBD3-R, THEMBISA, and GBD2023 together</small></a>
-<a class="journey-card" href="#injury-methods"><span>03</span><strong>Injury methods</strong><small>Survey-informed interpolation, fixed smoothing, and direct survey-to-estimate comparison</small></a>
+<a class="journey-card" href="#injury-methods"><span>03</span><strong>Injury methods</strong><small>IMS/FAMHIS envelope calibration, survey-informed cause interpolation, and direct comparisons</small></a>
 <a class="journey-card" href="#injury-model-comparison"><span>04</span><strong>Injury model comparison</strong><small>NBD2, NBD3-Stata, NBD3-R, and GBD2023 together</small></a>
 <a class="journey-card" href="#provincial-natural"><span>05</span><strong>Provincial natural deaths</strong><small>Final R estimates with exact uncertainty intervals where supported</small></a>
 <a class="journey-card" href="#provincial-injury"><span>06</span><strong>Provincial injury deaths</strong><small>Final R injury causes and broad injury groups</small></a>
@@ -991,7 +999,7 @@ comparison_panel_ui("hiv_compare", "hiv", "hiv_deaths")
 
 # 2. Injury methods {#injury-methods}
 
-<div class="section-lead">The injury section follows the established storyboard—data sources, cause-fraction estimation, model-to-survey comparison, assumptions, and model comparison. NIMS 2000, IMS 2009, and FAMHIS 2017 are treated as informative but imperfect measurements of an underlying smooth injury composition. The fitted trajectory is therefore allowed to differ from every survey observation, including in the three survey years.</div>
+<div class="section-lead">The injury analysis has three linked parts: the national total injury level, its province–sex–age profile, and the division of those injury deaths among 15 causes. All IMS 2009 and later-cleaned FAMHIS 2017 injury records meeting the published analytic criteria determine the injury level and profile. Cause fractions use only records mapped to a well-specified common injury cause; generic and unresolved injury records remain in the completeness envelope but are excluded from the cause-fraction denominator. NIMS 2000, IMS 2009, and FAMHIS 2017 then define the cause-composition trajectory.</div>
 
 ## Injury cause-fraction data sources
 
@@ -1042,12 +1050,59 @@ The fixed moving average spreads survey-year changes over neighbouring years. Th
 
 <div class="report-callout callout-info">
 <div class="callout-title">Survey observations are evidence, not exact constraints</div>
-<div class="callout-body">The survey systems do not define every detailed injury cause identically, particularly analysis causes 132, 136, and 138. The final curve therefore follows one common interpolation and smoothing rule rather than reproducing each survey exactly. Historical correction formulas remain in the Stage 03 audit fields but are not imposed as survey truths.</div>
+<div class="callout-body">The survey systems do not define every detailed injury cause identically. Before interpolation, the production anchors harmonise causes 132 and 138 at NIMS 2000 by backward extrapolation from IMS and FAMHIS, and cause 136 at FAMHIS 2017 by forward extrapolation from NIMS and IMS. The corrected composition is renormalised, after which the same hierarchical interpolation and moving-average rule is applied to all causes. This prevents a change in survey coding from appearing as a steep epidemiological trend.</div>
 </div>
+
+
+## Total injury level and relative profile
+
+The injury model separates the national level from the relative demographic profile. The point anchors are calculated directly from the supplied microdata: IMS retains records with `Cause_of_death == 1` and uses the supplied survey weight; FAMHIS retains records with a nonblank injury mechanism that are not explicitly excluded by `non_nat_undert == 0`, using the supplied `wht`. The published national estimates and intervals remain external validation references and do not replace the empirical totals.
+
+```{r injury-level-reference-audit}
+if (nrow(injury_level_audit)) {
+  level_display <- injury_level_audit[, .(
+    Survey = survey,
+    Year = survey_year,
+    `Empirical weighted total` = round(empirical_level_estimate),
+    `External reference` = round(reference_estimate),
+    `Reference lower` = round(reference_lower),
+    `Reference upper` = round(reference_upper),
+    `Difference` = round(difference, 1),
+    `Difference (%)` = round(100 * relative_difference, 3),
+    `Well-specified cause mass (%)` = round(100 * well_specified_share, 2),
+    `Reference version` = reference_version
+  )]
+  nbd_kable_html(
+    level_display,
+    caption = paste(
+      "Survey-derived national injury totals compared with external published",
+      "benchmarks. The empirical totals, not the external references, define",
+      "the NBD3-R injury-level anchors."
+    ),
+    align = c("l", "r", "r", "r", "r", "r", "r", "r", "r", "l")
+  )
+}
+```
+
+At survey year $y$, the empirical national injury total $S_y$ is compared with the completed routine injury total $V_y$:
+
+$$
+K_y=\frac{S_y}{V_y}.
+$$
+
+The IMS calibration is held through 2009, the log calibration is linearly interpolated between 2009 and 2017, and the FAMHIS calibration is held through 2019. Separately, the survey and routine injury totals are normalised across province × sex × age, and their share ratio defines the relative profile:
+
+$$
+R_{psay}=\frac{q^{S}_{psay}}{q^{R}_{psay}}.
+$$
+
+The log relative profile is smoothed over age and follows the same hold/interpolation policy. NIMS remains a cause-composition source rather than an injury-level survey. The earlier assumption that injury completeness changed in proportion to all-cause completeness is not used.
+
+Within every province × sex × population-group × age × year cell, injury and natural deaths remain complementary parts of the completed total. One annual bounded log-odds intercept makes the adjusted demographic profile sum to the survey-calibrated national target. This preserves every completed all-cause cell, prevents negative natural deaths, and prevents injuries from exceeding total deaths.
 
 <div class="report-callout callout-info">
 <div class="callout-title">How injury uncertainty is propagated</div>
-<div class="callout-body">For every joint mortality draw, each survey composition is sampled from a Dirichlet distribution centred on the prepared fractions. The total information size is the observed NIMS count or the Kish count-equivalent information from the IMS and FAMHIS weights. The sampled compositions pass through the same linear interpolation, triangular moving average, and softmax calculation. No extra inter-survey variance parameter is introduced.</div>
+<div class="callout-body">Each joint draw resamples sampled mortuaries or forensic pathology facilities within the original survey strata. One IMS replicate and one FAMHIS replicate jointly determine the national injury level, provincial and demographic profile, and well-specified cause counts. Thus level, geography, age, sex, and cause composition retain their within-survey covariance. NIMS 2000 uses count-based composition uncertainty because its complete sampling design is not available. The same temporal interpolation, harmonisation, and bounded all-cause calibration are rerun inside every draw.</div>
 </div>
 
 ```{r injury-composition-chart}
@@ -1097,7 +1152,7 @@ if (nrow(injury_broad_fit_table)) {
 
 ## Cause comparability and sparse survey cells
 
-Three detailed causes have known comparability concerns across the survey instruments. Historical extrapolation formulas are retained in the Stage 03 audit fields so the analytical history remains traceable, but those values are not imposed as observations and do not constrain the final trajectory.
+Three detailed causes have known comparability concerns across the survey instruments. The production trajectory therefore uses the documented harmonisation formulas for causes 132, 136, and 138 before the survey compositions are renormalised and interpolated. Both the uncorrected survey fractions and the harmonised inputs are retained in the Stage 03 audit tables.
 
 <div class="interpret-grid">
 <div class="support-box"><strong>Sparse cells</strong><p>Where a complete survey stratum has no injury deaths, its composition is borrowed from the most specific observed donor available: province × sex × age, national sex × age, national age, and finally the national composition. Cells sharing the same donor also share the same survey-composition draw in the uncertainty analysis.</p></div>
@@ -1201,10 +1256,10 @@ $$
 The draws are carried through as complete cause vectors. Therefore, aggregation to all causes, broad causes, final ZA causes, provinces, South Africa, or population groups preserves the covariance generated by the analytical reallocations. The current report uses `r uncertainty_draw_label`; the draw count is controlled in config/uncertainty_joint.yml.
 
 <div class="method-flow uncertainty-flow">
-<article><span>1</span><h3>Completeness</h3><p>Draw one shared national African natural-cause completeness factor.</p></article>
-<article><span>2</span><h3>Injuries</h3><p>Draw the three survey compositions and rerun the fixed interpolation and smoother.</p></article>
+<article><span>1</span><h3>Completeness</h3><p>Draw one province-specific African natural-cause completeness factor for each province.</p></article>
+<article><span>2</span><h3>Injuries</h3><p>Draw the IMS/FAMHIS injury envelope and the three survey compositions, then rerun both annual trajectories.</p></article>
 <article><span>3</span><h3>HIV/AIDS</h3><p>Draw fitted coefficients jointly and rerun the complete Stage 05 reallocation.</p></article>
-<article><span>4</span><h3>Redistribution</h3><p>Draw an approved target subset for each multi-target expert rule and rerun Stage 06.</p></article>
+<article><span>4</span><h3>Redistribution</h3><p>Draw one continuous positive multiplier vector across the approved targets of each multi-target rule and rerun Stage 06.</p></article>
 <article><span>5</span><h3>Aggregation</h3><p>Construct final causes and summarise the within-draw totals by geography and age.</p></article>
 </div>
 
@@ -1214,49 +1269,62 @@ The draws are carried through as complete cause vectors. Therefore, aggregation 
 uncertainty_drivers <- data.table::data.table(
   Driver = c(
     "African natural-cause completeness",
+    "National injury level and relative profile",
     "Injury cause composition",
     "HIV/AIDS statistical model",
     "Garbage and ill-defined redistribution"
   ),
   `Evidence used` = c(
     paste(
-      "Nine province-level aggregate S2 multipliers, calculated with",
-      "pre-adjustment African natural deaths as weights"
+      "Within each province, annual aggregate S2 variation across time",
+      "after sex and age are collapsed using implied pre-adjustment deaths"
     ),
     paste(
-      "NIMS observed counts and Kish count-equivalent information from",
-      "IMS and FAMHIS weights"
+      "Published-compatible IMS 2009 and later-cleaned FAMHIS 2017 records,",
+      "weights, sampled facilities, strata, and the completed routine injury envelope"
+    ),
+    paste(
+      "Well-specified NIMS, IMS and FAMHIS mechanisms; causes 132, 136 and",
+      "138 harmonised before interpolation"
     ),
     paste(
       "Fitted Stage 05 coefficient vectors and their estimated",
       "variance-covariance matrices"
     ),
     paste(
-      "The original expert-approved target lists in every multi-target",
-      "redistribution rule"
+      "The original expert-approved target lists and the structural",
+      "uncertainty scale of the former non-empty-subset model"
     )
   ),
   `Operation in each draw` = c(
     paste(
-      "Resample provinces as clusters, recalculate the national",
-      "death-weighted S2 mean, and apply one shared factor"
+      "Use the province-specific log SD to draw one independent",
+      "mean-one factor for each province"
     ),
     paste(
-      "Draw each survey composition, then repeat the hierarchical ALR",
-      "interpolation and five-year triangular moving average"
+      "Select one stratified PSU bootstrap replicate from each survey and",
+      "rebuild the level and relative profile jointly"
+    ),
+    paste(
+      "Use the same survey replicate for well-specified IMS/FAMHIS cause",
+      "counts; draw NIMS counts and rerun harmonisation and ALR interpolation"
     ),
     paste(
       "Draw coefficients jointly from the fitted covariance matrices",
       "after completeness scaling and rerun Stage 05"
     ),
     paste(
-      "Select one non-empty subset of the existing targets and rerun",
-      "the unchanged ordered proportional redistribution algorithm"
+      "Draw positive mean-one Gamma multipliers across all approved targets",
+      "and rerun the unchanged ordered proportional redistribution algorithm"
     )
   ),
   `What changes` = c(
     "The African natural mortality envelope, including HIV/AIDS",
-    "The division of a fixed total injury envelope among 15 injury causes",
+    paste(
+      "Total injuries and the natural-versus-injury split; the completed",
+      "all-cause total is preserved"
+    ),
+    "The division of the sampled injury envelope among 15 injury causes",
     "The division of deaths between HIV/AIDS and linked non-HIV causes",
     "The recipient cause of redistributed deaths, not the cell total"
   )
@@ -1270,17 +1338,21 @@ nbd_kable_html(
 
 ### Completeness and under-reporting
 
-The S2 inputs are first collapsed to one death-weighted aggregate multiplier for each province. The nine provinces are treated as clusters in an exact ordinary bootstrap of the national weighted mean. A single factor is drawn and applied to all African natural-cause deaths before HIV/AIDS is re-estimated. This changes the natural-cause and all-cause envelopes while retaining the deterministic relative pattern between provinces.
+Completeness uncertainty is estimated separately for each province. Within each province-year, sex and age are collapsed using implied pre-adjustment African natural deaths as weights, and the weighted standard deviation of the resulting annual aggregate log S2 is calculated across time. One mean-one lognormal factor is then drawn independently for each province and applied to all African natural-cause deaths in that province before HIV/AIDS is re-estimated. This measures variation in the province-wide reporting level over time and does not treat systematic age differences as uncertainty in a common province factor.
 
-The same draw is inherited by every African natural cause. HIV/AIDS therefore receives both under-reporting uncertainty and uncertainty from the fitted HIV/AIDS model. Population-group estimates now retain the complete joint draw at national population-group level, so the African series reflects the completeness draw directly and all four population groups retain the subsequent HIV/AIDS and redistribution covariance.
+The factor is common to every African natural cause within a province. HIV/AIDS therefore receives both province-specific under-reporting uncertainty and uncertainty from the fitted HIV/AIDS model. Population-group estimates retain the complete joint draw at national population-group level, so the African series reflects the completeness draws directly and all four population groups retain the subsequent HIV/AIDS and redistribution covariance.
 
-### Injury survey composition
+### Injury level, relative profile and cause composition
 
-NIMS 2000, IMS 2009, and FAMHIS 2017 are sampled as closed cause compositions. NIMS uses its observed count information; IMS and FAMHIS use Kish count-equivalent information calculated from the available weights. Each sampled composition is passed through the same hierarchical additive-log-ratio interpolation and five-year triangular moving average used for the point estimate.
+IMS 2009 and FAMHIS 2017 determine uncertainty in the national injury level and the relative province–sex–age profile directly from the supplied survey designs. Sampled mortuaries or forensic pathology facilities are resampled with replacement within their survey strata; singleton sampled strata are held fixed. The same replicate simultaneously generates the national total and all provincial and demographic totals, so provinces always sum to the national estimate and their covariance is retained.
+
+The replicate-specific level and profile are compared with the completed routine injury envelope. The IMS correction is held through 2009, the IMS and FAMHIS log components are interpolated from 2009 to 2017, and the FAMHIS correction is held thereafter. Injury and natural deaths remain bounded complements of the same completed all-cause total.
+
+Cause fractions use only well-specified mechanisms on the common 15-cause list. Generic and unresolved survey injuries contribute to total injury completeness but not to the cause-fraction denominator. For IMS and FAMHIS, the same PSU replicate used for the level and profile supplies the well-specified cause counts. NIMS 2000 uses count-based uncertainty. Causes 132, 136, and 138 are harmonised within every draw before the hierarchical additive-log-ratio interpolation and five-year triangular moving average are applied.
 
 <div class="report-callout callout-info">
-<div class="callout-title">Why some injury intervals are narrow</div>
-<div class="callout-body"><strong>Total injuries are largely deterministic in the current uncertainty model.</strong> The survey draws change how the injury envelope is divided among causes, but their effects cancel exactly when all injury causes are added together. The total injury envelope, including the NPR replacement component, is currently fixed because the supplied inputs do not provide a defensible variance model for it. Specific injury causes do include survey uncertainty, although national all-age aggregation, large count or Kish-equivalent information sizes, and the common interpolation-and-smoothing rule can make those intervals comparatively narrow. The pipeline does not widen them with an unsupported variance multiplier.</div>
+<div class="callout-title">How to read the injury intervals</div>
+<div class="callout-body"><strong>Total injuries retain survey-level uncertainty; provincial and demographic totals retain the joint level/profile uncertainty; specific causes additionally retain cause-composition uncertainty.</strong> The reported IMS and FAMHIS publication estimates remain validation benchmarks. The uncertainty shown by NBD3-R comes from the resampled survey records and design variables rather than being imposed from published confidence limits.</div>
 </div>
 
 ### HIV/AIDS model uncertainty
@@ -1297,17 +1369,23 @@ N\left(
 \right).
 $$
 
-The complete HIV/AIDS calculation is rerun after completeness scaling. More deaths allocated to HIV/AIDS imply fewer deaths retained by its donor causes in the same demographic cell; fewer HIV/AIDS deaths imply the converse. This creates negative covariance between HIV/AIDS and linked non-HIV causes while preserving the cell total. Antenatal HIV prevalence remains fixed because the supplied prevalence series does not contain an approved variance-covariance source.
+The complete HIV/AIDS calculation is rerun after completeness and injury-envelope scaling. More deaths allocated to HIV/AIDS imply fewer deaths retained by its donor causes in the same demographic cell; fewer HIV/AIDS deaths imply the converse. This creates negative covariance between HIV/AIDS and linked non-HIV causes while preserving the cell total. Antenatal HIV prevalence remains fixed because the supplied prevalence series does not contain an approved variance-covariance source.
 
 ### Garbage and ill-defined redistribution
 
-For a rule with approved targets $\{a,b,c\}$, the uncertainty support consists of the non-empty target subsets:
+For a rule with approved targets $\{a,b,c\}$, the deterministic point estimate uses the equal multiplier vector $(1,1,1)$. In an uncertainty draw, the same approved targets remain available but receive one continuous positive multiplier vector:
 
 $$
-\{a\},\{b\},\{c\},\{a,b\},\{a,c\},\{b,c\},\{a,b,c\}.
+(W_a,W_b,W_c), \qquad W_j>0, \qquad \overline W=1.
 $$
 
-One subset is selected in each draw and the same deterministic proportional redistribution algorithm is applied within that subset. Single-target rules remain deterministic. This represents uncertainty in the expert-approved destination set without inventing new causes or an unsupported concentration parameter.
+If the current target counts are $(D_a,D_b,D_c)$ and the source contains $S$ deaths, the amount added to target $j$ is
+
+$$
+A_j=S\frac{D_jW_j}{\sum_k D_kW_k}.
+$$
+
+When all current target counts are zero, the normalised multipliers themselves provide the fallback shares. The multipliers are independent Gamma draws before normalisation. Their shape is derived so that, for equal baseline targets, the marginal variance of the continuous allocation share matches the variance under the former uniformly sampled non-empty target-subset model. This preserves the established structural uncertainty scale while removing exact target switching and retaining all expert-approved causes in every draw. Single-target rules remain deterministic.
 
 ## Interpretation by result type
 
@@ -1323,24 +1401,24 @@ uncertainty_by_result <- data.table::data.table(
   ),
   `Uncertainty carried into the result` = c(
     paste(
-      "Completeness changes the envelope. HIV/AIDS reallocation, injury",
-      "composition, and redistribution cancel when all causes are summed."
+      "General completeness changes the total. Injury-envelope calibration,",
+      "HIV/AIDS reallocation, composition, and redistribution preserve it."
     ),
     paste(
       "Completeness, fitted HIV/AIDS coefficients, and any subsequent",
       "eligible redistribution."
     ),
     paste(
-      "Completeness, reciprocal HIV/AIDS reallocation where relevant,",
-      "and expert-target redistribution."
+      "Completeness, the reciprocal injury-envelope offset in African",
+      "natural deaths, HIV/AIDS reallocation, and expert redistribution."
     ),
     paste(
-      "Survey composition cancels in the total; the current injury",
-      "envelope is fixed."
+      "IMS/FAMHIS envelope draws remain in the total; survey cause",
+      "composition cancels when all injury causes are summed."
     ),
     paste(
-      "NIMS/IMS/FAMHIS composition draws, interpolation and smoothing,",
-      "plus eligible redistribution."
+      "IMS/FAMHIS envelope draws plus NIMS/IMS/FAMHIS composition",
+      "draws, interpolation, smoothing, and eligible redistribution."
     ),
     paste(
       "The same complete joint draw, aggregated nationally within each",
@@ -1350,10 +1428,13 @@ uncertainty_by_result <- data.table::data.table(
   `Changes the all-cause total?` = c(
     "Yes — through completeness",
     "No — HIV/AIDS reallocation preserves the cell total",
-    "Only through the shared completeness envelope",
-    "No",
-    "No",
-    "Only through the completeness component affecting African natural deaths"
+    "Completeness changes the total; the injury offset itself preserves it",
+    "No — the injury-envelope adjustment reallocates within the completed total",
+    "No — the injury-envelope adjustment reallocates within the completed total",
+    paste(
+      "Yes within a population group: the injury-envelope offset is carried",
+      "by African natural deaths, while the provincial all-cause total is preserved"
+    )
   )
 )
 nbd_kable_html(
@@ -1390,9 +1471,10 @@ uncertainty_limitations <- data.table::data.table(
   Quantity = c(
     "Monte Carlo draw count",
     "S1 completeness",
-    "NPR and total injury envelope",
+    "Cross-province completeness covariance",
+    "Independent NPR variance",
     "Antenatal HIV prevalence",
-    "Injury survey design",
+    "Injury level, profile and composition evidence",
     "Reported measures"
   ),
   `Current treatment` = c(
@@ -1401,11 +1483,14 @@ uncertainty_limitations <- data.table::data.table(
       "in the configured joint run; increase the draw count for more stable interval tails"
     ),
     "Fixed because no defensible sampling variance is supplied",
-    "Fixed because no defensible sampling variance is supplied",
+    "Not supplied; province-specific completeness factors are drawn independently",
+    "Fixed because no independent NPR-specific variance source is supplied",
     "Fixed because no approved prevalence variance-covariance input is supplied",
     paste(
-      "Observed counts and Kish-equivalent information are used; complete",
-      "PSU and stratum variables are unavailable"
+      "IMS/FAMHIS level, provincial profile and well-specified causes use a",
+      "stratified PSU bootstrap from the supplied facility and stratum fields;",
+      "finite-population corrections and the original software's exact",
+      "variance settings are not imposed"
     ),
     paste(
       "Intervals are generated for deaths and corresponding crude rates;",

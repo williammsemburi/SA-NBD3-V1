@@ -1,5 +1,17 @@
 library(targets)
 
+# Scientific sequence ----------------------------------------------------------
+#
+# The six scientific operations are implemented through eight cached targets:
+# 1) clean/aggregate COD (Stages 01-02);
+# 2) complete African natural mortality (Stage 04);
+# 3) calibrate total injury mortality from survey-derived IMS/FAMHIS levels and profiles (Stage 04);
+# 4) estimate HIV/AIDS from the revised natural envelope (Stage 05);
+# 5) apply the NIMS/IMS/FAMHIS injury profile (prepared in Stage 03 and scaled
+#    with the calibrated envelope in Stage 04); and
+# 6) redistribute ill-defined and garbage causes (Stage 06).
+# Stages 07-08 construct YLLs, rates and the final database.
+
 # Load the nine numbered analytical modules in their documented order.
 module_files <- sort(list.files(
   "R",
@@ -108,7 +120,7 @@ list(
     format = "file"
   ),
 
-  # Stage 03: injury cause fractions ------------------------------------------
+  # Stage 03: injury profile preparation --------------------------------------
   tar_target(injury_survey_file, {
     injury_inputs
     stage_prepare_injury_surveys(cfg)
@@ -119,7 +131,7 @@ list(
     format = "file"
   ),
 
-  # Stage 04: completeness and NPR adjustment ---------------------------------
+  # Stage 04: completed envelope and total injury calibration ------------------
   tar_target(
     investigation_file,
     {
@@ -127,7 +139,8 @@ list(
       stage_adjust_completeness(
         cfg,
         cod_file,
-        select_stage_file(injury_outputs, "03_final_injuries.parquet")
+        injury_outputs,
+        injury_survey_file
       )
     },
     format = "file"
