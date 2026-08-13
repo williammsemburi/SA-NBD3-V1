@@ -65,27 +65,15 @@ G_j\sim\operatorname{Gamma}(\alpha_J,\alpha_J),
 \qquad W_j=\frac{G_j}{\overline G}.
 $$
 
-All $W_j$ are strictly positive and have mean one after normalisation. The same vector is applied to every demographic cell governed by the rule.
+All $W_j$ are strictly positive and have mean one after normalisation. The same multiplier vector is applied to every demographic cell governed by the rule. The shape $\alpha_J$ is determined by the number of approved targets and places the allocation-share variance on a common reference scale across multi-target rules.
 
-The shape $\alpha_J$ is derived from the former uniform non-empty-subset model. Let $K$ be the size of a uniformly sampled non-empty subset of $J$ targets:
-
-$$
-P(K=k)=\frac{\binom{J}{k}}{2^J-1}.
-$$
-
-For equal baseline target counts, the old marginal allocation-share variance is:
+For source deaths $S$, current target deaths $D_j$, and multiplier $W_j$, the amount assigned to target $j$ is:
 
 $$
-V_J=\frac{1}{J}E\left(\frac{1}{K}\right)-\frac{1}{J^2}.
+A_j=S\frac{D_jW_j}{\sum_kD_kW_k}.
 $$
 
-The symmetric Dirichlet/Gamma shape is chosen so that:
-
-$$
-\frac{J-1}{J^2(J\alpha_J+1)}=V_J.
-$$
-
-Thus the continuous model retains the former structural variance under a neutral equal-target reference, while removing exact target switching. Single-target rules remain deterministic.
+When all current target counts are zero, the normalised multiplier vector supplies the fallback shares. Every approved target remains active, no unapproved target can receive deaths, source deaths are conserved, and single-target rules remain deterministic.
 
 ## 5. Draw order
 
