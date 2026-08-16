@@ -51,7 +51,7 @@ if (is.null(info)) {
   )
 }
 
-cache_version <- "1.0.0"
+cache_version <- "1.0.1"
 cache_root <- file.path(root, "output", "report-data", "ui_uncertainty_cache")
 work_root <- file.path(root, "output", "report-data", ".ui_uncertainty_work")
 overwrite <- as_flag(Sys.getenv("NBD3_UI_CACHE_OVERWRITE", "false"))
@@ -140,7 +140,14 @@ if (!identical(sort(asr_weights$age), 1:18)) {
   stop("ASR factors must contain one positive value for ages 1:18.",
        call. = FALSE)
 }
-weight_for <- function(age) asr_weights[age == as.integer(age), F][[1L]]
+weight_for <- function(age_code) {
+  value <- asr_weights[age == as.integer(age_code), F]
+  if (length(value) != 1L || !is.finite(value[[1L]]) || value[[1L]] <= 0) {
+    stop("Missing or invalid ASR weight for standard age ", age_code, ".",
+         call. = FALSE)
+  }
+  as.numeric(value[[1L]])
+}
 
 cause_rates_path <- derived_path(config, "cause_rates.parquet")
 if (!file.exists(cause_rates_path)) {
@@ -211,7 +218,10 @@ point_population_matrix <- function(storage_scope, sex_code, units) {
     rows <- config$age_map[
       include_explorer %in% TRUE &
         vapply(database_age_codes, function(value) {
-          parsed <- tryCatch(parse_integer_codes(value), error = function(e) integer())
+          parsed <- tryCatch(
+            parse_integer_codes(value),
+            error = function(e) integer()
+          )
           length(parsed) == 1L && identical(parsed, as.integer(code))
         }, logical(1))
     ]
@@ -231,13 +241,15 @@ point_population_matrix <- function(storage_scope, sex_code, units) {
     point_dataset,
     .data$model == "NBD3-R",
     .data$sex_code == .env$sex_code,
-    .data$series_id == "za_172",
+    .data$series_id %in% .env$series_ids,
     .data$age_id %in% .env$age_ids
   )
   query <- dplyr::select(
     query,
-    .data$geography_type, .data$geography_code, .data$year,
-    .data$age_id, .data$population
+    dplyr::all_of(c(
+      "geography_type", "geography_code", "year", "age_id",
+      "series_id", "population"
+    ))
   )
   out <- data.table::as.data.table(dplyr::collect(query))
   out <- out[geography_type %in% geo_types]
@@ -248,13 +260,38 @@ point_population_matrix <- function(storage_scope, sex_code, units) {
   }
   out <- merge(out, base_age_map, by = "age_id", all.x = TRUE, sort = FALSE)
   out[, unit_key__ := paste(geography_code_raw, year, sep = "|")]
+  out[, series_unit_key__ := paste(series_id, unit_key__, sep = "|")]
   unit_key <- paste(units$geography_code_raw, units$year, sep = "|")
+  expected_key <- unlist(lapply(series_ids, function(series_id) {
+    paste(series_id, unit_key, sep = "|")
+  }), use.names = FALSE)
+  n_units <- nrow(units)
+  n_series <- length(series_ids)
   populations <- vector("list", 20L)
   for (code in 0:19) {
     values <- out[database_age == code]
-    populations[[code + 1L]] <- values$population[
-      match(unit_key, values$unit_key__)
-    ]
+    if (values[, anyDuplicated(series_unit_key__)]) {
+      stop(
+        "Point populations are duplicated for database age ", code, ".",
+        call. = FALSE
+      )
+    }
+    selected <- as.numeric(values$population[
+      match(expected_key, values$series_unit_key__)
+    ])
+    if (any(!is.finite(selected))) {
+      stop(
+        "Point populations are incomplete for database age ", code, ".",
+        call. = FALSE
+      )
+    }
+    populations[[code + 1L]] <- matrix(
+      selected,
+      nrow = n_units,
+      ncol = n_series,
+      byrow = FALSE,
+      dimnames = list(NULL, series_ids)
+    )
   }
   populations
 }
@@ -312,40 +349,30 @@ flatten_matrix <- function(x) as.numeric(x)
 
 asr_vector <- function(mapped, populations, n_series) {
   n_units <- nrow(mapped[[1L]])
-  numerator <- numeric(n_units * n_series)
-  denominator_unit <- numeric(n_units)
+  numerator <- matrix(0, nrow = n_units, ncol = n_series)
+  denominator <- matrix(0, nrow = n_units, ncol = n_series)
 
-  under5_population <- as.numeric(populations[[2L]]) +
-    as.numeric(populations[[3L]])
-  under5_deaths <- flatten_matrix(
-    mapped[[1L]] + mapped[[2L]] + mapped[[3L]]
-  )
+  under5_population <- populations[[2L]] + populations[[3L]]
+  under5_deaths <- mapped[[1L]] + mapped[[2L]] + mapped[[3L]]
   valid <- is.finite(under5_population) & under5_population > 0
   weight <- weight_for(1L)
-  repeated_population <- rep(under5_population, times = n_series)
-  repeated_valid <- rep(valid, times = n_series)
-  numerator[repeated_valid] <- numerator[repeated_valid] +
-    weight * under5_deaths[repeated_valid] /
-    repeated_population[repeated_valid]
-  denominator_unit[valid] <- denominator_unit[valid] + weight
+  numerator[valid] <- numerator[valid] +
+    weight * under5_deaths[valid] / under5_population[valid]
+  denominator[valid] <- denominator[valid] + weight
 
   for (database_age in 3:19) {
-    population <- as.numeric(populations[[database_age + 1L]])
-    deaths <- flatten_matrix(mapped[[database_age + 1L]])
+    population <- populations[[database_age + 1L]]
+    deaths <- mapped[[database_age + 1L]]
     valid <- is.finite(population) & population > 0
     weight <- weight_for(database_age - 1L)
-    repeated_population <- rep(population, times = n_series)
-    repeated_valid <- rep(valid, times = n_series)
-    numerator[repeated_valid] <- numerator[repeated_valid] +
-      weight * deaths[repeated_valid] /
-      repeated_population[repeated_valid]
-    denominator_unit[valid] <- denominator_unit[valid] + weight
+    numerator[valid] <- numerator[valid] +
+      weight * deaths[valid] / population[valid]
+    denominator[valid] <- denominator[valid] + weight
   }
-  denominator <- rep(denominator_unit, times = n_series)
-  out <- rep(NA_real_, length(numerator))
+  out <- matrix(NA_real_, nrow = n_units, ncol = n_series)
   valid <- is.finite(denominator) & denominator > 0
   out[valid] <- 1e5 * numerator[valid] / denominator[valid]
-  out
+  as.numeric(out)
 }
 
 age_vector <- function(mapped, codes) {
@@ -615,6 +642,81 @@ for (storage_scope in names(stores)) {
       storage_scope, sex_code, units
     )
 
+    # Verify the draw-level ASR implementation against the deterministic point
+    # database before processing the stochastic archive. This catches weight,
+    # age-alignment, and series-specific denominator errors immediately.
+    point_full_path <- file.path(
+      info$output_root,
+      if (identical(storage_scope, "province")) {
+        "full_point_report.parquet"
+      } else {
+        "population_full_point_report.parquet"
+      }
+    )
+    if (!file.exists(point_full_path)) {
+      stop("Full-grid point report not found: ", point_full_path, call. = FALSE)
+    }
+    point_slice <- read_draw_slice(
+      point_full_path,
+      store$geo_column,
+      sex_code,
+      source_ids = source_ids
+    )
+    if (!identical(point_slice$units, units)) {
+      stop("The point and draw unit grids differ for ASR validation.",
+           call. = FALSE)
+    }
+    point_mapped <- map_draw(point_slice, mapping, series_ids)
+    point_calculated <- asr_vector(point_mapped, populations, n_series)
+    point_key <- data.table::data.table(
+      series_id = rep(series_ids, each = n_units),
+      geography_code_raw = rep(units$geography_code_raw, times = n_series),
+      year = rep(units$year, times = n_series),
+      calculated_asr = point_calculated
+    )
+    if (identical(storage_scope, "province")) {
+      point_key[, `:=`(
+        geography_type = data.table::fifelse(
+          geography_code_raw == 10L, "national", "province"
+        ),
+        geography_code = geography_code_raw
+      )]
+    } else {
+      point_key[, `:=`(
+        geography_type = "population_group",
+        geography_code = geography_code_raw + 10L
+      )]
+    }
+    point_key[, geography_code_raw := NULL]
+    point_reference <- point_partition(storage_scope, sex_code, "asr_all")
+    point_check <- merge(
+      point_reference[, .(
+        geography_type, geography_code, year, series_id,
+        point_asr = as.numeric(asr)
+      )],
+      point_key,
+      by = c("geography_type", "geography_code", "year", "series_id"),
+      all = TRUE,
+      sort = FALSE
+    )
+    point_check[, relative_error := abs(calculated_asr - point_asr) /
+      pmax(1, abs(point_asr))]
+    max_asr_relative_error <- max(point_check$relative_error, na.rm = TRUE)
+    if (!is.finite(max_asr_relative_error) || max_asr_relative_error > 1e-8) {
+      worst <- point_check[order(-relative_error)][1L]
+      stop(
+        "Draw-level ASR calculation does not reproduce the deterministic ASR. ",
+        "Scope=", storage_scope, ", sex=", sex_code,
+        ", max relative error=", signif(max_asr_relative_error, 6),
+        ", series=", worst$series_id,
+        ", geography=", worst$geography_code,
+        ", year=", worst$year, ".",
+        call. = FALSE
+      )
+    }
+    rm(point_slice, point_mapped, point_calculated, point_key,
+       point_reference, point_check)
+
     if (completed < info$n_draws) {
       for (draw_index in seq.int(completed + 1L, info$n_draws)) {
         slice <- if (draw_index == 1L) {
@@ -875,7 +977,8 @@ manifest <- list(
   cache_bytes = as.numeric(cache_bytes),
   cache_gib = as.numeric(cache_bytes / 1024^3),
   crude_rate_intervals = "derived from death intervals and fixed point-estimate populations",
-  asr_intervals = "calculated inside each draw before summarisation",
+  asr_intervals = "calculated inside each draw with the deterministic ASR weight schedule before summarisation",
+  asr_formula_version = "1.0.1",
   raw_draw_runtime_required = FALSE
 )
 yaml::write_yaml(manifest, file.path(cache_root, "manifest.yml"))

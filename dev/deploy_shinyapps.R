@@ -34,7 +34,7 @@ if (!file.exists(primary)) {
   )
 }
 
-app_name <- Sys.getenv("NBD3_SHINY_APP_NAME", "sa-nbd3-results")
+app_name <- Sys.getenv("NBD3_SHINY_APP_NAME", "nbd3viztool")
 account <- Sys.getenv("NBD3_SHINY_ACCOUNT", "")
 server <- Sys.getenv("NBD3_SHINY_SERVER", "shinyapps.io")
 force_update <- tolower(Sys.getenv("NBD3_SHINY_FORCE_UPDATE", "true")) %in%

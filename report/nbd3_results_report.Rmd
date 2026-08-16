@@ -788,6 +788,515 @@ register_final_panel <- function(prefix, geography_type_name, domain_name, defau
   invisible(TRUE)
 }
 
+# Section 4.3: broad cause group × age profile -------------------------------
+#
+# The panel below uses the same optimized point/uncertainty cache as the two
+# general result explorers, but it requests point-estimate deaths only. Four
+# fixed years are displayed in a 2 × 2 layout, with the age-specific deaths
+# stacked into the four broad cause groups used in the published figure.
+
+broad_age_profile_years <- c(1997L, 2005L, 2012L, 2019L)
+
+broad_age_profile_ages <- data.table::data.table(
+  age_id = c(
+    "age_under1", "age_1_4", "age_5_9", "age_10_14", "age_15_19",
+    "age_20_24", "age_25_29", "age_30_34", "age_35_39", "age_40_44",
+    "age_45_49", "age_50_54", "age_55_59", "age_60_64", "age_65_69",
+    "age_70_74", "age_75_79", "age_80_84", "age_85_plus"
+  ),
+  age_label = c(
+    "0", "1–4", "5–9", "10–14", "15–19",
+    "20–24", "25–29", "30–34", "35–39", "40–44",
+    "45–49", "50–54", "55–59", "60–64", "65–69",
+    "70–74", "75–79", "80–84", "85+"
+  ),
+  age_order = seq_len(19L)
+)
+
+# The colours are sampled from the reference figure supplied for this report.
+# Stack order is bottom to top; legend order is the reverse, matching the
+# reference figure.
+broad_age_profile_causes <- data.table::data.table(
+  series_id = c("za_168", "za_169", "za_170", "za_171"),
+  series_label = c(
+    paste(
+      "Communicable diseases, perinatal conditions, maternal causes,",
+      "and nutritional deficiencies"
+    ),
+    "HIV/AIDS and tuberculosis",
+    "Non-communicable diseases",
+    "Injuries"
+  ),
+  legend_label = c(
+    paste(
+      "Communicable diseases, perinatal conditions, maternal causes,",
+      "and nutritional deficiencies"
+    ),
+    "HIV/AIDS and tuberculosis",
+    "Non-communicable diseases",
+    "Injuries"
+  ),
+  colour = c("#926DB2", "#AC0639", "#3B9FC2", "#72B43C"),
+  stack_order = 1:4,
+  legend_order = c(4L, 3L, 2L, 1L)
+)
+
+resolve_broad_age_profile_causes <- function() {
+  causes <- data.table::copy(broad_age_profile_causes)
+  available_ids <- unique(as.character(result_cause_catalog$series_id))
+  if (all(causes$series_id %in% available_ids)) return(causes)
+
+  # Stable label-based fallback for repositories whose report IDs were
+  # regenerated while retaining the same cause hierarchy.
+  fallback_patterns <- c(
+    "communicable.*maternal.*perinatal|comm/mat/peri/nutr",
+    "hiv/aids.*tuberculosis|hiv/aids.*tb",
+    "non-communicable",
+    "^injuries$"
+  )
+  for (i in seq_len(nrow(causes))) {
+    if (causes$series_id[[i]] %in% available_ids) next
+    hit <- result_cause_catalog[
+      grepl(
+        fallback_patterns[[i]],
+        series_label,
+        ignore.case = TRUE,
+        perl = TRUE
+      )
+    ]
+    if (nrow(hit)) causes$series_id[[i]] <- hit$series_id[[1L]]
+  }
+  causes
+}
+
+broad_age_profile_panel_chart <- function(
+    data,
+    panel_year,
+    y_max,
+    show_y_title = FALSE,
+    show_x_title = FALSE,
+    config = NULL,
+    height = 355) {
+  d <- data.table::as.data.table(data.table::copy(data))
+  if (!nrow(d)) return(empty_nbd_chart(height = height))
+
+  causes <- resolve_broad_age_profile_causes()[order(stack_order)]
+  total_deaths <- sum(d$estimate, na.rm = TRUE)
+  panel_title <- paste0(
+    panel_year,
+    " (N=",
+    format(round(total_deaths), big.mark = ",", scientific = FALSE),
+    ")"
+  )
+
+  complete_grid <- data.table::CJ(
+    age_id = broad_age_profile_ages$age_id,
+    series_id = causes$series_id,
+    unique = TRUE
+  )
+  d <- merge(
+    complete_grid,
+    d[, .(age_id, series_id, estimate)],
+    by = c("age_id", "series_id"),
+    all.x = TRUE,
+    sort = FALSE
+  )
+  d[!is.finite(estimate), estimate := 0]
+  d <- merge(d, broad_age_profile_ages, by = "age_id", all.x = TRUE)
+  d <- merge(d, causes, by = "series_id", all.x = TRUE)
+  data.table::setorder(d, stack_order, age_order)
+
+  hc <- highcharter::highchart() |>
+    highcharter::hc_chart(
+      type = "column",
+      spacing = c(8, 8, 8, 8),
+      marginTop = 42
+    ) |>
+    highcharter::hc_title(
+      text = panel_title,
+      align = "left",
+      x = 4,
+      y = 15,
+      style = list(
+        color = "#30343b",
+        fontSize = "13px",
+        fontWeight = "600"
+      )
+    ) |>
+    highcharter::hc_xAxis(
+      categories = broad_age_profile_ages$age_label,
+      title = list(text = if (show_x_title) "Age group (years)" else NULL),
+      labels = list(
+        rotation = -45,
+        style = list(fontSize = "10px", color = "#4d535a")
+      ),
+      tickLength = 4,
+      lineWidth = 1,
+      lineColor = "#4d535a",
+      tickColor = "#4d535a"
+    ) |>
+    highcharter::hc_yAxis(
+      min = 0,
+      max = y_max,
+      tickAmount = 6,
+      reversedStacks = FALSE,
+      title = list(text = if (show_y_title) "Number of deaths" else NULL),
+      gridLineColor = "#d8d8d8",
+      gridLineWidth = 1,
+      labels = list(style = list(fontSize = "10px", color = "#4d535a"))
+    ) |>
+    highcharter::hc_tooltip(
+      shared = TRUE,
+      useHTML = TRUE,
+      headerFormat = "<b>{point.key}</b><br/>",
+      pointFormat = paste0(
+        '<span style="color:{series.color}">●</span> ',
+        '{series.name}: <b>{point.y:,.0f}</b><br/>'
+      ),
+      footerFormat = "<b>Total: {point.stackTotal:,.0f}</b>"
+    ) |>
+    highcharter::hc_plotOptions(
+      column = list(
+        stacking = "normal",
+        borderColor = "#4b4b4b",
+        borderWidth = 0.6,
+        pointPadding = 0.02,
+        groupPadding = 0.05
+      ),
+      series = list(
+        animation = nbd_hc_animation(duration = 520L),
+        animationLimit = 10000L,
+        states = list(inactive = list(opacity = 0.22))
+      )
+    ) |>
+    highcharter::hc_legend(enabled = FALSE)
+
+  for (i in seq_len(nrow(causes))) {
+    cause <- causes[i]
+    values <- d[series_id == cause$series_id][order(age_order)]$estimate
+    hc <- highcharter::hc_add_series(
+      hc,
+      type = "column",
+      name = cause$legend_label,
+      data = as.numeric(values),
+      color = cause$colour,
+      borderColor = "#4b4b4b",
+      borderWidth = 0.6,
+      showInLegend = FALSE,
+      animation = nbd_hc_animation(
+        duration = 520L,
+        defer = 70L * (i - 1L)
+      )
+    )
+  }
+
+  finish_nbd_hc(
+    hc,
+    config = config,
+    height = height,
+    filename = paste0("broad-cause-age-", panel_year)
+  )
+}
+
+broad_age_profile_legend <- function() {
+  causes <- resolve_broad_age_profile_causes()[order(legend_order)]
+  htmltools::div(
+    class = "broad-age-profile-legend",
+    style = paste(
+      "display:flex;flex-wrap:wrap;justify-content:center;",
+      "gap:0.75rem 1.35rem;margin:0.2rem 0 1rem 0;",
+      "color:#29465b;font-size:0.92rem;font-weight:500;"
+    ),
+    lapply(seq_len(nrow(causes)), function(i) {
+      htmltools::span(
+        class = "broad-age-profile-legend-item",
+        style = "display:inline-flex;align-items:center;gap:0.42rem;",
+        htmltools::span(
+          class = "broad-age-profile-swatch",
+          style = paste0(
+            "display:inline-block;width:14px;height:14px;",
+            "border:1px solid #4b4b4b;background:",
+            causes$colour[[i]], ";"
+          )
+        ),
+        causes$legend_label[[i]]
+      )
+    })
+  )
+}
+
+broad_age_profile_panel_ui <- function(prefix = "result_broad_age") {
+  ids <- paste0(prefix, c("_scope", "_geography", "_sex"))
+  sexes <- unique(result_availability[, .(sex_code, sex)])[order(sex_code)]
+  province_choices <- geography_choices_for_scope("province")
+
+  shiny::tagList(
+    htmltools::div(
+      class = "control-panel research-control-panel",
+      shiny::fluidRow(
+        shiny::column(3, shiny::selectInput(
+          ids[[1L]], "Population set",
+          choices = c(
+            "South Africa or province" = "province",
+            "South Africa or population group" = "population_group"
+          ),
+          selected = "province"
+        )),
+        shiny::column(6, shiny::selectizeInput(
+          ids[[2L]], "Geography or population group",
+          choices = province_choices,
+          selected = make_geography_key("national", 10L),
+          multiple = FALSE
+        )),
+        shiny::column(3, shiny::selectizeInput(
+          ids[[3L]], "Sex",
+          choices = named_choices(sexes, "sex_code", "sex"),
+          selected = safe_default(sexes$sex_code, 3L),
+          multiple = FALSE
+        ))
+      )
+    ),
+    htmltools::div(
+      class = "broad-age-profile-grid",
+      shiny::fluidRow(
+        shiny::column(
+          6,
+          htmltools::div(
+            class = "report-chart broad-age-profile-panel",
+            highcharter::highchartOutput(
+              paste0(prefix, "_chart_1997"),
+              height = "355px"
+            )
+          )
+        ),
+        shiny::column(
+          6,
+          htmltools::div(
+            class = "report-chart broad-age-profile-panel",
+            highcharter::highchartOutput(
+              paste0(prefix, "_chart_2005"),
+              height = "355px"
+            )
+          )
+        )
+      ),
+      shiny::fluidRow(
+        shiny::column(
+          6,
+          htmltools::div(
+            class = "report-chart broad-age-profile-panel",
+            highcharter::highchartOutput(
+              paste0(prefix, "_chart_2012"),
+              height = "355px"
+            )
+          )
+        ),
+        shiny::column(
+          6,
+          htmltools::div(
+            class = "report-chart broad-age-profile-panel",
+            highcharter::highchartOutput(
+              paste0(prefix, "_chart_2019"),
+              height = "355px"
+            )
+          )
+        )
+      )
+    ),
+    broad_age_profile_legend(),
+    shiny::uiOutput(paste0(prefix, "_note")),
+    htmltools::tags$details(
+      class = "appendix-detail",
+      htmltools::tags$summary(
+        "View and download the broad-cause age profile"
+      ),
+      htmltools::div(
+        class = "report-table",
+        shiny::uiOutput(paste0(prefix, "_table")),
+        shiny::downloadLink(
+          paste0(prefix, "_download"),
+          "Download broad-cause age profile",
+          class = "download-link"
+        )
+      )
+    )
+  )
+}
+
+register_broad_age_profile_panel <- function(prefix = "result_broad_age") {
+  ids <- list(
+    scope = paste0(prefix, "_scope"),
+    geography = paste0(prefix, "_geography"),
+    sex = paste0(prefix, "_sex"),
+    note = paste0(prefix, "_note"),
+    table = paste0(prefix, "_table"),
+    download = paste0(prefix, "_download")
+  )
+  chart_ids <- stats::setNames(
+    paste0(prefix, "_chart_", broad_age_profile_years),
+    broad_age_profile_years
+  )
+
+  shiny::observeEvent(input[[ids$scope]], {
+    scope <- input[[ids$scope]] %||% "province"
+    choices <- geography_choices_for_scope(scope)
+    selected <- make_geography_key("national", 10L)
+    if (!selected %in% unname(choices)) selected <- unname(choices)[[1L]]
+    shiny::updateSelectizeInput(
+      session,
+      ids$geography,
+      choices = choices,
+      selected = selected,
+      server = TRUE
+    )
+  }, ignoreInit = TRUE)
+
+  selection_key <- shiny::reactive({
+    shiny::req(input[[ids$geography]], input[[ids$sex]])
+    list(
+      panel = prefix,
+      geography = as.character(input[[ids$geography]]),
+      sex = as.integer(input[[ids$sex]])
+    )
+  })
+
+  selected_data <- nbd_cached_reactive(
+    selection_key,
+    function(key) {
+      causes <- resolve_broad_age_profile_causes()
+      pieces <- lapply(
+        seq_len(nrow(broad_age_profile_ages)),
+        function(i) {
+          age <- broad_age_profile_ages[i]
+          d <- collect_result_slice(
+            geography_keys = key$geography,
+            sex_code = key$sex,
+            series_ids = causes$series_id,
+            age_id = age$age_id,
+            year_range = range(broad_age_profile_years),
+            measure = "deaths"
+          )
+          if (!nrow(d)) return(data.table::data.table())
+          d <- d[year %in% broad_age_profile_years]
+          d[, `:=`(
+            age_id = age$age_id,
+            age_label = age$age_label,
+            age_order = age$age_order
+          )]
+          d
+        }
+      )
+      d <- data.table::rbindlist(pieces, use.names = TRUE, fill = TRUE)
+      if (!nrow(d)) return(d)
+      d <- merge(
+        d,
+        causes[, .(
+          series_id,
+          broad_label = series_label,
+          colour,
+          stack_order,
+          legend_order
+        )],
+        by = "series_id",
+        all.x = TRUE,
+        sort = FALSE
+      )
+      data.table::setorder(d, year, age_order, stack_order)
+      d
+    },
+    millis = 250L
+  )
+
+  y_max <- shiny::reactive({
+    d <- selected_data()
+    if (!nrow(d)) return(NULL)
+    totals <- d[, .(age_total = sum(estimate, na.rm = TRUE)),
+                by = .(year, age_id)]
+    maximum <- max(totals$age_total, na.rm = TRUE)
+    if (!is.finite(maximum) || maximum <= 0) return(NULL)
+    magnitude <- 10^floor(log10(maximum))
+    step <- if (maximum / magnitude < 2) {
+      magnitude / 5
+    } else if (maximum / magnitude < 5) {
+      magnitude / 2
+    } else {
+      magnitude
+    }
+    ceiling(maximum / step) * step
+  })
+
+  for (panel_year in broad_age_profile_years) {
+    local({
+      year_value <- panel_year
+      output[[chart_ids[[as.character(year_value)]]]] <-
+        highcharter::renderHighchart({
+          d <- data.table::copy(selected_data())
+          ymax <- y_max()
+          if (!nrow(d) || is.null(ymax)) {
+            return(empty_nbd_chart(height = 355))
+          }
+          broad_age_profile_panel_chart(
+            d[year == year_value],
+            panel_year = year_value,
+            y_max = ymax,
+            show_y_title = year_value %in% c(1997L, 2012L),
+            show_x_title = year_value %in% c(2012L, 2019L),
+            config = config,
+            height = 355
+          )
+        })
+    })
+  }
+
+  output[[ids$note]] <- shiny::renderUI({
+    d <- selected_data()
+    if (!nrow(d)) {
+      return(htmltools::div(
+        class = "narrative-box warning",
+        "No broad-cause age profile is available for this selection."
+      ))
+    }
+    htmltools::div(
+      class = "narrative-box",
+      htmltools::strong("Broad cause composition by age. "),
+      paste0(
+        "The four panels show deaths in 1997, 2005, 2012, and 2019 for ",
+        unique(d$geography)[[1L]], " — ", unique(d$sex)[[1L]],
+        ". The four stacked groups sum to the displayed all-cause total in ",
+        "each age group."
+      )
+    )
+  })
+
+  output[[ids$table]] <- shiny::renderUI({
+    d <- data.table::copy(selected_data())
+    if (!nrow(d)) return(nbd_kable_html(data.frame()))
+    display <- d[, .(
+      Geography = geography,
+      Sex = sex,
+      Year = year,
+      `Age group` = age_label,
+      `Broad cause group` = broad_label,
+      Deaths = round(estimate)
+    )]
+    nbd_kable_html(
+      display,
+      caption = paste(
+        "Deaths by broad cause group and age group for the four selected years"
+      ),
+      align = c("l", "l", "r", "l", "l", "r")
+    )
+  })
+
+  output[[ids$download]] <- shiny::downloadHandler(
+    filename = function() paste0(prefix, "-broad-cause-age-profile.csv"),
+    content = function(file) data.table::fwrite(selected_data(), file)
+  )
+
+  invisible(TRUE)
+}
+
+
 # Injury source table used in the methods section.
 injury_source_table <- data.table::data.table()
 source_fractions <- data.table::as.data.table(data.table::copy(
@@ -1840,48 +2349,14 @@ register_result_cause_panel <- function(prefix = "result_cause") {
 }
 ```
 
-<div class="utility-note"><strong>Using this report.</strong> The report combines a conventional research-report narrative with interactive results explorers. Charts support hover values, zooming, image export, and data download. The floating contents panel follows the report as you scroll.</div>
-
-# Study overview and report guide {#overview .unnumbered}
+# Study overview and analytical sequence {#overview .unnumbered}
 
 <div class="research-abstract">
 <div class="research-abstract-label">Study summary</div>
-<p>The Third South African National Burden of Disease Study develops internally coherent estimates of mortality by cause, province, population group, sex, age, and year. It begins with registered cause-of-death microdata and then addresses four central limitations of those data: incomplete death registration, misclassification of HIV/AIDS deaths, incomplete information on the level and composition of injury mortality, and deaths assigned to ill-defined or otherwise unusable underlying causes. The resulting database contains deaths, crude and age-standardised mortality rates, and years of life lost.</p>
+<p>The Third South African National Burden of Disease Study develops internally coherent estimates of mortality by cause, province, population group, sex, age, and year. It begins with registered cause-of-death microdata and then addresses four central limitations of those data: incomplete death registration, misclassification of HIV/AIDS deaths, incomplete information on the level and composition of injury mortality, and deaths assigned to ill-defined or otherwise unusable underlying causes. The resulting database contains deaths, crude and age-standardised mortality rate. The analytical sequence of the study is shown below:</p>
 </div>
 
-```{r study-scope-table}
-study_scope <- data.table::data.table(
-  Item = c(
-    "Analytical period", "Geographic outputs", "Population-group outputs",
-    "Demographic detail", "Cause hierarchy", "Measures", "Uncertainty"
-  ),
-  `Current scope` = c(
-    "1997–2019",
-    "South Africa and nine provinces",
-    "African, White, Asian/Indian, and Coloured at national level",
-    "Male, female, person; detailed and aggregate age groups",
-    paste(
-      "All causes, broad cause groups, disease categories, detailed causes,",
-      "and selected reporting aggregates"
-    ),
-    paste(
-      "Deaths, crude rates, age-standardised rates, and years of life lost",
-      "under the supplied schedules"
-    ),
-    paste(
-      "Joint uncertainty intervals for supported deaths and crude-rate cells;",
-      "point estimates for measures not retained in the draw profile"
-    )
-  )
-)
-nbd_kable_html(
-  study_scope,
-  caption = "Scope of the current mortality analysis",
-  align = c("l", "l")
-)
-```
 
-## Analytical sequence
 
 <div class="method-flow research-report-flow">
 <article><span>1</span><h3>Prepare registered deaths</h3><p>Verify ICD information, map records to NBD causes, aggregate records, and redistribute unknown demographic categories.</p></article>
@@ -1892,58 +2367,6 @@ nbd_kable_html(
 <article><span>6</span><h3>Construct final outputs</h3><p>Map to the reporting hierarchy, calculate deaths, crude rates and age-standardised rates, and aggregate the complete joint uncertainty draws.</p></article>
 </div>
 
-## Cause hierarchy used in the results
-
-```{r cause-hierarchy-table}
-cause_hierarchy_table <- data.table::data.table(
-  Level = c(
-    "All causes", "Broad cause groups", "Disease categories",
-    "Detailed causes", "Reporting and custom aggregates"
-  ),
-  Description = c(
-    "The complete mortality envelope across every cause.",
-    paste(
-      "The highest analytical groupings, including communicable/maternal/",
-      "perinatal/nutritional causes, non-communicable diseases, and injuries."
-    ),
-    paste(
-      "Intermediate groupings such as HIV/AIDS and tuberculosis, infectious",
-      "diseases, cardiovascular diseases, cancers, and intentional injuries."
-    ),
-    paste(
-      "The individual South African NBD causes used for cause-specific",
-      "analysis and ranking."
-    ),
-    paste(
-      "Aggregations retained for reporting or comparison when they do not",
-      "correspond exactly to one standard hierarchy level."
-    )
-  ),
-  `How it is used here` = c(
-    "Overall mortality trends and envelope checks.",
-    "High-level burden patterns and comparisons.",
-    "Programme- and disease-area interpretation.",
-    "Cause-specific trends, comparisons, and rankings.",
-    "Selected reporting views and model-comparison series."
-  )
-)
-nbd_kable_html(
-  cause_hierarchy_table,
-  caption = "Cause hierarchy available in the interactive results sections",
-  align = c("l", "l", "l")
-)
-```
-
-## Report map
-
-<div class="journey-grid research-report-map">
-<a class="journey-card" href="#background"><span>01</span><strong>Background and objectives</strong><small>Why the study is required and what the current analysis is designed to estimate.</small></a>
-<a class="journey-card" href="#data"><span>02</span><strong>Data and analytical inputs</strong><small>Registered deaths, demographic envelopes, injury surveys, NPR, HIV prevalence, and supporting lookups.</small></a>
-<a class="journey-card" href="#methods"><span>03</span><strong>Methods</strong><small>Data preparation, completeness, HIV/AIDS, injuries, redistribution, and joint uncertainty.</small></a>
-<a class="journey-card" href="#results"><span>04</span><strong>Results</strong><small>Interactive comparison of one cause across populations and multiple causes within one population.</small></a>
-<a class="journey-card" href="#discussion"><span>05</span><strong>Discussion and next phases</strong><small>Interpretation, current boundaries, COVID-19 extension, comparative risk assessment, and district estimates.</small></a>
-<a class="journey-card" href="#technical-appendix"><span>06</span><strong>Technical appendix</strong><small>Uncertainty by result type, covariance, limitations, and study references.</small></a>
-</div>
 
 # Background and objectives {#background}
 
@@ -2099,109 +2522,6 @@ The completeness inputs were developed for the South African NBD programme and a
 ### Updating the recent period with the National Population Register
 
 The original completeness series is held at the configured reference year after 2010. From 2017, the pipeline uses NPR information to update the trajectory. NPR natural and injury counts are aligned to vital registration using their 2015–2016 overlap, after which the calibrated NPR series informs the post-2016 mortality adjustment. The aim is to incorporate recent changes in registration without imposing the older completeness pattern indefinitely.
-
-### Completeness over time
-
-The chart below shows the annual aggregate $S_2$ information within each province after age and sex have been combined using implied pre-adjustment African natural deaths as weights. The plotted quantity is $100/S_2$: values below 100% indicate an upward correction for under-registration, while values above 100% indicate that the observed African natural component is scaled downward to remain within the specified all-cause envelope.
-
-```{r completeness-time-chart}
-if (nrow(completeness_time_data)) {
-  completeness_plot <- completeness_time_data[
-    is.finite(implied_completeness),
-    .(DeathYear, Province, implied_completeness)
-  ]
-  completeness_chart <- hc_nbd_lines(
-    completeness_plot,
-    x = "DeathYear",
-    y = "implied_completeness",
-    series = "Province",
-    title = "Implied completeness of African natural death registration",
-    subtitle = paste(
-      "Annual province-level values after age and sex are collapsed with",
-      "implied pre-adjustment African natural deaths as weights"
-    ),
-    x_title = "Year",
-    y_title = "Implied completeness (%)",
-    config = config,
-    decimals = 1,
-    suffix = "%",
-    height = 510,
-    filename = "african-natural-completeness-over-time",
-    series_order = unname(report_province_labels)
-  )
-  highcharter::hc_yAxis(
-    completeness_chart,
-    title = list(text = "Implied completeness (%)"),
-    plotLines = list(list(
-      value = 100,
-      color = "#7c858e",
-      width = 1,
-      dashStyle = "ShortDash",
-      label = list(text = "No adjustment", align = "right")
-    ))
-  )
-} else {
-  htmltools::div(
-    class = "narrative-box warning",
-    "The completeness checkpoints are not available for this rendered report."
-  )
-}
-```
-
-### Differential completeness by province
-
-```{r completeness-province-chart}
-if (nrow(completeness_province_data)) {
-  hc_nbd_bar(
-    completeness_province_data[is.finite(implied_completeness)],
-    category = "Province",
-    value = "implied_completeness",
-    title = "Death-weighted African natural completeness by province",
-    subtitle = paste(
-      "Aggregate values over the eligible completeness period;",
-      "100% corresponds to no residual adjustment"
-    ),
-    axis_title = "Implied completeness (%)",
-    config = config,
-    decimals = 1,
-    suffix = "%",
-    height = 470,
-    filename = "african-natural-completeness-by-province"
-  )
-} else {
-  htmltools::div(
-    class = "narrative-box warning",
-    "The province completeness summary is not available."
-  )
-}
-```
-
-```{r completeness-province-table}
-if (nrow(completeness_province_data)) {
-  completeness_display <- data.table::copy(completeness_province_data)
-  if (!"eligible_years" %in% names(completeness_display)) {
-    completeness_display[, eligible_years := NA_integer_]
-  }
-  completeness_display <- completeness_display[, .(
-    Province,
-    `Eligible years` = eligible_years,
-    `Aggregate S2` = round(aggregate_s2, 3),
-    `Implied completeness (%)` = round(implied_completeness, 1),
-    `Minimum annual completeness (%)` = round(minimum_annual_completeness, 1),
-    `Median annual completeness (%)` = round(median_annual_completeness, 1),
-    `Maximum annual completeness (%)` = round(maximum_annual_completeness, 1),
-    `Time-only log SD used in uncertainty` = round(log_sd, 3)
-  )]
-  nbd_kable_html(
-    completeness_display,
-    caption = paste(
-      "Province completeness summaries and the time-only empirical",
-      "dispersion used for the completeness component of joint uncertainty"
-    ),
-    align = c("l", "r", "r", "r", "r", "r", "r", "r")
-  )
-}
-```
 
 ## Correcting misclassified HIV/AIDS deaths {#hiv-methods}
 
@@ -2625,6 +2945,18 @@ register_result_cause_panel("result_cause")
 
 ```{r result-cause-ui}
 result_cause_panel_ui("result_cause")
+```
+
+## Number of deaths by broad cause group and age group {#result-broad-cause-age}
+
+This view shows how the age distribution of mortality changed across the four broad cause groups. The four panels use a common vertical scale and fixed reference years—1997, 2005, 2012, and 2019—so the changing level and composition of mortality can be compared directly. Select South Africa, one province, or one national population group, together with Male, Female, or Person.
+
+```{r register-result-broad-age, include=FALSE}
+register_broad_age_profile_panel("result_broad_age")
+```
+
+```{r result-broad-age-ui}
+broad_age_profile_panel_ui("result_broad_age")
 ```
 
 # Discussion and next analytical phases {#discussion}

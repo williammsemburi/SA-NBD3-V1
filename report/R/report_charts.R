@@ -461,9 +461,7 @@ hc_injury_composition <- function(
       plotLines = survey_lines
     ) |>
     highcharter::hc_yAxis(
-      title = list(text = "Share of injury deaths"),
-      min = 0,
-      max = 1
+      title = list(text = "Share of injury deaths")
     ) |>
     highcharter::hc_tooltip(shared = TRUE, valueDecimals = 3) |>
     highcharter::hc_plotOptions(
