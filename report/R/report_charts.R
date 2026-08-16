@@ -37,6 +37,20 @@ nbd_hc_theme <- function(config = NULL) {
   )
 }
 
+
+nbd_hc_animation_enabled <- function() {
+  isTRUE(getOption("nbd3.highcharts.animation", TRUE))
+}
+
+nbd_hc_animation <- function(duration = 500L, defer = 0L) {
+  if (!nbd_hc_animation_enabled()) return(FALSE)
+  list(
+    duration = as.integer(duration),
+    defer = as.integer(defer),
+    easing = "easeInOutSine"
+  )
+}
+
 hc_export_data_available <- function() {
   nzchar(system.file(
     "htmlwidgets/lib/highcharts/modules/export-data.js",
@@ -51,6 +65,10 @@ finish_nbd_hc <- function(
     filename = "nbd3-chart") {
   if (is.null(hc)) return(NULL)
   hc <- highcharter::hc_add_theme(hc, nbd_hc_theme(config))
+  hc <- highcharter::hc_chart(
+    hc,
+    animation = nbd_hc_animation(duration = 300L)
+  )
   hc <- highcharter::hc_credits(hc, enabled = FALSE)
   if (hc_export_data_available()) {
     hc <- highcharter::hc_add_dependency(hc, "modules/export-data.js")
@@ -166,7 +184,8 @@ hc_nbd_lines <- function(
       valueSuffix = suffix
     ) |>
     highcharter::hc_plotOptions(series = list(
-      animation = FALSE,
+      animation = nbd_hc_animation(duration = 550L),
+      animationLimit = 10000L,
       lineWidth = 2.5,
       marker = list(enabled = markers, radius = 3),
       states = list(inactive = list(opacity = 0.18), hover = list(lineWidthPlus = 1))
@@ -194,6 +213,10 @@ hc_nbd_lines <- function(
       color = series_colour(name, config, i),
       dashStyle = series_dash(name, config),
       connectNulls = FALSE,
+      animation = nbd_hc_animation(
+        duration = 550L,
+        defer = 45L * (i - 1L)
+      ),
       zIndex = 2
     )
 
@@ -215,6 +238,10 @@ hc_nbd_lines <- function(
           lineWidth = 0,
           linkedTo = line_id,
           showInLegend = FALSE,
+          animation = nbd_hc_animation(
+            duration = 350L,
+            defer = 70L + 45L * (i - 1L)
+          ),
           zIndex = 0
         )
       }
@@ -268,7 +295,10 @@ hc_nbd_bar <- function(
     ) |>
     highcharter::hc_plotOptions(
       bar = list(borderRadius = 3, pointPadding = 0.06, groupPadding = 0.08),
-      series = list(animation = FALSE)
+      series = list(
+        animation = nbd_hc_animation(duration = 500L, defer = 80L),
+        animationLimit = 10000L
+      )
     )
   finish_nbd_hc(hc, config, height, filename)
 }
@@ -318,7 +348,10 @@ hc_nbd_columns <- function(
     ) |>
     highcharter::hc_plotOptions(
       column = list(borderRadius = 2, pointPadding = 0.04, groupPadding = 0.08),
-      series = list(animation = FALSE)
+      series = list(
+        animation = nbd_hc_animation(duration = 500L, defer = 80L),
+        animationLimit = 10000L
+      )
     )
   finish_nbd_hc(hc, config, height, filename)
 }
@@ -373,7 +406,8 @@ hc_nbd_heatmap <- function(
       data = points,
       name = value_label,
       borderWidth = 0.5,
-      borderColor = "#ffffff"
+      borderColor = "#ffffff",
+      animation = nbd_hc_animation(duration = 450L, defer = 60L)
     ) |>
     highcharter::hc_tooltip(pointFormat = paste0("<b>", value_label, ": {point.value:,.2f}</b>"))
   finish_nbd_hc(hc, config, height, filename)
@@ -433,7 +467,11 @@ hc_injury_composition <- function(
     ) |>
     highcharter::hc_tooltip(shared = TRUE, valueDecimals = 3) |>
     highcharter::hc_plotOptions(
-      series = list(animation = FALSE, lineWidth = 2.5)
+      series = list(
+        animation = nbd_hc_animation(duration = 550L),
+        animationLimit = 10000L,
+        lineWidth = 2.5
+      )
     ) |>
     highcharter::hc_legend(
       layout = "horizontal",
@@ -442,7 +480,8 @@ hc_injury_composition <- function(
     )
 
   groups <- intersect(names(group_colours), unique(model$broad_group))
-  for (group in groups) {
+  for (i in seq_along(groups)) {
+    group <- groups[[i]]
     d <- model[broad_group == group][order(year)]
     hc <- highcharter::hc_add_series(
       hc,
@@ -451,6 +490,10 @@ hc_injury_composition <- function(
       data = hc_points_xy(d$year, d$fraction),
       color = group_colours[[group]],
       marker = list(enabled = FALSE),
+      animation = nbd_hc_animation(
+        duration = 550L,
+        defer = 90L * (i - 1L)
+      ),
       zIndex = 2
     )
 
@@ -473,6 +516,10 @@ hc_injury_composition <- function(
             lineWidth = 2
           ),
           showInLegend = FALSE,
+          animation = nbd_hc_animation(
+            duration = 350L,
+            defer = 300L + 90L * (i - 1L)
+          ),
           zIndex = 5
         )
       }

@@ -1,12 +1,12 @@
 # Joint uncertainty configuration for the Third South African NBD Study,
 # Version 1 (1997-2019).
 #
-# The default 100 draws support collaborator review. Increase n_draws for a
-# final Monte Carlo run without changing the statistical model.
+# The publication profile uses 1,000 joint draws. Use a separate output_name
+# for any smaller smoke test so production results cannot be mixed with it.
 run:
   profile: analysis
-  output_name: nbd3_v1_joint_survey_injury_weighted_redist
-  n_draws: 100
+  output_name: nbd3_v1_joint_full_ui_1000
+  n_draws: 1000
   base_seed: 20260810
   scenarios:
     - joint
@@ -82,7 +82,16 @@ reporting:
   # Asian/Indian and Coloured) so the final population-group panels receive
   # the same joint uncertainty as the provincial panels.
   include_population_groups: true
+  # Keep the compact headline draw table for the legacy comparison builder.
   sexes:
+    - 3
+  # Write a second wide base-age draw table for every sex. The interactive
+  # report derives exact deaths, crude-rate and all-age ASR intervals from
+  # these files for every supported cause, geography and age combination.
+  full_ui_enabled: true
+  full_ui_sexes:
+    - 1
+    - 2
     - 3
   age_groups:
     under_1:

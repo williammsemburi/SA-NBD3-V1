@@ -16,14 +16,14 @@
 # phases to FALSE to resume from existing outputs.
 
 RUN_POINT_ESTIMATES <- FALSE
-RUN_UNCERTAINTY     <- TRUE
+RUN_UNCERTAINTY     <- FALSE
 RUN_REPORT          <- TRUE
 OPEN_REPORT         <- TRUE
 RUN_FULL_VALIDATION <- FALSE
 
 UNCERTAINTY_CONFIG   <- file.path("config", "uncertainty_joint.yml")
 UNCERTAINTY_SCENARIO <- "joint"
-OVERWRITE_UNCERTAINTY <- TRUE
+OVERWRITE_UNCERTAINTY <- FALSE
 
 nbd_start_directory <- function() {
   arguments <- commandArgs(trailingOnly = FALSE)

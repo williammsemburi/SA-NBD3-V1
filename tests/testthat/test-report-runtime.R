@@ -1,6 +1,8 @@
 report_data_path <- file.path(.test_root, "report", "R", "report_data.R")
+report_cache_path <- file.path(.test_root, "report", "R", "report_cache.R")
 report_charts_path <- file.path(.test_root, "report", "R", "report_charts.R")
 source(report_data_path, local = environment())
+source(report_cache_path, local = environment())
 source(report_charts_path, local = environment())
 
 runtime_test_config <- list(
@@ -95,4 +97,94 @@ testthat::test_that("Arrow cause-rate filtering collects before multi-value filt
     measure = "crude_rate"
   ))
   testthat::expect_equal(nrow(out), 4L)
+})
+
+testthat::test_that("the explorer exposes mortality measures and rejects YLL measures", {
+  testthat::expect_identical(measure_column("deaths"), "deaths")
+  testthat::expect_identical(measure_column("crude_rate"), "crude_rate")
+  testthat::expect_identical(measure_column("asr"), "asr")
+  testthat::expect_error(
+    measure_column("yll00"),
+    "Unsupported explorer measure"
+  )
+})
+
+testthat::test_that("Highcharter plots animate by default and allow reduced-motion opt-out", {
+  testthat::skip_if_not_installed("highcharter")
+  d <- data.table::data.table(
+    year = 2017:2019,
+    model = "NBD3-R",
+    estimate = c(100, 103, 106)
+  )
+
+  chart <- hc_nbd_lines(
+    d,
+    y = "estimate",
+    series = "model",
+    config = runtime_test_config
+  )
+  testthat::expect_true(is.list(chart$x$hc_opts$chart$animation))
+  testthat::expect_gt(chart$x$hc_opts$chart$animation$duration, 0)
+  testthat::expect_true(is.list(chart$x$hc_opts$plotOptions$series$animation))
+  testthat::expect_gt(chart$x$hc_opts$plotOptions$series$animation$duration, 0)
+
+  old_options <- options(nbd3.highcharts.animation = FALSE)
+  on.exit(options(old_options), add = TRUE)
+  reduced_motion_chart <- hc_nbd_lines(
+    d,
+    y = "estimate",
+    series = "model",
+    config = runtime_test_config
+  )
+  testthat::expect_false(reduced_motion_chart$x$hc_opts$chart$animation)
+  testthat::expect_false(
+    reduced_motion_chart$x$hc_opts$plotOptions$series$animation
+  )
+})
+
+testthat::test_that("publication report includes the fast deployment cache layer", {
+  testthat::expect_true(file.exists(file.path(
+    .test_root, "report", "R", "report_cache.R"
+  )))
+  testthat::expect_true(file.exists(file.path(
+    .test_root, "dev", "build_shiny_ui_cache.R"
+  )))
+  testthat::expect_true(file.exists(file.path(
+    .test_root, "dev", "prepare_shinyapps_bundle.R"
+  )))
+  testthat::expect_true(file.exists(file.path(
+    .test_root, "docs", "SHINY_DEPLOYMENT.md"
+  )))
+})
+
+testthat::test_that("fast cache paths are rooted in report data", {
+  config <- read_viz_config(.test_root)
+  paths <- nbd_fast_ui_cache_paths(config)
+  testthat::expect_true(grepl(
+    "output/report-data/ui_uncertainty_cache$",
+    gsub("\\\\", "/", paths$root)
+  ))
+  testthat::expect_identical(
+    basename(paths$comparison),
+    "model_comparison_uncertainty.parquet"
+  )
+})
+
+testthat::test_that("deployment cache prewarms the default report partitions", {
+  path <- file.path(root, "report", "R", "report_cache.R")
+  text <- paste(readLines(path, warn = FALSE), collapse = "\n")
+  testthat::expect_match(text, "NBD3_PREWARM_UI_CACHE", fixed = TRUE)
+  testthat::expect_match(text, 'c("age_all", "asr_all")', fixed = TRUE)
+  testthat::expect_match(text, "sex_code = 3L", fixed = TRUE)
+})
+
+
+testthat::test_that("deployment partition-cache keys are cachem compatible", {
+  keys <- c(
+    nbd_fast_ui_partition_cache_key("province", 3L, "age_0"),
+    nbd_fast_ui_partition_cache_key("province", 3L, "asr_all"),
+    nbd_fast_ui_partition_cache_key("population_group", 1L, "age_85_plus")
+  )
+  testthat::expect_true(all(grepl("^[a-z0-9]+$", keys)))
+  testthat::expect_length(unique(keys), length(keys))
 })

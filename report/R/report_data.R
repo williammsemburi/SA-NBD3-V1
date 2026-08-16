@@ -444,6 +444,7 @@ file_metadata <- function(path) {
 source_report_files <- function(root = nbd3_root()) {
   files <- c(
     file.path(root, "report", "R", "report_data.R"),
+    file.path(root, "report", "R", "report_cache.R"),
     file.path(root, "report", "R", "report_charts.R")
   )
   files[file.exists(files)]
@@ -453,14 +454,776 @@ source_viztool_files <- function(root = nbd3_root(), include_modules = FALSE) {
   invisible(source_report_files(root))
 }
 
+
+
+# Full-grid joint uncertainty for the interactive explorers -------------------
+#
+# The production uncertainty run stores a wide base-age table in addition to
+# the compact comparison table. This lets the report calculate exact intervals
+# only for the cells selected by the collaborator, rather than materialising a
+# many-million-row interval table for every possible combination.
+
+full_uncertainty_age_columns <- function() paste0("age_", 0:19)
+
+full_uncertainty_expand_database_ages <- function(codes) {
+  codes <- as.integer(codes)
+  if (!length(codes)) return(integer())
+  aggregate_map <- list(
+    `20` = 0:2,
+    `21` = 3:4,
+    `22` = 5:10,
+    `23` = 11:13,
+    `24` = 14:19,
+    `25` = 0:19,
+    `26` = 5:19
+  )
+  out <- unlist(lapply(codes, function(code) {
+    key <- as.character(code)
+    if (key %in% names(aggregate_map)) aggregate_map[[key]] else code
+  }), use.names = FALSE)
+  sort(unique(as.integer(out[out %in% 0:19])))
+}
+
+full_uncertainty_age_spec <- function(config, age_id, measure) {
+  age_id <- as.character(age_id)[[1L]]
+  measure <- as.character(measure)[[1L]]
+  if (identical(measure, "asr")) {
+    if (!identical(age_id, "asr_all")) {
+      stop("Age-standardised uncertainty requires age_id='asr_all'.",
+           call. = FALSE)
+    }
+    return(list(
+      age_id = age_id,
+      death_codes = 0:19,
+      population_codes = 1:19,
+      columns = full_uncertainty_age_columns(),
+      metric_type = "asr"
+    ))
+  }
+  age_id_value <- age_id
+  row <- config$age_map[get("age_id") == age_id_value]
+  if (nrow(row) != 1L) {
+    stop("Unknown explorer age_id: ", age_id, call. = FALSE)
+  }
+  codes <- full_uncertainty_expand_database_ages(
+    parse_integer_codes(row$database_age_codes[[1L]])
+  )
+  if (!length(codes)) {
+    stop("No base ages are available for ", age_id, ".", call. = FALSE)
+  }
+  population_codes <- codes[codes != 0L]
+  if (identical(measure, "crude_rate") && !length(population_codes)) {
+    stop(
+      "A crude neonatal rate is not supported because the supplied population ",
+      "input has no separate neonatal denominator. Use deaths or the combined ",
+      "under-one rate.",
+      call. = FALSE
+    )
+  }
+  list(
+    age_id = age_id,
+    death_codes = codes,
+    population_codes = population_codes,
+    columns = paste0("age_", codes),
+    metric_type = "standard"
+  )
+}
+
+full_uncertainty_draw_files <- function(directory, expected_draws) {
+  if (is.null(directory) || !dir.exists(directory)) return(character())
+  files <- list.files(
+    directory,
+    pattern = "^draw_[0-9]+[.]parquet$",
+    full.names = TRUE
+  )
+  if (!length(files)) return(character())
+  ids <- suppressWarnings(as.integer(sub(
+    "^draw_([0-9]+)[.]parquet$", "\\1", basename(files)
+  )))
+  if (anyNA(ids)) stop("Could not parse full uncertainty draw filenames.",
+                       call. = FALSE)
+  order_index <- order(ids)
+  files <- files[order_index]
+  ids <- ids[order_index]
+  if (length(expected_draws) == 1L && is.finite(expected_draws)) {
+    expected <- seq_len(as.integer(expected_draws))
+    if (!identical(ids, expected)) {
+      stop(
+        "The full uncertainty draw directory is not a complete 1:",
+        expected_draws, " sequence.",
+        call. = FALSE
+      )
+    }
+  }
+  files
+}
+
+full_uncertainty_source_mapping <- function(config, comparison = FALSE) {
+  map <- data.table::as.data.table(data.table::copy(config$cause_map))
+  map <- if (isTRUE(comparison)) {
+    map[include_comparison %in% TRUE & measure %in% c("deaths", "fraction")]
+  } else {
+    map[include_explorer %in% TRUE]
+  }
+  hierarchy_path <- file.path(
+    config$root, "data", "lookups", "analysis_to_za.csv"
+  )
+  if (!file.exists(hierarchy_path)) {
+    stop("Cause hierarchy not found: ", hierarchy_path, call. = FALSE)
+  }
+  hierarchy <- data.table::fread(hierarchy_path, na.strings = c("", "NA"))
+  assert_columns(
+    hierarchy,
+    c("analysis_code", "za_code", "weight"),
+    "analysis_to_za.csv"
+  )
+  hierarchy[, `:=`(
+    analysis_code = as.integer(analysis_code),
+    za_code = as.integer(za_code),
+    weight = as.numeric(weight)
+  )]
+
+  pieces <- lapply(seq_len(nrow(map)), function(index) {
+    row <- map[index]
+    za_codes <- parse_integer_codes(row$za_codes[[1L]])
+    if (length(za_codes) == 1L && identical(za_codes, 172L)) {
+      source <- data.table::data.table(
+        source_cause_id = "all_causes", weight = 1
+      )
+    } else if (length(za_codes) == 1L && identical(za_codes, 171L)) {
+      source <- data.table::data.table(
+        source_cause_id = "all_injuries", weight = 1
+      )
+    } else {
+      source <- hierarchy[
+        za_code %in% za_codes & is.finite(weight) & weight > 0,
+        .(weight = sum(weight)),
+        by = analysis_code
+      ][, .(
+        source_cause_id = paste0("nbd_", analysis_code),
+        weight = as.numeric(weight)
+      )]
+    }
+    if (!nrow(source)) return(NULL)
+    source[, `:=`(
+      series_id = as.character(row$series_id[[1L]]),
+      measure = as.character(row$measure[[1L]] %||% ""),
+      denominator_series_id = if (
+        isTRUE(comparison) && identical(as.character(row$measure[[1L]]), "fraction")
+      ) "hiv_all_causes_deaths" else NA_character_
+    )]
+    source
+  })
+  out <- data.table::rbindlist(pieces, use.names = TRUE, fill = TRUE)
+  if (!nrow(out)) stop("No uncertainty cause mapping could be constructed.",
+                       call. = FALSE)
+  data.table::setorder(out, series_id, source_cause_id)
+  out[]
+}
+
+open_full_uncertainty_runtime <- function(config, scenario = "joint") {
+  viz_require_packages(c("arrow", "data.table", "dplyr", "yaml"))
+  profile_path <- file.path(config$root, "config", "uncertainty_joint.yml")
+  if (!file.exists(profile_path)) return(NULL)
+  profile <- yaml::read_yaml(profile_path)
+  if (!isTRUE(profile$reporting$full_ui_enabled %||% FALSE)) return(NULL)
+  output_name <- as.character(profile$run$output_name %||% "")
+  if (!nzchar(output_name)) return(NULL)
+  n_draws <- as.integer(profile$run$n_draws %||% NA_integer_)
+  output_root <- file.path(
+    config$root, "output", "uncertainty", output_name
+  )
+  scenario_root <- file.path(output_root, scenario)
+  province_dir <- file.path(scenario_root, "full_draws")
+  population_dir <- file.path(scenario_root, "population_full_draws")
+  province_files <- full_uncertainty_draw_files(province_dir, n_draws)
+  population_files <- full_uncertainty_draw_files(population_dir, n_draws)
+  if (!length(province_files)) return(NULL)
+  if (isTRUE(profile$reporting$include_population_groups %||% FALSE) &&
+      !length(population_files)) {
+    stop(
+      "Population-group full uncertainty draws were requested but are missing: ",
+      population_dir, ".",
+      call. = FALSE
+    )
+  }
+  asr_path <- file.path(output_root, "asr_factors.csv")
+  if (!file.exists(asr_path)) {
+    stop("ASR factors for the full uncertainty runtime are missing: ",
+         asr_path, call. = FALSE)
+  }
+  factors <- data.table::fread(asr_path)
+  assert_columns(factors, c("age", "F"), "ASR factors")
+  factors[, `:=`(age = as.integer(age), F = as.numeric(F))]
+
+  list(
+    profile = profile,
+    output_root = output_root,
+    scenario = scenario,
+    n_draws = n_draws,
+    province_files = province_files,
+    population_files = population_files,
+    province_dataset = arrow::open_dataset(province_files, format = "parquet"),
+    population_dataset = if (length(population_files)) {
+      arrow::open_dataset(population_files, format = "parquet")
+    } else NULL,
+    cause_mapping = full_uncertainty_source_mapping(config, comparison = FALSE),
+    comparison_mapping = full_uncertainty_source_mapping(
+      config, comparison = TRUE
+    ),
+    asr_factors = factors,
+    cache = new.env(parent = emptyenv())
+  )
+}
+
+full_uncertainty_cache_key <- function(prefix, data) {
+  x <- data.table::as.data.table(data.table::copy(data))
+  fields <- c(
+    "geography_type", "geography_code", "sex_code", "year",
+    "age_id", "series_id", "measure"
+  )
+  fields <- fields[fields %in% names(x)]
+  data.table::setorderv(x, fields)
+  values <- lapply(fields, function(field) {
+    paste(unique(as.character(x[[field]])), collapse = ",")
+  })
+  paste(c(prefix, unlist(values, use.names = FALSE)), collapse = "|")
+}
+
+full_uncertainty_query <- function(
+    info,
+    geography_type,
+    geography_codes,
+    sex_code,
+    years,
+    cause_ids,
+    age_columns) {
+  geography_type <- as.character(geography_type)[[1L]]
+  geography_codes <- sort(unique(as.integer(geography_codes)))
+  sex_code <- as.integer(sex_code)[[1L]]
+  years <- sort(unique(as.integer(years)))
+  cause_ids <- sort(unique(as.character(cause_ids)))
+  age_columns <- unique(as.character(age_columns))
+  is_population <- identical(geography_type, "population_group")
+  storage_geography_codes <- if (is_population) {
+    ifelse(geography_codes %in% 11:14, geography_codes - 10L, geography_codes)
+  } else {
+    geography_codes
+  }
+  dataset <- if (is_population) info$population_dataset else info$province_dataset
+  files <- if (is_population) info$population_files else info$province_files
+  geo_column <- if (is_population) "Popgroup" else "Death_Prov"
+  selected_columns <- c(
+    "scenario", "draw_id", geo_column, "Sex", "DeathYear", "cause_id",
+    age_columns
+  )
+
+  query_result <- tryCatch({
+    query <- dplyr::filter(
+      dataset,
+      .data$Sex == .env$sex_code,
+      .data$DeathYear >= .env$years[[1L]],
+      .data$DeathYear <= .env$years[[length(years)]]
+    )
+    if (length(storage_geography_codes) == 1L) {
+      geography_value <- storage_geography_codes[[1L]]
+      query <- dplyr::filter(
+        query, .data[[geo_column]] == .env$geography_value
+      )
+    } else {
+      query <- dplyr::filter(
+        query, .data[[geo_column]] %in% .env$storage_geography_codes
+      )
+    }
+    if (length(cause_ids) == 1L) {
+      cause_value <- cause_ids[[1L]]
+      query <- dplyr::filter(query, .data$cause_id == .env$cause_value)
+    } else {
+      query <- dplyr::filter(query, .data$cause_id %in% .env$cause_ids)
+    }
+    query <- dplyr::select(query, dplyr::all_of(selected_columns))
+    data.table::as.data.table(dplyr::collect(query))
+  }, error = function(error) NULL)
+
+  if (is.null(query_result)) {
+    pieces <- lapply(files, function(path) {
+      x <- data.table::as.data.table(arrow::read_parquet(
+        path,
+        col_select = selected_columns,
+        as_data_frame = TRUE
+      ))
+      x[
+        Sex == sex_code &
+          DeathYear %in% years &
+          get(geo_column) %in% storage_geography_codes &
+          cause_id %in% cause_ids
+      ]
+    })
+    query_result <- data.table::rbindlist(
+      pieces, use.names = TRUE, fill = TRUE
+    )
+  }
+  if (!nrow(query_result)) return(query_result)
+  query_result <- query_result[DeathYear %in% years]
+  if (query_result[, data.table::uniqueN(draw_id)] != info$n_draws) {
+    stop(
+      "A full uncertainty query returned ",
+      query_result[, data.table::uniqueN(draw_id)], " draw(s); expected ",
+      info$n_draws, ".",
+      call. = FALSE
+    )
+  }
+  query_result[]
+}
+
+full_uncertainty_base_population <- function(runtime, point_rows) {
+  viz_require_packages(c("arrow", "dplyr", "data.table"))
+  d <- data.table::as.data.table(data.table::copy(point_rows))
+  if (!nrow(d)) return(data.table::data.table())
+  base_age_map <- data.table::rbindlist(lapply(0:19, function(code) {
+    rows <- runtime$config$age_map[
+      include_explorer %in% TRUE &
+        vapply(database_age_codes, function(value) {
+          parsed <- tryCatch(parse_integer_codes(value), error = function(e) integer())
+          length(parsed) == 1L && identical(parsed, as.integer(code))
+        }, logical(1))
+    ]
+    if (!nrow(rows)) return(NULL)
+    data.table::data.table(
+      database_age = as.integer(code),
+      age_id = as.character(rows$age_id[[1L]])
+    )
+  }), use.names = TRUE, fill = TRUE)
+  if (base_age_map[, data.table::uniqueN(database_age)] != 20L) {
+    stop("The report age map does not identify all 20 base ages.",
+         call. = FALSE)
+  }
+
+  geo_types <- unique(d$geography_type)
+  pieces <- lapply(geo_types, function(type) {
+    slice <- d[geography_type == type]
+    dataset <- runtime$cause_rates_dataset
+    sex_value <- unique(slice$sex_code)
+    if (length(sex_value) != 1L) stop("ASR population query requires one sex.", call. = FALSE)
+    year_start <- min(slice$year)
+    year_end <- max(slice$year)
+    base_age_ids <- unique(base_age_map$age_id)
+    series_values <- unique(slice$series_id)
+    query <- dplyr::filter(
+      dataset,
+      .data$model == "NBD3-R",
+      .data$geography_type == .env$type,
+      .data$sex_code == .env$sex_value[[1L]],
+      .data$year >= .env$year_start,
+      .data$year <= .env$year_end,
+      .data$age_id %in% .env$base_age_ids,
+      .data$series_id %in% .env$series_values
+    )
+    query <- dplyr::select(
+      query,
+      .data$geography_type, .data$geography_code, .data$sex_code,
+      .data$year, .data$series_id, .data$age_id, .data$population
+    )
+    out <- data.table::as.data.table(dplyr::collect(query))
+    out <- out[
+      geography_code %in% unique(slice$geography_code) &
+        year %in% unique(slice$year) &
+        series_id %in% unique(slice$series_id)
+    ]
+    out
+  })
+  out <- data.table::rbindlist(pieces, use.names = TRUE, fill = TRUE)
+  out <- merge(out, base_age_map, by = "age_id", all.x = TRUE, sort = FALSE)
+  out[, population_column := paste0("pop_", database_age)]
+  wide <- data.table::dcast(
+    out,
+    geography_type + geography_code + sex_code + year + series_id ~
+      population_column,
+    value.var = "population",
+    fun.aggregate = max_or_na
+  )
+  for (column in paste0("pop_", 0:19)) {
+    if (!column %in% names(wide)) wide[, (column) := NA_real_]
+  }
+  wide[]
+}
+
+full_uncertainty_apply_mapping <- function(draws, mapping, age_columns, geo_column) {
+  x <- data.table::as.data.table(data.table::copy(draws))
+  joined <- merge(
+    x,
+    mapping[, .(series_id, source_cause_id, weight)],
+    by.x = "cause_id",
+    by.y = "source_cause_id",
+    all = FALSE,
+    allow.cartesian = TRUE,
+    sort = FALSE
+  )
+  if (!nrow(joined)) return(joined)
+  for (column in age_columns) {
+    joined[, (column) := as.numeric(get(column)) * as.numeric(weight)]
+  }
+  joined[, lapply(.SD, sum, na.rm = TRUE),
+         by = c("draw_id", geo_column, "Sex", "DeathYear", "series_id"),
+         .SDcols = age_columns]
+}
+
+full_uncertainty_asr_values <- function(
+    mapped,
+    population,
+    factors,
+    geography_type,
+    geo_column) {
+  x <- data.table::as.data.table(data.table::copy(mapped))
+  data.table::setnames(
+    x,
+    c(geo_column, "Sex", "DeathYear"),
+    c("geography_code", "sex_code", "year")
+  )
+  if (identical(geography_type, "population_group")) {
+    x[, geography_code := as.integer(geography_code) + 10L]
+  }
+  x[, geography_type := geography_type]
+  x <- merge(
+    x,
+    population,
+    by = c(
+      "geography_type", "geography_code", "sex_code", "year", "series_id"
+    ),
+    all.x = TRUE,
+    sort = FALSE
+  )
+  weights <- unique(factors[
+    age %in% 1:18 & is.finite(F) & F > 0,
+    .(age = as.integer(age), F = as.numeric(F))
+  ])
+  if (!identical(sort(weights$age), 1:18)) {
+    stop("ASR factors must contain one positive finite weight for ages 1:18.",
+         call. = FALSE)
+  }
+  weight_for <- function(age_value) {
+    value <- weights[age == as.integer(age_value), F]
+    if (length(value) != 1L || !is.finite(value)) {
+      stop("Could not resolve the ASR weight for age ", age_value, ".",
+           call. = FALSE)
+    }
+    value[[1L]]
+  }
+  numerator <- rep(0, nrow(x))
+  denominator <- rep(0, nrow(x))
+
+  under5_population <- x$pop_1 + x$pop_2
+  under5_deaths <- x$age_0 + x$age_1 + x$age_2
+  valid <- is.finite(under5_population) & under5_population > 0
+  w <- weight_for(1L)
+  numerator[valid] <- numerator[valid] + w * under5_deaths[valid] / under5_population[valid]
+  denominator[valid] <- denominator[valid] + w
+
+  for (database_age in 3:19) {
+    pop <- x[[paste0("pop_", database_age)]]
+    deaths <- x[[paste0("age_", database_age)]]
+    valid <- is.finite(pop) & pop > 0
+    w <- weight_for(database_age - 1L)
+    numerator[valid] <- numerator[valid] + w * deaths[valid] / pop[valid]
+    denominator[valid] <- denominator[valid] + w
+  }
+  x[, value := data.table::fifelse(
+    denominator > 0,
+    1e5 * numerator / denominator,
+    NA_real_
+  )]
+  x[, .(
+    draw_id, geography_type, geography_code, sex_code, year, series_id, value
+  )]
+}
+
+full_uncertainty_summarise <- function(values, info) {
+  x <- data.table::as.data.table(data.table::copy(values))
+  out <- x[is.finite(value), .(
+    lower = as.numeric(stats::quantile(value, 0.025, names = FALSE, type = 8)),
+    upper = as.numeric(stats::quantile(value, 0.975, names = FALSE, type = 8)),
+    draw_mean = mean(value),
+    draw_median = stats::median(value),
+    draw_sd = stats::sd(value),
+    n_draws = data.table::uniqueN(draw_id)
+  ), by = .(
+    geography_type, geography_code, sex_code, year, series_id
+  )]
+  if (out[n_draws != info$n_draws, .N]) {
+    stop("One or more full uncertainty cells do not contain every draw.",
+         call. = FALSE)
+  }
+  out[, source := paste0(
+    "NBD3 joint uncertainty; ", format(info$n_draws, big.mark = ","),
+    " draws"
+  )]
+  out[]
+}
+
+collect_full_cause_uncertainty <- function(runtime, point_rows) {
+  info <- runtime$full_uncertainty
+  d <- data.table::as.data.table(data.table::copy(point_rows))
+  if (is.null(info) || !nrow(d)) return(data.table::data.table())
+  required <- c(
+    "geography_type", "geography_code", "sex_code", "year",
+    "age_id", "series_id", "measure"
+  )
+  assert_columns(d, required, "point rows for full uncertainty")
+  combinations <- unique(d[, .(age_id, measure, sex_code)])
+  if (nrow(combinations) != 1L) {
+    pieces <- lapply(seq_len(nrow(combinations)), function(index) {
+      row <- combinations[index]
+      collect_full_cause_uncertainty(
+        runtime,
+        d[
+          age_id == row$age_id & measure == row$measure &
+            sex_code == row$sex_code
+        ]
+      )
+    })
+    return(data.table::rbindlist(pieces, use.names = TRUE, fill = TRUE))
+  }
+  key <- full_uncertainty_cache_key("cause", d)
+  if (exists(key, envir = info$cache, inherits = FALSE)) {
+    return(data.table::copy(get(key, envir = info$cache, inherits = FALSE)))
+  }
+
+  age_id_value <- combinations$age_id[[1L]]
+  measure_value <- combinations$measure[[1L]]
+  sex_code_value <- combinations$sex_code[[1L]]
+  spec <- full_uncertainty_age_spec(
+    runtime$config, age_id_value, measure_value
+  )
+  selected_mapping <- info$cause_mapping[series_id %in% unique(d$series_id)]
+  missing_series <- setdiff(unique(d$series_id), unique(selected_mapping$series_id))
+  zero_intervals <- data.table::data.table()
+  if (length(missing_series)) {
+    missing_rows <- d[series_id %in% missing_series]
+    nonzero_missing <- missing_rows[
+      !is.finite(estimate) | abs(estimate) > 1e-12,
+      unique(series_id)
+    ]
+    if (length(nonzero_missing)) {
+      stop(
+        "Full uncertainty mapping is missing non-zero series: ",
+        paste(nonzero_missing, collapse = ", "), ".",
+        call. = FALSE
+      )
+    }
+    zero_intervals <- unique(missing_rows[, .(
+      geography_type, geography_code, sex_code, year, series_id
+    )])
+    zero_intervals[, `:=`(
+      lower = 0,
+      upper = 0,
+      draw_mean = 0,
+      draw_median = 0,
+      draw_sd = 0,
+      n_draws = as.integer(info$n_draws),
+      source = "Structural zero in every joint draw",
+      age_id = age_id_value,
+      measure = measure_value
+    )]
+  }
+  source_ids <- unique(selected_mapping$source_cause_id)
+  if (!nrow(selected_mapping)) {
+    assign(key, data.table::copy(zero_intervals), envir = info$cache)
+    return(zero_intervals[])
+  }
+  geo_pieces <- lapply(unique(d[series_id %in% selected_mapping$series_id]$geography_type), function(type) {
+    slice <- d[geography_type == type]
+    draws <- full_uncertainty_query(
+      info = info,
+      geography_type = type,
+      geography_codes = unique(slice$geography_code),
+      sex_code = sex_code_value,
+      years = unique(slice$year),
+      cause_ids = source_ids,
+      age_columns = if (identical(measure_value, "asr")) {
+        full_uncertainty_age_columns()
+      } else {
+        spec$columns
+      }
+    )
+    if (!nrow(draws)) return(data.table::data.table())
+    geo_column <- if (identical(type, "population_group")) {
+      "Popgroup"
+    } else {
+      "Death_Prov"
+    }
+    mapped <- full_uncertainty_apply_mapping(
+      draws,
+      selected_mapping,
+      age_columns = if (identical(measure_value, "asr")) {
+        full_uncertainty_age_columns()
+      } else {
+        spec$columns
+      },
+      geo_column = geo_column
+    )
+    if (identical(measure_value, "asr")) {
+      population <- full_uncertainty_base_population(runtime, slice)
+      return(full_uncertainty_asr_values(
+        mapped,
+        population,
+        info$asr_factors,
+        geography_type = type,
+        geo_column = geo_column
+      ))
+    }
+    mapped[, value := rowSums(.SD), .SDcols = spec$columns]
+    data.table::setnames(
+      mapped,
+      c(geo_column, "Sex", "DeathYear"),
+      c("geography_code", "sex_code", "year")
+    )
+    if (identical(type, "population_group")) {
+      mapped[, geography_code := as.integer(geography_code) + 10L]
+    }
+    mapped[, geography_type := type]
+    values <- mapped[, .(
+      draw_id, geography_type, geography_code, sex_code, year, series_id, value
+    )]
+    if (identical(measure_value, "crude_rate")) {
+      denominator <- unique(slice[, .(
+        geography_type, geography_code, sex_code, year, series_id, population
+      )])
+      values <- merge(
+        values,
+        denominator,
+        by = c(
+          "geography_type", "geography_code", "sex_code", "year", "series_id"
+        ),
+        all.x = TRUE,
+        sort = FALSE
+      )
+      values[, value := data.table::fifelse(
+        is.finite(population) & population > 0,
+        1e5 * value / population,
+        NA_real_
+      )]
+      values[, population := NULL]
+    }
+    values
+  })
+  values <- data.table::rbindlist(geo_pieces, use.names = TRUE, fill = TRUE)
+  out <- full_uncertainty_summarise(values, info)
+  out[, `:=`(age_id = age_id_value, measure = measure_value)]
+  if (nrow(zero_intervals)) {
+    out <- data.table::rbindlist(
+      list(out, zero_intervals), use.names = TRUE, fill = TRUE
+    )
+  }
+  assign(key, data.table::copy(out), envir = info$cache)
+  out[]
+}
+
+collect_full_comparison_uncertainty <- function(runtime, point_rows) {
+  info <- runtime$full_uncertainty
+  d <- data.table::as.data.table(data.table::copy(point_rows))
+  if (is.null(info) || !nrow(d)) return(data.table::data.table())
+  combinations <- unique(d[, .(age_id, measure, sex_code)])
+  if (nrow(combinations) != 1L) {
+    pieces <- lapply(seq_len(nrow(combinations)), function(index) {
+      row <- combinations[index]
+      collect_full_comparison_uncertainty(
+        runtime,
+        d[
+          age_id == row$age_id & measure == row$measure &
+            sex_code == row$sex_code
+        ]
+      )
+    })
+    return(data.table::rbindlist(pieces, use.names = TRUE, fill = TRUE))
+  }
+  key <- full_uncertainty_cache_key("comparison", d)
+  if (exists(key, envir = info$cache, inherits = FALSE)) {
+    return(data.table::copy(get(key, envir = info$cache, inherits = FALSE)))
+  }
+  age_id_value <- combinations$age_id[[1L]]
+  measure_value <- combinations$measure[[1L]]
+  sex_code_value <- combinations$sex_code[[1L]]
+  spec <- full_uncertainty_age_spec(runtime$config, age_id_value, "deaths")
+  mapping <- info$comparison_mapping[series_id %in% unique(d$series_id)]
+  source_ids <- unique(c(mapping$source_cause_id, "all_causes"))
+  pieces <- lapply(unique(d$geography_type), function(type) {
+    slice <- d[geography_type == type]
+    draws <- full_uncertainty_query(
+      info,
+      geography_type = type,
+      geography_codes = unique(slice$geography_code),
+      sex_code = sex_code_value,
+      years = unique(slice$year),
+      cause_ids = source_ids,
+      age_columns = spec$columns
+    )
+    if (!nrow(draws)) return(data.table::data.table())
+    geo_column <- if (identical(type, "population_group")) "Popgroup" else "Death_Prov"
+    numerator <- full_uncertainty_apply_mapping(
+      draws,
+      mapping,
+      spec$columns,
+      geo_column
+    )
+    numerator[, value := rowSums(.SD), .SDcols = spec$columns]
+    data.table::setnames(
+      numerator,
+      c(geo_column, "Sex", "DeathYear"),
+      c("geography_code", "sex_code", "year")
+    )
+    if (identical(type, "population_group")) {
+      numerator[, geography_code := as.integer(geography_code) + 10L]
+    }
+    numerator[, geography_type := type]
+    numerator <- numerator[, .(
+      draw_id, geography_type, geography_code, sex_code, year, series_id, value
+    )]
+    if (identical(measure_value, "fraction")) {
+      denominator <- draws[cause_id == "all_causes"]
+      denominator[, value_denominator := rowSums(.SD), .SDcols = spec$columns]
+      denominator <- denominator[, .(
+        draw_id,
+        geography_code = if (identical(type, "population_group")) {
+          as.integer(get(geo_column)) + 10L
+        } else {
+          as.integer(get(geo_column))
+        },
+        sex_code = Sex,
+        year = DeathYear,
+        value_denominator
+      )]
+      numerator <- merge(
+        numerator,
+        denominator,
+        by = c("draw_id", "geography_code", "sex_code", "year"),
+        all.x = TRUE,
+        sort = FALSE
+      )
+      numerator[, value := data.table::fifelse(
+        is.finite(value_denominator) & value_denominator > 0,
+        value / value_denominator,
+        NA_real_
+      )]
+      numerator[, value_denominator := NULL]
+    }
+    numerator
+  })
+  values <- data.table::rbindlist(pieces, use.names = TRUE, fill = TRUE)
+  out <- full_uncertainty_summarise(values, info)
+  out[, `:=`(age_id = age_id_value, measure = measure_value)]
+  assign(key, data.table::copy(out), envir = info$cache)
+  out[]
+}
+
 load_viz_runtime_data <- function(config = read_viz_config(), open_rates = TRUE) {
   runtime_path <- derived_path(config, "viz_input_new.rds")
   if (!file.exists(runtime_path)) {
     stop("Report inputs have not been built. Run Rscript run_nbd.R with RUN_REPORT <- TRUE.", call. = FALSE)
   }
   runtime <- readRDS(runtime_path)
-  # Resolve the large Parquet relative to the current repository rather than
-  # relying on the absolute path stored on the machine that built the RDS.
+  runtime$config <- config
+  # Resolve large files relative to the current repository rather than relying
+  # on absolute paths stored on the machine that built the RDS.
   runtime$paths$cause_rates <- derived_path(config, "cause_rates.parquet")
   cause_uncertainty_path <- derived_path(config, "nbd3_cause_uncertainty.parquet")
   runtime$paths$cause_uncertainty <- cause_uncertainty_path
@@ -471,7 +1234,12 @@ load_viz_runtime_data <- function(config = read_viz_config(), open_rates = TRUE)
   }
   if (open_rates) {
     viz_require_packages(c("arrow", "dplyr"))
-    runtime$cause_rates_dataset <- arrow::open_dataset(runtime$paths$cause_rates, format = "parquet")
+    runtime$cause_rates_dataset <- arrow::open_dataset(
+      runtime$paths$cause_rates, format = "parquet"
+    )
+    runtime$full_uncertainty <- open_full_uncertainty_runtime(config)
+  } else {
+    runtime$full_uncertainty <- NULL
   }
   runtime
 }
@@ -490,21 +1258,18 @@ measure_unit <- function(measure) {
     fraction = "proportion",
     crude_rate = "per 100,000",
     asr = "per 100,000",
-    yll00 = "YLLs",
-    yll03 = "YLLs",
-    yll015 = "YLLs",
     ""
   )
 }
 
 measure_column <- function(measure) {
-  allowed <- c("deaths", "crude_rate", "asr", "yll00", "yll03", "yll015")
+  allowed <- c("deaths", "crude_rate", "asr")
   if (!measure %in% allowed) stop("Unsupported explorer measure: ", measure, call. = FALSE)
   measure
 }
 
 available_measure_names <- function(data) {
-  candidates <- c("deaths", "crude_rate", "asr", "yll00", "yll03", "yll015")
+  candidates <- c("deaths", "crude_rate", "asr")
   candidates[vapply(candidates, function(column) {
     column %in% names(data) && any(is.finite(data[[column]]))
   }, logical(1))]
@@ -560,7 +1325,7 @@ collect_cause_rates <- function(
     "model", "geography_type", "geography_code", "geography",
     "sex_code", "sex", "year", "age_id", "age_label",
     "series_id", "series_label", "domain", "hierarchy", "cause_type",
-    value_column
+    "population", value_column
   )
 
   if (inherits(dataset, "Dataset")) {
@@ -1846,6 +2611,103 @@ validate_viz_input <- function(config = read_viz_config(), stop_on_failure = TRU
   differences <- read_parquet_dt(derived_path(config, "model_differences.parquet"))
   runtime <- readRDS(derived_path(config, "viz_input_new.rds"))
 
+  add("full-grid uncertainty coverage", {
+    info <- open_full_uncertainty_runtime(config)
+    if (is.null(info)) {
+      stop(
+        "The full-grid uncertainty runtime is unavailable. Complete the current ",
+        "joint uncertainty run before building the report."
+      )
+    }
+    required_age_columns <- full_uncertainty_age_columns()
+    required_province_columns <- c(
+      "scenario", "draw_id", "Death_Prov", "Sex", "DeathYear",
+      "cause_id", required_age_columns
+    )
+    province_first <- data.table::as.data.table(arrow::read_parquet(
+      info$province_files[[1L]],
+      col_select = required_province_columns,
+      as_data_frame = TRUE
+    ))
+    assert_columns(
+      province_first, required_province_columns,
+      "first full province uncertainty draw"
+    )
+    if (!identical(sort(unique(province_first$Sex)), 1:3)) {
+      stop("Full province uncertainty draws do not contain Male, Female and Person.")
+    }
+    if (!setequal(unique(province_first$Death_Prov), 1:10)) {
+      stop("Full province uncertainty draws do not contain provinces 1:9 and South Africa.")
+    }
+    expected_years <- seq.int(
+      as.integer(config$labels$build$start_year),
+      as.integer(config$labels$build$end_year)
+    )
+    if (!identical(sort(unique(province_first$DeathYear)), expected_years)) {
+      stop("Full province uncertainty years are incomplete.")
+    }
+    if (data.table::uniqueN(province_first$cause_id) < 216L) {
+      stop("Full province uncertainty draws do not contain the complete analysis-cause catalogue.")
+    }
+    if (any(!is.finite(unlist(province_first[, ..required_age_columns])))) {
+      stop("The first full province uncertainty draw contains non-finite age-specific deaths.")
+    }
+
+    if (isTRUE(info$profile$reporting$include_population_groups %||% FALSE)) {
+      if (!length(info$population_files)) {
+        stop("Population-group full uncertainty draw files are missing.")
+      }
+      population_first <- data.table::as.data.table(arrow::read_parquet(
+        info$population_files[[1L]],
+        col_select = c(
+          "scenario", "draw_id", "Popgroup", "Sex", "DeathYear",
+          "cause_id", required_age_columns
+        ),
+        as_data_frame = TRUE
+      ))
+      if (!setequal(unique(population_first$Popgroup), 1:4)) {
+        stop("Full population-group uncertainty draws do not contain all four groups.")
+      }
+      if (!identical(sort(unique(population_first$Sex)), 1:3)) {
+        stop("Full population-group uncertainty draws do not contain all three sex categories.")
+      }
+    }
+
+    point_files <- c(
+      file.path(info$output_root, "full_point_report.parquet"),
+      file.path(info$output_root, "population_full_point_report.parquet"),
+      file.path(info$output_root, "asr_factors.csv")
+    )
+    if (any(!file.exists(point_files))) {
+      stop("One or more full-grid point/ASR support files are missing.")
+    }
+
+    coverage <- data.table::data.table(
+      dimension = c(
+        "causes_and_aggregates", "geographies", "population_groups",
+        "sexes", "base_ages", "years", "measures", "draws"
+      ),
+      coverage = c(
+        paste(data.table::uniqueN(province_first$cause_id), "stored source series"),
+        "South Africa and 9 provinces",
+        "4 national population groups",
+        "Male, Female and Person",
+        "20 base age groups; report aggregates derived on demand",
+        paste(range(expected_years), collapse = "-"),
+        "Deaths, crude mortality rates and all-age ASRs",
+        as.character(info$n_draws)
+      )
+    )
+    data.table::fwrite(
+      coverage,
+      derived_path(config, "full_ui_uncertainty_coverage.csv")
+    )
+    paste(
+      format(info$n_draws, big.mark = ","),
+      "draws with all sexes, base ages, provinces and population groups"
+    )
+  })
+
   add("explicit analytical version labels", {
     models <- unique(c(legacy$model, nbd3$model, rates$model))
     if ("NBD3" %in% models) stop("Unqualified NBD3 model label remains")
@@ -2031,11 +2893,18 @@ validate_viz_input <- function(config = read_viz_config(), stop_on_failure = TRU
     uncertainty_path <- derived_path(config, "nbd3_cause_uncertainty.parquet")
     integration_expected <- !is.null(runtime$metadata$uncertainty) ||
       !is.null(runtime$paths$cause_uncertainty)
+    dynamic_full_ui <- isTRUE(
+      runtime$metadata$uncertainty$dynamic_full_ui %||% FALSE
+    )
     if (!file.exists(uncertainty_path)) {
-      if (isTRUE(integration_expected)) {
+      if (isTRUE(integration_expected) && !dynamic_full_ui) {
         stop("Runtime metadata references final-cause uncertainty, but the Parquet file is missing")
       }
-      "not attached in this report-input build"
+      if (dynamic_full_ui) {
+        "served dynamically from the complete full-UI draw files"
+      } else {
+        "not attached in this report-input build"
+      }
     } else {
       uncertainty <- read_parquet_dt(uncertainty_path)
       required_columns <- c(

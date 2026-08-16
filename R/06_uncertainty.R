@@ -37,7 +37,7 @@
 # Components without an empirical variance source (S1 and ANC prevalence)
 # remain fixed and are listed explicitly in the run manifest.
 
-NBD3_UNCERTAINTY_VERSION <- "1.7.1"
+NBD3_UNCERTAINTY_VERSION <- "1.8.2"
 
 UC_KEY <- c(
   "Death_Prov", "Sex", "DeathYear", "Popgroup", "age5", "nbdcode"
@@ -385,7 +385,12 @@ uc_default_config <- function() {
       top_n_causes = 214L,
       include_all_provinces = TRUE,
       include_population_groups = TRUE,
+      # The compact headline draw table remains Person-only for compatibility.
       sexes = 3L,
+      # A second wide base-age table powers exact intervals for every sex,
+      # explorer age and supported measure in the interactive report.
+      full_ui_enabled = TRUE,
+      full_ui_sexes = 1:3,
       age_groups = list(
         under_1 = 1:2,
         under_5 = 1:3,
@@ -633,6 +638,18 @@ uc_validate_config <- function(config) {
   config$reporting$sexes <- sort(unique(as.integer(unlist(
     config$reporting$sexes
   ))))
+  config$reporting$full_ui_enabled <- isTRUE(
+    config$reporting$full_ui_enabled %||% TRUE
+  )
+  config$reporting$full_ui_sexes <- sort(unique(as.integer(unlist(
+    config$reporting$full_ui_sexes %||% 1:3
+  ))))
+  if (!identical(config$reporting$full_ui_sexes, 1:3)) {
+    stop(
+      "reporting.full_ui_sexes must contain Male, Female and Person (1, 2, 3).",
+      call. = FALSE
+    )
+  }
   for (name in names(config$reporting$age_groups)) {
     values <- sort(unique(as.integer(unlist(
       config$reporting$age_groups[[name]]
@@ -1450,7 +1467,7 @@ uc_report_draw <- function(data, catalog, config, scenario, draw_id) {
   x <- uc_aggregate_counts(data)
   detail_codes <- catalog$nbdcode
   base <- x[
-    nbdcode %in% 1:214,
+    nbdcode %in% 1:214 & Sex %in% 1:2,
     .(Deaths = sum(Deaths)),
     by = .(Death_Prov, Sex, DeathYear, age5, nbdcode)
   ]
@@ -1596,6 +1613,199 @@ uc_report_population_draw <- function(
   out[]
 }
 
+
+
+# Full uncertainty reporting grid ---------------------------------------------
+#
+# The compact headline draw files above are retained for the model-comparison
+# panels and convergence diagnostics. The functions below write a second,
+# wide base-age representation for the general results explorers. One row
+# contains all 20 base-age death counts for one geography, sex, year and
+# analysis-cause series. Aggregate ages, crude rates and ASRs are derived only
+# when a collaborator requests a selection in the Shiny report. This avoids a
+# prohibitively large long table while preserving every joint draw.
+
+uc_full_age_columns <- function() paste0("age_", 0:19)
+
+uc_full_ui_sexes <- function(config) {
+  values <- config$reporting$full_ui_sexes %||% 1:3
+  values <- sort(unique(as.integer(unlist(values, use.names = FALSE))))
+  values <- values[values %in% 1:3]
+  if (!length(values)) values <- 1:3
+  values
+}
+
+uc_complete_full_age_columns <- function(x) {
+  out <- uc_as_dt(x)
+  age_columns <- uc_full_age_columns()
+  missing <- setdiff(age_columns, names(out))
+  if (length(missing)) {
+    for (column in missing) out[, (column) := 0]
+  }
+  out
+}
+
+uc_report_full_draw <- function(data, config, scenario, draw_id) {
+  x <- uc_aggregate_counts(data)
+  base <- x[
+    nbdcode %in% 1:214 & Sex %in% 1:2,
+    .(Deaths = sum(Deaths)),
+    by = .(Death_Prov, Sex, DeathYear, age5, nbdcode)
+  ]
+
+  national <- base[, .(Deaths = sum(Deaths)),
+                   by = .(Sex, DeathYear, age5, nbdcode)]
+  national[, Death_Prov := 10L]
+  geo <- data.table::rbindlist(list(base, national), use.names = TRUE)
+
+  persons <- geo[
+    Sex %in% 1:2,
+    .(Deaths = sum(Deaths)),
+    by = .(Death_Prov, DeathYear, age5, nbdcode)
+  ]
+  persons[, Sex := 3L]
+  geo <- data.table::rbindlist(list(geo, persons), use.names = TRUE)
+
+  if (!isTRUE(config$reporting$include_all_provinces)) {
+    geo <- geo[Death_Prov == 10L]
+  }
+  geo <- geo[Sex %in% uc_full_ui_sexes(config)]
+
+  detail <- geo[nbdcode %in% 1:214]
+  detail[, cause_id := paste0("nbd_", nbdcode)]
+  detail[, nbdcode := NULL]
+
+  all_causes <- geo[, .(Deaths = sum(Deaths)),
+                    by = .(Death_Prov, Sex, DeathYear, age5)]
+  all_causes[, cause_id := "all_causes"]
+
+  all_injuries <- geo[
+    nbdcode %in% UC_INJURY_CODES,
+    .(Deaths = sum(Deaths)),
+    by = .(Death_Prov, Sex, DeathYear, age5)
+  ]
+  all_injuries[, cause_id := "all_injuries"]
+
+  long <- data.table::rbindlist(
+    list(detail, all_causes, all_injuries),
+    use.names = TRUE,
+    fill = TRUE
+  )
+  if (long[!age5 %in% 1:20, .N]) {
+    stop("The full uncertainty report contains an age code outside 1:20.",
+         call. = FALSE)
+  }
+  long[, age_column__ := paste0("age_", as.integer(age5) - 1L)]
+  long[, age5 := NULL]
+
+  wide <- data.table::dcast(
+    long,
+    Death_Prov + Sex + DeathYear + cause_id ~ age_column__,
+    value.var = "Deaths",
+    fun.aggregate = sum,
+    fill = 0
+  )
+  wide <- uc_complete_full_age_columns(wide)
+  age_columns <- uc_full_age_columns()
+  wide[, (age_columns) := lapply(.SD, as.numeric), .SDcols = age_columns]
+  if (wide[, any(!is.finite(unlist(.SD)) | unlist(.SD) < -1e-9),
+           .SDcols = age_columns]) {
+    stop("The full province uncertainty report contains invalid deaths.",
+         call. = FALSE)
+  }
+  wide[, `:=`(
+    scenario = as.character(scenario),
+    draw_id = as.integer(draw_id)
+  )]
+  data.table::setcolorder(
+    wide,
+    c(
+      "scenario", "draw_id", "Death_Prov", "Sex", "DeathYear",
+      "cause_id", age_columns
+    )
+  )
+  data.table::setorder(wide, cause_id, Death_Prov, Sex, DeathYear)
+  wide[]
+}
+
+uc_report_full_population_draw <- function(
+    data,
+    config,
+    scenario,
+    draw_id) {
+  x <- uc_aggregate_counts(data)
+  base <- x[
+    nbdcode %in% 1:214 & Popgroup %in% 1:4 & Sex %in% 1:2,
+    .(Deaths = sum(Deaths)),
+    by = .(Popgroup, Sex, DeathYear, age5, nbdcode)
+  ]
+
+  persons <- base[
+    Sex %in% 1:2,
+    .(Deaths = sum(Deaths)),
+    by = .(Popgroup, DeathYear, age5, nbdcode)
+  ]
+  persons[, Sex := 3L]
+  geo <- data.table::rbindlist(list(base, persons), use.names = TRUE)
+  geo <- geo[Sex %in% uc_full_ui_sexes(config)]
+
+  detail <- geo[nbdcode %in% 1:214]
+  detail[, cause_id := paste0("nbd_", nbdcode)]
+  detail[, nbdcode := NULL]
+
+  all_causes <- geo[, .(Deaths = sum(Deaths)),
+                    by = .(Popgroup, Sex, DeathYear, age5)]
+  all_causes[, cause_id := "all_causes"]
+
+  all_injuries <- geo[
+    nbdcode %in% UC_INJURY_CODES,
+    .(Deaths = sum(Deaths)),
+    by = .(Popgroup, Sex, DeathYear, age5)
+  ]
+  all_injuries[, cause_id := "all_injuries"]
+
+  long <- data.table::rbindlist(
+    list(detail, all_causes, all_injuries),
+    use.names = TRUE,
+    fill = TRUE
+  )
+  if (long[!age5 %in% 1:20, .N]) {
+    stop("The full population-group uncertainty report contains an age code outside 1:20.",
+         call. = FALSE)
+  }
+  long[, age_column__ := paste0("age_", as.integer(age5) - 1L)]
+  long[, age5 := NULL]
+
+  wide <- data.table::dcast(
+    long,
+    Popgroup + Sex + DeathYear + cause_id ~ age_column__,
+    value.var = "Deaths",
+    fun.aggregate = sum,
+    fill = 0
+  )
+  wide <- uc_complete_full_age_columns(wide)
+  age_columns <- uc_full_age_columns()
+  wide[, (age_columns) := lapply(.SD, as.numeric), .SDcols = age_columns]
+  if (wide[, any(!is.finite(unlist(.SD)) | unlist(.SD) < -1e-9),
+           .SDcols = age_columns]) {
+    stop("The full population-group uncertainty report contains invalid deaths.",
+         call. = FALSE)
+  }
+  wide[, `:=`(
+    scenario = as.character(scenario),
+    draw_id = as.integer(draw_id)
+  )]
+  data.table::setcolorder(
+    wide,
+    c(
+      "scenario", "draw_id", "Popgroup", "Sex", "DeathYear",
+      "cause_id", age_columns
+    )
+  )
+  data.table::setorder(wide, cause_id, Popgroup, Sex, DeathYear)
+  wide[]
+}
+
 uc_write_parquet_atomic <- function(x, path) {
   uc_require("arrow")
   dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
@@ -1620,6 +1830,473 @@ uc_write_csv_atomic <- function(x, path) {
     stop("Could not finalise ", path, call. = FALSE)
   }
   invisible(path)
+}
+
+# Scalable uncertainty finalisation -------------------------------------------
+#
+# The full uncertainty profile writes one compact reporting table and one wide
+# base-age table per draw. At 1,000 draws, combining even the compact tables in
+# memory or serialising them as one Parquet file can exceed Arrow/Thrift limits.
+# The functions below retain the per-draw files as the canonical store and
+# calculate exact compact summaries in bounded row blocks.
+
+uc_draw_key_columns <- function() {
+  c("scenario", "Death_Prov", "Sex", "DeathYear", "age_group", "cause_id")
+}
+
+uc_keys_identical <- function(current, reference, columns) {
+  if (nrow(current) != nrow(reference)) return(FALSE)
+  all(vapply(
+    columns,
+    function(column) identical(current[[column]], reference[[column]]),
+    logical(1)
+  ))
+}
+
+uc_safe_max <- function(values) {
+  values <- as.numeric(values)
+  values <- values[is.finite(values)]
+  if (length(values)) max(values) else NA_real_
+}
+
+uc_read_csv_stack <- function(paths, add_draw_id = FALSE) {
+  pieces <- vector("list", length(paths))
+  for (index in seq_along(paths)) {
+    pieces[[index]] <- data.table::fread(paths[[index]])
+    if (isTRUE(add_draw_id)) {
+      pieces[[index]][, draw_id := as.integer(index)]
+    }
+  }
+  data.table::rbindlist(pieces, use.names = TRUE, fill = TRUE)
+}
+
+uc_hiv_covariance_state_init <- function(draw) {
+  x <- draw[
+    Death_Prov == 10L & Sex == 3L & age_group == "all_ages" &
+      grepl("^nbd_[0-9]+$", cause_id)
+  ]
+  data.table::setorder(x, DeathYear, cause_id)
+  if (!nrow(x) || !"nbd_2" %in% x$cause_id) return(NULL)
+
+  hiv <- x[cause_id == "nbd_2", .(DeathYear, hiv_deaths = Deaths)]
+  other <- x[cause_id != "nbd_2"]
+  other <- merge(other, hiv, by = "DeathYear", all = FALSE, sort = FALSE)
+  data.table::setorder(other, DeathYear, cause_id)
+  list(
+    keys = other[, .(scenario, DeathYear, cause_id)],
+    n = 0L,
+    sum_x = numeric(nrow(other)),
+    sum_x2 = numeric(nrow(other)),
+    sum_y = numeric(nrow(other)),
+    sum_y2 = numeric(nrow(other)),
+    sum_xy = numeric(nrow(other))
+  )
+}
+
+uc_hiv_covariance_state_update <- function(state, draw) {
+  if (is.null(state)) return(NULL)
+  x <- draw[
+    Death_Prov == 10L & Sex == 3L & age_group == "all_ages" &
+      grepl("^nbd_[0-9]+$", cause_id)
+  ]
+  data.table::setorder(x, DeathYear, cause_id)
+  hiv <- x[cause_id == "nbd_2", .(DeathYear, hiv_deaths = Deaths)]
+  other <- x[cause_id != "nbd_2"]
+  other <- merge(other, hiv, by = "DeathYear", all = FALSE, sort = FALSE)
+  data.table::setorder(other, DeathYear, cause_id)
+  current_keys <- other[, .(scenario, DeathYear, cause_id)]
+  if (!uc_keys_identical(
+    current_keys,
+    state$keys,
+    c("scenario", "DeathYear", "cause_id")
+  )) {
+    stop("HIV covariance keys differ between completed draws.", call. = FALSE)
+  }
+  xv <- as.numeric(other$Deaths)
+  yv <- as.numeric(other$hiv_deaths)
+  state$n <- state$n + 1L
+  state$sum_x <- state$sum_x + xv
+  state$sum_x2 <- state$sum_x2 + xv * xv
+  state$sum_y <- state$sum_y + yv
+  state$sum_y2 <- state$sum_y2 + yv * yv
+  state$sum_xy <- state$sum_xy + xv * yv
+  state
+}
+
+uc_hiv_covariance_state_finish <- function(state, catalog) {
+  if (is.null(state) || state$n < 1L) return(data.table::data.table())
+  n <- state$n
+  mean_x <- state$sum_x / n
+  mean_y <- state$sum_y / n
+  if (n > 1L) {
+    var_x <- pmax(0, (state$sum_x2 - state$sum_x^2 / n) / (n - 1L))
+    var_y <- pmax(0, (state$sum_y2 - state$sum_y^2 / n) / (n - 1L))
+    covariance <- (state$sum_xy - state$sum_x * state$sum_y / n) /
+      (n - 1L)
+    sd_x <- sqrt(var_x)
+    sd_y <- sqrt(var_y)
+  } else {
+    var_y <- rep(NA_real_, length(mean_x))
+    covariance <- rep(NA_real_, length(mean_x))
+    sd_x <- rep(NA_real_, length(mean_x))
+    sd_y <- rep(NA_real_, length(mean_x))
+  }
+  correlation <- data.table::fifelse(
+    is.finite(sd_x) & sd_x > 0 & is.finite(sd_y) & sd_y > 0,
+    covariance / (sd_x * sd_y),
+    NA_real_
+  )
+  slope <- data.table::fifelse(
+    is.finite(var_y) & var_y > 0,
+    covariance / var_y,
+    NA_real_
+  )
+  out <- cbind(
+    data.table::copy(state$keys),
+    data.table::data.table(
+      n_draws = as.integer(n),
+      mean_cause_deaths = mean_x,
+      sd_cause_deaths = sd_x,
+      mean_hiv_deaths = mean_y,
+      sd_hiv_deaths = sd_y,
+      covariance_with_hiv = covariance,
+      correlation_with_hiv = correlation,
+      cause_change_per_hiv_death = slope
+    )
+  )
+  labels <- uc_as_dt(catalog)[, .(
+    cause_id,
+    nbdcode = as.integer(nbdcode),
+    cause_label = as.character(label)
+  )]
+  out <- merge(out, labels, by = "cause_id", all.x = TRUE, sort = FALSE)
+  hiv_linked_codes <- sort(unique(c(
+    2L,
+    as.integer(unlist(HIV_PSEUDO_DESTINATION, use.names = FALSE))
+  )))
+  out[, hiv_linked_destination := nbdcode %in% hiv_linked_codes]
+  data.table::setorder(
+    out,
+    -hiv_linked_destination,
+    DeathYear,
+    correlation_with_hiv,
+    nbdcode
+  )
+  out[]
+}
+
+uc_summarise_binary_draw_matrix <- function(
+    matrix_path,
+    keys,
+    n_draws,
+    point_report,
+    block_size = 2000L) {
+  uc_require("matrixStats")
+  key_columns <- uc_draw_key_columns()
+  n_cells <- nrow(keys)
+  block_size <- max(1L, as.integer(block_size))
+  starts <- seq.int(1L, n_cells, by = block_size)
+  pieces <- vector("list", length(starts))
+  con <- file(matrix_path, open = "rb")
+  on.exit(close(con), add = TRUE)
+
+  message(
+    "Calculating exact type-8 compact summaries in ", length(starts),
+    " bounded row block(s)..."
+  )
+  for (piece_index in seq_along(starts)) {
+    first <- starts[[piece_index]]
+    last <- min(n_cells, first + block_size - 1L)
+    rows <- first:last
+    n_block <- length(rows)
+    values <- matrix(NA_real_, nrow = n_block, ncol = n_draws)
+
+    for (draw_index in seq_len(n_draws)) {
+      byte_offset <- as.double(
+        ((draw_index - 1L) * n_cells + (first - 1L)) * 8
+      )
+      seek(con, where = byte_offset, origin = "start")
+      current <- readBin(
+        con,
+        what = double(),
+        n = n_block,
+        size = 8L,
+        endian = .Platform$endian
+      )
+      if (length(current) != n_block) {
+        stop(
+          "Could not read the expected values from the temporary compact ",
+          "draw matrix for block ", piece_index, " and draw ", draw_index,
+          ".",
+          call. = FALSE
+        )
+      }
+      values[, draw_index] <- current
+    }
+    if (any(!is.finite(values))) {
+      stop(
+        "The completed compact uncertainty draws contain a non-finite death ",
+        "value in summary block ", piece_index, ".",
+        call. = FALSE
+      )
+    }
+
+    quantiles <- matrixStats::rowQuantiles(
+      values,
+      probs = c(0.025, 0.5, 0.975),
+      type = 8L,
+      useNames = FALSE,
+      drop = FALSE
+    )
+    means <- matrixStats::rowMeans2(values)
+    standard_deviations <- if (n_draws > 1L) {
+      matrixStats::rowSds(values)
+    } else {
+      rep(NA_real_, n_block)
+    }
+    statistics <- data.table::data.table(
+      n_draws = as.integer(n_draws),
+      mean = as.numeric(means),
+      median = as.numeric(quantiles[, 2L]),
+      sd = as.numeric(standard_deviations),
+      lower = as.numeric(quantiles[, 1L]),
+      upper = as.numeric(quantiles[, 3L])
+    )
+    pieces[[piece_index]] <- cbind(
+      data.table::copy(keys[rows, ..key_columns]),
+      statistics
+    )
+
+    rm(values, quantiles, means, standard_deviations, statistics)
+    if (piece_index == 1L || piece_index %% 10L == 0L ||
+        piece_index == length(starts)) {
+      message("  compact summary blocks: ", piece_index, "/", length(starts))
+      invisible(gc(verbose = FALSE))
+    }
+  }
+
+  summary <- data.table::rbindlist(pieces, use.names = TRUE, fill = FALSE)
+  point <- point_report[, .(
+    Death_Prov, Sex, DeathYear, age_group, cause_id,
+    point = as.numeric(Deaths)
+  )]
+  summary <- merge(
+    summary,
+    point,
+    by = c("Death_Prov", "Sex", "DeathYear", "age_group", "cause_id"),
+    all.x = TRUE,
+    sort = FALSE
+  )
+  if (any(!is.finite(summary$point))) {
+    stop(
+      "One or more compact uncertainty cells could not be matched to the ",
+      "deterministic point report.",
+      call. = FALSE
+    )
+  }
+  summary[, `:=`(
+    cv = data.table::fifelse(mean > 0, sd / mean, NA_real_),
+    interval_width = upper - lower,
+    relative_interval_width = data.table::fifelse(
+      point > 0,
+      (upper - lower) / point,
+      NA_real_
+    ),
+    monte_carlo_se_mean = sd / sqrt(n_draws)
+  )]
+  data.table::setcolorder(
+    summary,
+    c(
+      key_columns, "point", "mean", "median", "sd", "cv", "lower", "upper",
+      "interval_width", "relative_interval_width", "monte_carlo_se_mean",
+      "n_draws"
+    )
+  )
+  summary[]
+}
+
+uc_summarise_draw_files <- function(
+    draw_paths,
+    point_report,
+    catalog,
+    scenario_path,
+    block_size = 2000L) {
+  uc_require("arrow")
+  uc_require("data.table")
+  key_columns <- uc_draw_key_columns()
+  n_draws <- length(draw_paths)
+  if (!n_draws) stop("No compact draw files were supplied.", call. = FALSE)
+
+  matrix_path <- file.path(
+    scenario_path,
+    paste0(".compact_deaths_", Sys.getpid(), ".bin")
+  )
+  if (file.exists(matrix_path)) unlink(matrix_path)
+  con <- file(matrix_path, open = "wb")
+  connection_open <- TRUE
+  on.exit({
+    if (isTRUE(connection_open)) try(close(con), silent = TRUE)
+    if (file.exists(matrix_path)) unlink(matrix_path)
+  }, add = TRUE)
+
+  key_reference <- NULL
+  headline_pieces <- vector("list", n_draws)
+  hiv_state <- NULL
+  message(
+    "Finalising ", n_draws,
+    " compact draw files without creating a monolithic Parquet table..."
+  )
+
+  for (draw_index in seq_len(n_draws)) {
+    draw <- data.table::as.data.table(
+      arrow::read_parquet(draw_paths[[draw_index]], as_data_frame = TRUE)
+    )
+    required_columns <- c(key_columns, "draw_id", "Deaths")
+    missing_columns <- setdiff(required_columns, names(draw))
+    if (length(missing_columns)) {
+      stop(
+        "Compact draw file is missing column(s): ",
+        paste(missing_columns, collapse = ", "), ". File: ",
+        draw_paths[[draw_index]],
+        call. = FALSE
+      )
+    }
+    observed <- unique(as.integer(draw$draw_id))
+    if (length(observed) != 1L || is.na(observed) || observed != draw_index) {
+      stop(
+        "Draw identifier mismatch in ", draw_paths[[draw_index]],
+        ": expected ", draw_index, " but found ",
+        paste(observed, collapse = ", "), ".",
+        call. = FALSE
+      )
+    }
+    data.table::setorderv(draw, key_columns)
+    if (any(!is.finite(draw$Deaths))) {
+      stop("Compact draw ", draw_index, " contains non-finite deaths.",
+           call. = FALSE)
+    }
+
+    current_keys <- draw[, ..key_columns]
+    if (is.null(key_reference)) {
+      key_reference <- data.table::copy(current_keys)
+      hiv_state <- uc_hiv_covariance_state_init(draw)
+      temporary_gib <- nrow(key_reference) * n_draws * 8 / 1024^3
+      message(
+        "  compact reporting cells per draw: ",
+        format(nrow(key_reference), big.mark = ",", scientific = FALSE),
+        "; temporary binary matrix: approximately ",
+        sprintf("%.2f", temporary_gib), " GiB"
+      )
+    } else if (!uc_keys_identical(current_keys, key_reference, key_columns)) {
+      stop(
+        "The compact reporting key differs between completed draws; first ",
+        "detected in draw ", draw_index, ".",
+        call. = FALSE
+      )
+    }
+
+    writeBin(
+      as.double(draw$Deaths),
+      con,
+      size = 8L,
+      endian = .Platform$endian
+    )
+    headline_pieces[[draw_index]] <- draw[
+      Death_Prov == 10L & Sex == 3L & age_group == "all_ages" &
+        cause_id %in% c("all_causes", "all_injuries", "nbd_2"),
+      .(
+        scenario, draw_id, Death_Prov, Sex, DeathYear,
+        age_group, cause_id, Deaths
+      )
+    ]
+    hiv_state <- uc_hiv_covariance_state_update(hiv_state, draw)
+
+    if (draw_index == 1L || draw_index %% 50L == 0L ||
+        draw_index == n_draws) {
+      message("  compact draw files finalised: ", draw_index, "/", n_draws)
+      invisible(gc(verbose = FALSE))
+    }
+    rm(draw, current_keys)
+  }
+  close(con)
+  connection_open <- FALSE
+
+  summary <- uc_summarise_binary_draw_matrix(
+    matrix_path = matrix_path,
+    keys = key_reference,
+    n_draws = n_draws,
+    point_report = point_report,
+    block_size = block_size
+  )
+  headline_draws <- data.table::rbindlist(
+    headline_pieces,
+    use.names = TRUE,
+    fill = FALSE
+  )
+  convergence <- uc_convergence_headlines(headline_draws)
+  hiv_cause_covariance <- uc_hiv_covariance_state_finish(hiv_state, catalog)
+  if (file.exists(matrix_path)) unlink(matrix_path)
+
+  list(
+    summary = summary,
+    convergence = convergence,
+    hiv_cause_covariance = hiv_cause_covariance
+  )
+}
+
+uc_write_draw_storage_manifest <- function(draw_sets, scenario_path) {
+  uc_require("data.table")
+  pieces <- lapply(names(draw_sets), function(storage_type) {
+    paths <- draw_sets[[storage_type]]
+    if (!length(paths)) return(NULL)
+    draw_ids <- suppressWarnings(as.integer(sub(
+      "^draw_([0-9]+)[.]parquet$", "\\1", basename(paths)
+    )))
+    if (anyNA(draw_ids)) {
+      stop(
+        "Could not parse one or more draw filenames for storage type ",
+        storage_type, ".",
+        call. = FALSE
+      )
+    }
+    data.table::data.table(
+      storage_type = storage_type,
+      draw_id = draw_ids,
+      file = normalizePath(paths, winslash = "/", mustWork = TRUE),
+      size_bytes = as.numeric(file.info(paths)$size)
+    )
+  })
+  manifest <- data.table::rbindlist(pieces, use.names = TRUE, fill = TRUE)
+  data.table::setorder(manifest, storage_type, draw_id)
+  uc_write_csv_atomic(
+    manifest,
+    file.path(scenario_path, "uncertainty_draw_storage.csv")
+  )
+  writeLines(
+    c(
+      "The canonical uncertainty data are the individual Parquet files under:",
+      "  draws/                    compact province/national Person outputs",
+      "  population_draws/         compact population-group Person outputs",
+      "  full_draws/               base-age Male/Female/Person province outputs",
+      "  population_full_draws/    base-age Male/Female/Person population-group outputs",
+      "",
+      "A monolithic uncertainty_draws.parquet is intentionally not created.",
+      "The report reads the per-draw files and calculates selected intervals from",
+      "the complete joint draws. Compact summaries are calculated in bounded",
+      "blocks without loading all draw rows into memory."
+    ),
+    file.path(scenario_path, "UNCERTAINTY_DRAW_STORAGE.txt")
+  )
+
+  consolidated <- file.path(scenario_path, "uncertainty_draws.parquet")
+  stale_temporary <- list.files(
+    scenario_path,
+    pattern = "^uncertainty_draws[.]parquet[.]tmp-",
+    full.names = TRUE
+  )
+  if (file.exists(consolidated)) unlink(consolidated)
+  if (length(stale_temporary)) unlink(stale_temporary)
+  invisible(manifest)
 }
 
 uc_combine_draws <- function(draw_paths) {
@@ -1827,6 +2504,17 @@ uc_prepare_scenario_directory <- function(path, signature, overwrite) {
     }
   }
   dir.create(file.path(path, "draws"), recursive = TRUE, showWarnings = FALSE)
+  dir.create(file.path(path, "full_draws"), recursive = TRUE, showWarnings = FALSE)
+  dir.create(
+    file.path(path, "population_draws"),
+    recursive = TRUE,
+    showWarnings = FALSE
+  )
+  dir.create(
+    file.path(path, "population_full_draws"),
+    recursive = TRUE,
+    showWarnings = FALSE
+  )
   dir.create(
     file.path(path, "diagnostics"),
     recursive = TRUE,
@@ -2339,6 +3027,19 @@ uc_run_one_draw <- function(inputs, config, scenario, draw_id, catalog) {
     } else {
       data.table::data.table()
     },
+    full_report = if (isTRUE(config$reporting$full_ui_enabled)) {
+      uc_report_full_draw(final, config, scenario, draw_id)
+    } else {
+      data.table::data.table()
+    },
+    full_population_report = if (
+      isTRUE(config$reporting$full_ui_enabled) &&
+      isTRUE(config$reporting$include_population_groups)
+    ) {
+      uc_report_full_population_draw(final, config, scenario, draw_id)
+    } else {
+      data.table::data.table()
+    },
     diagnostics = diagnostics,
     completeness_factors = completeness$factors,
     injury_envelope_factors = injury_envelope$factors,
@@ -2500,7 +3201,7 @@ uc_write_manifest <- function(
     "injury_composition=well-specified IMS 2009 and FAMHIS 2017 cause counts come from the same stratified PSU replicate used for injury level/profile; the national NIMS 2000 sex-age composition is sampled from count information before IMS-based spatial expansion; causes 132, 136 and 138 are then harmonised before hierarchical ALR interpolation and the triangular moving average; no additional path-variance parameter is introduced",
     "hiv=fitted Stage 05 coefficient draws from model variance-covariance matrices after completeness and injury-envelope draws; ANC prevalence fixed because no variance input is supplied; preserves deaths within demographic cells",
     "redistribution=one continuous positive Gamma multiplier vector per multi-target expert rule; multipliers are centred on the deterministic all-one expert vector and marginal variance is moment-matched to the former non-empty-subset support; the weighted proportional algorithm preserves natural and injury envelopes",
-    "reporting=province, national and national population-group Person estimates are retained in separate per-draw files so final cause intervals preserve the full within-draw covariance",
+    "reporting=compact Person draw files are retained for model-comparison compatibility, while wide base-age files retain Male, Female and Person deaths for provinces, South Africa and national population groups; the report derives deaths, crude rates and all-age ASRs within each draw",
     "fixed_without_variance_source=S1 completeness, independent NPR-specific variance, ANC prevalence, and additional injury path variance"
   )
   rows <- data.table::rbindlist(list(
@@ -2591,7 +3292,11 @@ run_nbd3_uncertainty <- function(
   )
   if (isTRUE(config$reporting$include_population_groups)) {
     message(
-      "Reporting: retaining province, South Africa, and national population-group Person estimates in every draw."
+      paste(
+        "Reporting: retaining compact Person outputs plus full base-age",
+        "Male, Female and Person deaths for provinces, South Africa and",
+        "national population groups in every draw."
+      )
     )
   }
 
@@ -2634,6 +3339,12 @@ run_nbd3_uncertainty <- function(
     inputs$injury_envelope_artifact$annual_point,
     file.path(output_root, "injury_envelope_point_factors.parquet")
   )
+  if (exists("read_asr_factors", mode = "function", inherits = TRUE)) {
+    uc_write_csv_atomic(
+      read_asr_factors(inputs$cfg),
+      file.path(output_root, "asr_factors.csv")
+    )
+  }
 
   preflight <- uc_preflight_table(inputs, reconstruction, config)
   uc_write_csv_atomic(
@@ -2686,12 +3397,45 @@ run_nbd3_uncertainty <- function(
   } else {
     data.table::data.table()
   }
+  point_full_report <- if (isTRUE(config$reporting$full_ui_enabled)) {
+    uc_report_full_draw(
+      inputs$stage06, config, scenario = "point", draw_id = 0L
+    )
+  } else {
+    data.table::data.table()
+  }
+  point_full_population_report <- if (
+    isTRUE(config$reporting$full_ui_enabled) &&
+    isTRUE(config$reporting$include_population_groups)
+  ) {
+    uc_report_full_population_draw(
+      inputs$stage06, config, scenario = "point", draw_id = 0L
+    )
+  } else {
+    data.table::data.table()
+  }
   signature <- uc_run_signature(root, inputs, config)
   uc_write_csv_atomic(catalog, file.path(output_root, "cause_catalog.csv"))
+  uc_write_parquet_atomic(
+    point_report,
+    file.path(output_root, "point_report.parquet")
+  )
   if (nrow(point_population_report)) {
     uc_write_parquet_atomic(
       point_population_report,
       file.path(output_root, "population_point_report.parquet")
+    )
+  }
+  if (nrow(point_full_report)) {
+    uc_write_parquet_atomic(
+      point_full_report,
+      file.path(output_root, "full_point_report.parquet")
+    )
+  }
+  if (nrow(point_full_population_report)) {
+    uc_write_parquet_atomic(
+      point_full_population_report,
+      file.path(output_root, "population_full_point_report.parquet")
     )
   }
   uc_write_csv_atomic(
@@ -2722,6 +3466,8 @@ run_nbd3_uncertainty <- function(
     width <- max(3L, nchar(as.character(n_draws)))
     draw_paths <- character(n_draws)
     population_draw_paths <- character(n_draws)
+    full_draw_paths <- character(n_draws)
+    population_full_draw_paths <- character(n_draws)
     diagnostic_paths <- character(n_draws)
     completeness_factor_paths <- character(n_draws)
     injury_envelope_factor_paths <- character(n_draws)
@@ -2737,6 +3483,16 @@ run_nbd3_uncertainty <- function(
       population_draw_path <- file.path(
         scenario_path,
         "population_draws",
+        paste0(draw_name, ".parquet")
+      )
+      full_draw_path <- file.path(
+        scenario_path,
+        "full_draws",
+        paste0(draw_name, ".parquet")
+      )
+      population_full_draw_path <- file.path(
+        scenario_path,
+        "population_full_draws",
         paste0(draw_name, ".parquet")
       )
       diagnostic_path <- file.path(
@@ -2761,6 +3517,8 @@ run_nbd3_uncertainty <- function(
       )
       draw_paths[[draw_id]] <- draw_path
       population_draw_paths[[draw_id]] <- population_draw_path
+      full_draw_paths[[draw_id]] <- full_draw_path
+      population_full_draw_paths[[draw_id]] <- population_full_draw_path
       diagnostic_paths[[draw_id]] <- diagnostic_path
       completeness_factor_paths[[draw_id]] <- completeness_factor_path
       injury_envelope_factor_paths[[draw_id]] <- injury_envelope_factor_path
@@ -2770,6 +3528,15 @@ run_nbd3_uncertainty <- function(
         draw_path,
         if (isTRUE(config$reporting$include_population_groups)) {
           population_draw_path
+        },
+        if (isTRUE(config$reporting$full_ui_enabled)) {
+          full_draw_path
+        },
+        if (
+          isTRUE(config$reporting$full_ui_enabled) &&
+          isTRUE(config$reporting$include_population_groups)
+        ) {
+          population_full_draw_path
         },
         diagnostic_path,
         completeness_factor_path,
@@ -2793,6 +3560,18 @@ run_nbd3_uncertainty <- function(
         uc_write_parquet_atomic(
           result$population_report,
           population_draw_path
+        )
+      }
+      if (isTRUE(config$reporting$full_ui_enabled)) {
+        uc_write_parquet_atomic(result$full_report, full_draw_path)
+      }
+      if (
+        isTRUE(config$reporting$full_ui_enabled) &&
+        isTRUE(config$reporting$include_population_groups)
+      ) {
+        uc_write_parquet_atomic(
+          result$full_population_report,
+          population_full_draw_path
         )
       }
       uc_write_csv_atomic(result$diagnostics, diagnostic_path)
@@ -2821,6 +3600,15 @@ run_nbd3_uncertainty <- function(
       if (isTRUE(config$reporting$include_population_groups)) {
         population_draw_paths
       },
+      if (isTRUE(config$reporting$full_ui_enabled)) {
+        full_draw_paths
+      },
+      if (
+        isTRUE(config$reporting$full_ui_enabled) &&
+        isTRUE(config$reporting$include_population_groups)
+      ) {
+        population_full_draw_paths
+      },
       diagnostic_paths,
       completeness_factor_paths,
       injury_envelope_factor_paths,
@@ -2830,52 +3618,48 @@ run_nbd3_uncertainty <- function(
       stop("One or more uncertainty draw outputs are missing.", call. = FALSE)
     }
 
-    draws <- uc_combine_draws(draw_paths)
-    diagnostics <- data.table::rbindlist(
-      lapply(diagnostic_paths, data.table::fread),
-      use.names = TRUE,
-      fill = TRUE
+    compact_final <- uc_summarise_draw_files(
+      draw_paths = draw_paths,
+      point_report = point_report,
+      catalog = catalog,
+      scenario_path = scenario_path,
+      block_size = 2000L
     )
+    diagnostics <- uc_read_csv_stack(diagnostic_paths)
     if (diagnostics[valid != TRUE, .N]) {
       stop("One or more completed draws failed validation.", call. = FALSE)
     }
-    summary <- uc_summarise_draws(draws, point_report)
-    convergence <- uc_convergence_headlines(draws)
-    completeness_factors <- data.table::rbindlist(
-      Map(function(path, draw_id) {
-        x <- data.table::fread(path)
-        x[, draw_id := as.integer(draw_id)]
-        x
-      }, completeness_factor_paths, seq_along(completeness_factor_paths)),
-      use.names = TRUE,
-      fill = TRUE
+    summary <- compact_final$summary
+    convergence <- compact_final$convergence
+    hiv_cause_covariance <- compact_final$hiv_cause_covariance
+    completeness_factors <- uc_read_csv_stack(
+      completeness_factor_paths,
+      add_draw_id = TRUE
     )
-    injury_envelope_factors <- data.table::rbindlist(
-      Map(function(path, draw_id) {
-        x <- data.table::fread(path)
-        x[, draw_id := as.integer(draw_id)]
-        x
-      }, injury_envelope_factor_paths, seq_along(injury_envelope_factor_paths)),
-      use.names = TRUE,
-      fill = TRUE
+    injury_envelope_factors <- uc_read_csv_stack(
+      injury_envelope_factor_paths,
+      add_draw_id = TRUE
     )
-    redistribution_audit <- data.table::rbindlist(
-      Map(function(path, draw_id) {
-        x <- data.table::fread(path)
-        x[, draw_id := as.integer(draw_id)]
-        x
-      }, redistribution_audit_paths, seq_along(redistribution_audit_paths)),
-      use.names = TRUE,
-      fill = TRUE
-    )
-    hiv_cause_covariance <- uc_hiv_cause_covariance_diagnostics(
-      draws,
-      catalog
+    redistribution_audit <- uc_read_csv_stack(
+      redistribution_audit_paths,
+      add_draw_id = TRUE
     )
 
-    uc_write_parquet_atomic(
-      draws,
-      file.path(scenario_path, "uncertainty_draws.parquet")
+    uc_write_draw_storage_manifest(
+      list(
+        compact_province = draw_paths,
+        compact_population_group = if (
+          isTRUE(config$reporting$include_population_groups)
+        ) population_draw_paths else character(),
+        full_province = if (
+          isTRUE(config$reporting$full_ui_enabled)
+        ) full_draw_paths else character(),
+        full_population_group = if (
+          isTRUE(config$reporting$full_ui_enabled) &&
+          isTRUE(config$reporting$include_population_groups)
+        ) population_full_draw_paths else character()
+      ),
+      scenario_path
     )
     uc_write_parquet_atomic(
       summary,
@@ -2916,29 +3700,39 @@ run_nbd3_uncertainty <- function(
       output_path = scenario_path,
       n_draws = n_draws,
       mean_seconds = mean(diagnostics$seconds),
-      max_validation_abs_error = max(
-        diagnostics$injury_level_total_max_abs_error,
-        diagnostics$injury_envelope_max_abs_error,
-        diagnostics$hiv_conservation_max_abs_error,
-        diagnostics$redistribution_conservation_max_abs_error,
-        diagnostics$total_propagation_error,
-        na.rm = TRUE
-      ),
-      max_validation_relative_error = max(
-        diagnostics$injury_level_total_max_relative_error,
-        diagnostics$injury_envelope_max_relative_error,
-        diagnostics$hiv_conservation_max_relative_error,
-        diagnostics$redistribution_conservation_max_relative_error,
-        diagnostics$total_propagation_relative_error,
-        na.rm = TRUE
-      )
+      max_validation_abs_error = uc_safe_max(unlist(
+        diagnostics[, intersect(
+          c(
+            "injury_level_total_max_abs_error",
+            "injury_envelope_max_abs_error",
+            "hiv_conservation_max_abs_error",
+            "redistribution_conservation_max_abs_error",
+            "total_propagation_error"
+          ),
+          names(diagnostics)
+        ), with = FALSE],
+        use.names = FALSE
+      )),
+      max_validation_relative_error = uc_safe_max(unlist(
+        diagnostics[, intersect(
+          c(
+            "injury_level_total_max_relative_error",
+            "injury_envelope_max_relative_error",
+            "hiv_conservation_max_relative_error",
+            "redistribution_conservation_max_relative_error",
+            "total_propagation_relative_error"
+          ),
+          names(diagnostics)
+        ), with = FALSE],
+        use.names = FALSE
+      ))
     )
     message(
       "Scenario '", scenario, "' complete. Mean draw runtime: ",
       round(scenario_results[[scenario]]$mean_seconds, 1), " s."
     )
     rm(
-      draws,
+      compact_final,
       diagnostics,
       summary,
       convergence,

@@ -18,7 +18,15 @@ All displayed tables use a common `knitr::kable()` HTML style with captions, sti
 
 ## Uncertainty
 
-The report reads the individual per-draw files rather than one oversized consolidated Parquet file. Final cause and population-group results are mapped within each draw so covariance from survey-design injury level/profile/cause draws, completeness, HIV/AIDS and continuous redistribution weights is retained. Intervals appear only where the draw output provides an exact match for the selected geography, sex, age, year and cause.
+The publication-scale uncertainty engine treats the individual per-draw files as the canonical draw store and writes a manifest rather than attempting to serialize a monolithic table. An offline cache builder maps those draws to compact, partitioned interval summaries before deployment. The live report reads the summaries and does not scan the raw draw files. The full analytical archive continues to retain Male, Female and Person deaths for South Africa, all provinces, and all four national population groups.
+
+For every supported cause and aggregation, the interactive explorers derive exact draw-based intervals for:
+
+- deaths at every supported report age;
+- crude mortality rates at ages with a valid population denominator; and
+- all-age age-standardised death rates calculated within each draw.
+
+Final cause and population-group results are mapped within each draw so covariance from survey-design injury level/profile/cause draws, completeness, HIV/AIDS and continuous redistribution weights is retained. YLLs remain in the analytical database but are not offered as a visualization metric.
 
 ## Running the report
 
@@ -36,3 +44,25 @@ RUN_UNCERTAINTY     <- FALSE
 RUN_REPORT          <- TRUE
 OPEN_REPORT         <- TRUE
 ```
+
+## Production performance
+
+The publication app reads `output/report-data/ui_uncertainty_cache/` rather
+than scanning the raw uncertainty draw files. The cache is partitioned by sex
+and age, with separate province/national and population-group stores. Model
+comparison intervals are precomputed in one compact table.
+
+The report also uses application-level `bindCache()` memoisation and debounces
+linked inputs before querying. The analytical draw files remain the canonical
+scientific archive, while the deployment cache is a deterministic reporting
+product that can be rebuilt from those draws.
+
+Build and deploy using:
+
+```bat
+Rscript dev\build_shiny_ui_cache.R
+Rscript dev\prepare_shinyapps_bundle.R
+Rscript dev\deploy_shinyapps.R
+```
+
+See `docs/SHINY_DEPLOYMENT.md` for full details.

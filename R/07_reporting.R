@@ -801,13 +801,67 @@ nbd_uncertainty_profile_paths <- function(
     scenario_root = scenario_root,
     draw_dir = file.path(scenario_root, "draws"),
     population_draw_dir = file.path(scenario_root, "population_draws"),
+    point_report = file.path(output_root, "point_report.parquet"),
+    full_draw_dir = file.path(scenario_root, "full_draws"),
+    population_full_draw_dir = file.path(
+      scenario_root, "population_full_draws"
+    ),
     population_point = file.path(output_root, "population_point_report.parquet"),
+    full_point = file.path(output_root, "full_point_report.parquet"),
+    population_full_point = file.path(
+      output_root, "population_full_point_report.parquet"
+    ),
+    asr_factors = file.path(output_root, "asr_factors.csv"),
     draws = file.path(scenario_root, "uncertainty_draws.parquet"),
     summary = file.path(scenario_root, "uncertainty_summary.parquet"),
     summary_csv = file.path(scenario_root, "uncertainty_summary.csv"),
     diagnostics = file.path(scenario_root, "draw_diagnostics.csv"),
     convergence = file.path(scenario_root, "convergence_headlines.csv")
   )
+}
+
+nbd_validate_full_ui_draw_storage <- function(paths) {
+  nbd_integrated_require("data.table")
+  expected <- suppressWarnings(as.integer(paths$config$run$n_draws))
+  if (length(expected) != 1L || is.na(expected) || expected < 1L) {
+    stop("The uncertainty profile has an invalid run.n_draws value.",
+         call. = FALSE)
+  }
+  sets <- list(province = paths$full_draw_dir)
+  if (isTRUE(paths$config$reporting$include_population_groups %||% FALSE)) {
+    sets$population_group <- paths$population_full_draw_dir
+  }
+  rows <- lapply(names(sets), function(name) {
+    directory <- sets[[name]]
+    files <- if (dir.exists(directory)) list.files(
+      directory,
+      pattern = "^draw_[0-9]+[.]parquet$",
+      full.names = TRUE
+    ) else character()
+    ids <- suppressWarnings(as.integer(sub(
+      "^draw_([0-9]+)[.]parquet$", "\\1", basename(files)
+    )))
+    if (length(files)) {
+      order_index <- order(ids)
+      files <- files[order_index]
+      ids <- ids[order_index]
+    }
+    if (length(files) != expected || !identical(ids, seq_len(expected))) {
+      stop(
+        "The full-UI ", name, " draw store is incomplete. Expected ",
+        expected, " files numbered 1:", expected, " in ", directory,
+        "; found ", length(files), ".",
+        call. = FALSE
+      )
+    }
+    data.table::data.table(
+      storage = name,
+      directory = normalizePath(directory, winslash = "/", mustWork = TRUE),
+      n_draws = expected,
+      total_bytes = sum(as.numeric(file.info(files)$size))
+    )
+  })
+  data.table::rbindlist(rows, use.names = TRUE, fill = TRUE)
 }
 
 nbd_derive_uncertainty_series <- function(
@@ -995,10 +1049,16 @@ nbd_build_uncertainty_intervals <- function(
   rm(collected)
   invisible(gc(verbose = FALSE))
 
-  summary_input <- nbd_read_uncertainty_summary(paths)
-  summary_input <- summary_input[get("scenario") == scenario_name]
-  point_source <- unique(summary_input[, .(
-    Death_Prov, Sex, DeathYear, age_group, cause_id, point
+  if (!file.exists(paths$point_report)) {
+    stop("The deterministic uncertainty point report is missing: ",
+         paths$point_report, call. = FALSE)
+  }
+  point_source <- data.table::as.data.table(
+    arrow::read_parquet(paths$point_report, as_data_frame = TRUE)
+  )
+  point_source <- unique(point_source[, .(
+    Death_Prov, Sex, DeathYear, age_group, cause_id,
+    point = as.numeric(Deaths)
   )])
   point_series <- nbd_derive_uncertainty_series(
     point_source,
@@ -1956,17 +2016,41 @@ nbd_attach_uncertainty_to_report <- function(
   write_parquet_dt(nbd3_after, nbd3_path)
 
   build_viz_input(config)
-  cause_interval_result <- nbd_build_cause_uncertainty_intervals(
-    root = root,
-    uncertainty_config_path = uncertainty_config_path,
-    scenario = scenario,
-    relative_tolerance = relative_tolerance,
-    absolute_tolerance = absolute_tolerance
+  full_ui_enabled <- isTRUE(
+    interval_result$paths$config$reporting$full_ui_enabled %||% FALSE
   )
-  # Rebuild once more after the final-cause interval file is written so the
-  # same visualization run immediately loads province and population-group
-  # uncertainty into viz_input_new.rds.
-  build_viz_input(config)
+  if (full_ui_enabled) {
+    full_ui_storage <- nbd_validate_full_ui_draw_storage(interval_result$paths)
+    stale_paths <- file.path(
+      config$labels$paths$derived_dir,
+      c(
+        "nbd3_cause_uncertainty.parquet",
+        "nbd3_cause_uncertainty.csv",
+        "nbd3_cause_uncertainty_coverage.csv"
+      )
+    )
+    stale_paths <- stale_paths[file.exists(stale_paths)]
+    if (length(stale_paths)) unlink(stale_paths)
+    cause_interval_result <- list(
+      data = data.table::data.table(),
+      parquet = NA_character_,
+      csv = NA_character_,
+      coverage_path = NA_character_,
+      supported_series = 0L,
+      point_alignment_max_abs = 0,
+      dynamic_full_ui = TRUE,
+      storage = full_ui_storage
+    )
+  } else {
+    cause_interval_result <- nbd_build_cause_uncertainty_intervals(
+      root = root,
+      uncertainty_config_path = uncertainty_config_path,
+      scenario = scenario,
+      relative_tolerance = relative_tolerance,
+      absolute_tolerance = absolute_tolerance
+    )
+    build_viz_input(config)
+  }
   runtime_after <- readRDS(runtime_path)
   external_after <- data.table::as.data.table(data.table::copy(
     runtime_after$comparisons[model != "NBD3-R"]
@@ -2011,37 +2095,76 @@ nbd_attach_uncertainty_to_report <- function(
   } else {
     data.table::data.table()
   }
-  validation <- data.table::data.table(
-    check = c(
-      "uncertainty interval rows created",
-      "NBD3-R interval rows attached",
-      "NBD3-R point estimates unchanged",
-      "uncertainty points align with NBD3-R",
-      "standardised legacy comparison table unchanged",
-      "supplied viz.input.Rda unchanged",
-      "NBD2, NBD3-Stata, THEMBISA, and GBD2023 rows unchanged",
-      "final NBD3-R cause intervals created",
-      "final-cause uncertainty points align with NBD3-R",
-      "all completed draws valid"
-    ),
-    status = "PASS",
-    detail = c(
-      paste(format(nrow(intervals), big.mark = ","), "comparison interval rows"),
-      paste(format(matched_count, big.mark = ","), "matched NBD3-R comparison rows"),
-      paste(format(nrow(nbd3_after), big.mark = ","), "NBD3-R comparison rows checked"),
-      paste("maximum allowed error uses relative", relative_tolerance,
-            "and absolute", absolute_tolerance, "tolerances"),
-      paste("MD5", legacy_parquet_md5_after),
-      paste("MD5", legacy_rda_md5_after),
-      paste(format(nrow(external_after), big.mark = ","), "rows checked"),
-      paste(format(nrow(cause_interval_result$data), big.mark = ","),
-            "cause interval rows across",
-            cause_interval_result$supported_series, "exactly supported series"),
-      paste("maximum absolute point difference",
-            signif(cause_interval_result$point_alignment_max_abs, 6)),
-      paste(format(nrow(diagnostics), big.mark = ","), "draw diagnostics rows")
+  if (full_ui_enabled) {
+    full_ui_detail <- paste(
+      vapply(seq_len(nrow(cause_interval_result$storage)), function(index) {
+        row <- cause_interval_result$storage[index]
+        paste0(
+          row$storage, ": ", format(row$n_draws, big.mark = ","),
+          " draws (", sprintf("%.2f", row$total_bytes / 1024^3), " GiB)"
+        )
+      }, character(1)),
+      collapse = "; "
     )
-  )
+    validation <- data.table::data.table(
+      check = c(
+        "uncertainty interval rows created",
+        "NBD3-R interval rows attached",
+        "NBD3-R point estimates unchanged",
+        "uncertainty points align with NBD3-R",
+        "standardised legacy comparison table unchanged",
+        "supplied viz.input.Rda unchanged",
+        "NBD2, NBD3-Stata, THEMBISA, and GBD2023 rows unchanged",
+        "full-grid uncertainty draw stores complete",
+        "all completed draws valid"
+      ),
+      status = "PASS",
+      detail = c(
+        paste(format(nrow(intervals), big.mark = ","), "comparison interval rows"),
+        paste(format(matched_count, big.mark = ","), "matched NBD3-R comparison rows"),
+        paste(format(nrow(nbd3_after), big.mark = ","), "NBD3-R comparison rows checked"),
+        paste("maximum allowed error uses relative", relative_tolerance,
+              "and absolute", absolute_tolerance, "tolerances"),
+        paste("MD5", legacy_parquet_md5_after),
+        paste("MD5", legacy_rda_md5_after),
+        paste(format(nrow(external_after), big.mark = ","), "rows checked"),
+        full_ui_detail,
+        paste(format(nrow(diagnostics), big.mark = ","), "draw diagnostics rows")
+      )
+    )
+  } else {
+    validation <- data.table::data.table(
+      check = c(
+        "uncertainty interval rows created",
+        "NBD3-R interval rows attached",
+        "NBD3-R point estimates unchanged",
+        "uncertainty points align with NBD3-R",
+        "standardised legacy comparison table unchanged",
+        "supplied viz.input.Rda unchanged",
+        "NBD2, NBD3-Stata, THEMBISA, and GBD2023 rows unchanged",
+        "final NBD3-R cause intervals created",
+        "final-cause uncertainty points align with NBD3-R",
+        "all completed draws valid"
+      ),
+      status = "PASS",
+      detail = c(
+        paste(format(nrow(intervals), big.mark = ","), "comparison interval rows"),
+        paste(format(matched_count, big.mark = ","), "matched NBD3-R comparison rows"),
+        paste(format(nrow(nbd3_after), big.mark = ","), "NBD3-R comparison rows checked"),
+        paste("maximum allowed error uses relative", relative_tolerance,
+              "and absolute", absolute_tolerance, "tolerances"),
+        paste("MD5", legacy_parquet_md5_after),
+        paste("MD5", legacy_rda_md5_after),
+        paste(format(nrow(external_after), big.mark = ","), "rows checked"),
+        paste(format(nrow(cause_interval_result$data), big.mark = ","),
+              "cause interval rows across",
+              cause_interval_result$supported_series, "exactly supported series"),
+        paste("maximum absolute point difference",
+              signif(cause_interval_result$point_alignment_max_abs, 6)),
+        paste(format(nrow(diagnostics), big.mark = ","), "draw diagnostics rows")
+      )
+    )
+  }
   if ("valid" %in% names(diagnostics) && diagnostics[valid != TRUE, .N]) {
     stop("One or more uncertainty draws are marked invalid.", call. = FALSE)
   }
@@ -2059,33 +2182,47 @@ nbd_attach_uncertainty_to_report <- function(
     attached_rows = matched_count,
     cause_interval_rows = nrow(cause_interval_result$data),
     cause_supported_series = cause_interval_result$supported_series,
+    dynamic_full_ui = full_ui_enabled,
     validation = validation_path,
     coverage = coverage_path,
-    cause_coverage = cause_interval_result$coverage_path,
+    cause_coverage = if (full_ui_enabled) NA_character_ else
+      cause_interval_result$coverage_path,
+    full_draw_dir = interval_result$paths$full_draw_dir,
+    population_full_draw_dir = interval_result$paths$population_full_draw_dir,
+    full_ui_enabled = full_ui_enabled,
+    full_ui_measures = c("deaths", "crude_rate", "asr"),
     built_at = format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z")
   )
   runtime_after$uncertainty <- list(
     intervals = interval_result$parquet,
-    cause_intervals = cause_interval_result$parquet,
+    cause_intervals = if (full_ui_enabled) NA_character_ else
+      cause_interval_result$parquet,
     diagnostics = interval_result$paths$diagnostics,
     convergence = interval_result$paths$convergence,
     coverage = coverage_path,
-    cause_coverage = cause_interval_result$coverage_path,
+    cause_coverage = if (full_ui_enabled) NA_character_ else
+      cause_interval_result$coverage_path,
+    full_draw_dir = interval_result$paths$full_draw_dir,
+    population_full_draw_dir = interval_result$paths$population_full_draw_dir,
     validation = validation_path
   )
   runtime_after$paths$uncertainty_intervals <- interval_result$parquet
-  runtime_after$paths$cause_uncertainty <- cause_interval_result$parquet
+  runtime_after$paths$cause_uncertainty <- if (full_ui_enabled) NULL else
+    cause_interval_result$parquet
   write_rds_atomic(runtime_after, runtime_path)
 
   invisible(list(
     runtime = runtime_path,
     intervals = interval_result$parquet,
-    cause_intervals = cause_interval_result$parquet,
+    cause_intervals = if (full_ui_enabled) NA_character_ else
+      cause_interval_result$parquet,
     coverage = coverage_path,
-    cause_coverage = cause_interval_result$coverage_path,
+    cause_coverage = if (full_ui_enabled) NA_character_ else
+      cause_interval_result$coverage_path,
     validation = validation_path,
     matched_rows = matched_count,
     cause_interval_rows = nrow(cause_interval_result$data),
+    dynamic_full_ui = full_ui_enabled,
     convergence = convergence
   ))
 }

@@ -1,6 +1,6 @@
 project:
   title: "South African National Burden of Disease"
-  short_title: "NBD3 results"
+  short_title: "NBD3 Version 1 results"
   subtitle: "Methods, uncertainty, model comparisons, and detailed results"
   version: "NBD3 Version 1"
   analysis_period: "1997-2019"
@@ -72,9 +72,6 @@ measures:
   fraction: "Fraction of all-cause deaths"
   crude_rate: "Crude rate per 100,000"
   asr: "Age-standardised rate per 100,000"
-  yll00: "YLLs (undiscounted)"
-  yll03: "YLLs (3% discount)"
-  yll015: "YLLs (1.5% discount)"
 
 build:
   start_year: 1997
@@ -87,5 +84,5 @@ build:
 methods:
   nbd3_r_period: "1997-2019"
   injury_method: "NIMS 2000, IMS 2009, and FAMHIS 2017 define hierarchical additive-log-ratio inputs. The raw path is linearly interpolated between surveys, held flat outside the survey range, and passed through a five-year triangular moving average (two passes of a centred three-year moving average). Survey-year values are not reinserted after smoothing."
-  comparison_note: "NBD3-Stata is the working unpublished comparison series stored in viz.input.Rda. NBD3-R is generated from the reproducible 1997–2019 database."
-  uncertainty_note: "External comparison bounds are retained where supplied. NBD3-R intervals come from joint draws combining province-specific completeness variation, stratified IMS/FAMHIS PSU bootstrap replicates for injury level/profile/well-specified causes, NIMS count-based composition uncertainty, HIV fitted-parameter uncertainty, and continuous expert-target redistribution weights. Detailed cells outside the configured uncertainty outputs remain point estimates."
+  comparison_note: "NBD3-Stata is the unpublished internal benchmark stored in viz.input.Rda. NBD3-R is generated from the reproducible Version 1 database."
+  uncertainty_note: "External comparison bounds are retained where supplied. NBD3-R intervals come from joint draws combining province-specific completeness variation, stratified IMS/FAMHIS PSU bootstrap replicates for injury level/profile/well-specified causes, NIMS count-based composition uncertainty, HIV fitted-parameter uncertainty, and continuous expert-target redistribution weights. The full draw grid supports deaths and crude rates by cause, geography, sex and report age, plus all-age ASRs calculated within each draw."

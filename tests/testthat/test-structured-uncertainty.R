@@ -222,7 +222,7 @@ testthat::test_that("redistribution uncertainty uses continuous approved-target 
 })
 
 testthat::test_that("injury uncertainty uses one joint survey-design replicate", {
-  testthat::expect_identical(NBD3_UNCERTAINTY_VERSION, "1.7.1")
+  testthat::expect_identical(NBD3_UNCERTAINTY_VERSION, "1.8.2")
   draw_text <- paste(deparse(body(uc_run_one_draw)), collapse = " ")
   testthat::expect_match(draw_text, "injury_survey_design_draw", fixed = TRUE)
   testthat::expect_match(draw_text, "survey_draw$envelope_surveys", fixed = TRUE)
@@ -373,4 +373,101 @@ testthat::test_that("population-group reporting is retained in the joint profile
     result[cause_id == "all_causes", sum(Deaths)],
     point[, sum(Deaths)]
   )
+})
+
+testthat::test_that("full uncertainty draws retain every sex and base age", {
+  config <- uc_default_config()
+  config$reporting$include_all_provinces <- TRUE
+  config$reporting$full_ui_enabled <- TRUE
+  config$reporting$full_ui_sexes <- 1:3
+
+  source <- data.table::CJ(
+    Death_Prov = 1:2,
+    Sex = 1:2,
+    DeathYear = 2010L,
+    Popgroup = 1:2,
+    age5 = 1:20,
+    nbdcode = c(2L, 124L),
+    sorted = TRUE
+  )
+  source[, Deaths := as.numeric(
+    Death_Prov + 2 * Sex + age5 + nbdcode / 1000 + Popgroup / 10
+  )]
+
+  province <- uc_report_full_draw(
+    source, config, scenario = "joint", draw_id = 1L
+  )
+  population <- uc_report_full_population_draw(
+    source, config, scenario = "joint", draw_id = 1L
+  )
+  age_columns <- paste0("age_", 0:19)
+
+  testthat::expect_true(all(age_columns %in% names(province)))
+  testthat::expect_true(all(age_columns %in% names(population)))
+  testthat::expect_identical(sort(unique(province$Sex)), 1:3)
+  testthat::expect_identical(sort(unique(population$Sex)), 1:3)
+  testthat::expect_identical(sort(unique(province$Death_Prov)), 1:10)
+  testthat::expect_identical(sort(unique(population$Popgroup)), 1:2)
+  testthat::expect_true(all(c(
+    "nbd_2", "nbd_124", "all_causes", "all_injuries"
+  ) %in% unique(province$cause_id)))
+
+  male_female <- province[
+    Death_Prov == 1L & cause_id == "nbd_2" & Sex %in% 1:2
+  ]
+  person <- province[
+    Death_Prov == 1L & cause_id == "nbd_2" & Sex == 3L
+  ]
+  expected <- male_female[, lapply(.SD, sum), .SDcols = age_columns]
+  testthat::expect_equal(
+    unlist(person[, ..age_columns], use.names = FALSE),
+    unlist(expected, use.names = FALSE),
+    tolerance = 1e-12
+  )
+})
+
+testthat::test_that("uncertainty configuration enables the complete UI grid", {
+  config <- yaml::read_yaml(file.path(
+    .test_root, "config", "uncertainty_joint.yml"
+  ))
+  testthat::expect_true(isTRUE(config$reporting$full_ui_enabled))
+  testthat::expect_identical(
+    sort(as.integer(unlist(config$reporting$full_ui_sexes))),
+    1:3
+  )
+  testthat::expect_identical(
+    config$run$output_name,
+    "nbd3_v1_joint_full_ui_1000"
+  )
+})
+
+
+testthat::test_that("publication-scale uncertainty keeps per-draw storage canonical", {
+  finalise_text <- paste(deparse(body(run_uncertainty_pipeline)), collapse = "\n")
+  testthat::expect_match(finalise_text, "uc_summarise_draw_files", fixed = TRUE)
+  testthat::expect_match(finalise_text, "uc_write_draw_storage_manifest", fixed = TRUE)
+  testthat::expect_false(grepl(
+    "uc_write_parquet_atomic\\(draws,.*uncertainty_draws",
+    finalise_text, perl = TRUE
+  ))
+
+  storage_text <- paste(
+    deparse(body(uc_write_draw_storage_manifest)),
+    collapse = "\n"
+  )
+  testthat::expect_match(
+    storage_text,
+    "A monolithic uncertainty_draws.parquet is intentionally not created",
+    fixed = TRUE
+  )
+})
+
+testthat::test_that("compact summaries use bounded exact type-8 quantiles", {
+  summary_text <- paste(
+    deparse(body(uc_summarise_binary_draw_matrix)),
+    collapse = "\n"
+  )
+  testthat::expect_match(summary_text, "matrixStats::rowQuantiles", fixed = TRUE)
+  testthat::expect_match(summary_text, "type = 8L", fixed = TRUE)
+  testthat::expect_match(summary_text, "block_size", fixed = TRUE)
 })

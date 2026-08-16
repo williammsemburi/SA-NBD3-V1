@@ -1,0 +1,13 @@
+.git
+.github
+.Rproj.user
+_targets
+data/raw
+data/derived
+output/uncertainty
+output/database
+output/tables
+output/figures
+dev
+tests
+deployment

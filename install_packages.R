@@ -1,5 +1,6 @@
 packages <- c(
   "arrow",
+  "cachem",
   "collapse",
   "data.table",
   "dplyr",
@@ -7,8 +8,10 @@ packages <- c(
   "highcharter",
   "htmltools",
   "knitr",
+  "matrixStats",
   "readxl",
   "rmarkdown",
+  "rsconnect",
   "scales",
   "shiny",
   "targets",

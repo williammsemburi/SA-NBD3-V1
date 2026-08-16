@@ -130,3 +130,14 @@ testthat::test_that("comparison uncertainty retains draws for exact interval rep
     fixed = TRUE
   )
 })
+
+
+testthat::test_that("full-grid reporting validates per-draw stores instead of materialising all cause intervals", {
+  body_text <- paste(
+    deparse(body(nbd_attach_uncertainty_to_report)),
+    collapse = "\n"
+  )
+  testthat::expect_match(body_text, "nbd_validate_full_ui_draw_storage", fixed = TRUE)
+  testthat::expect_match(body_text, "dynamic_full_ui = TRUE", fixed = TRUE)
+  testthat::expect_match(body_text, "nbd_build_cause_uncertainty_intervals", fixed = TRUE)
+})

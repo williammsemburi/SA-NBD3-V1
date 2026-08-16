@@ -65,15 +65,27 @@ G_j\sim\operatorname{Gamma}(\alpha_J,\alpha_J),
 \qquad W_j=\frac{G_j}{\overline G}.
 $$
 
-All $W_j$ are strictly positive and have mean one after normalisation. The same multiplier vector is applied to every demographic cell governed by the rule. The shape $\alpha_J$ is determined by the number of approved targets and places the allocation-share variance on a common reference scale across multi-target rules.
+All $W_j$ are strictly positive and have mean one after normalisation. The same vector is applied to every demographic cell governed by the rule.
 
-For source deaths $S$, current target deaths $D_j$, and multiplier $W_j$, the amount assigned to target $j$ is:
+The shape $\alpha_J$ is derived from the former uniform non-empty-subset model. Let $K$ be the size of a uniformly sampled non-empty subset of $J$ targets:
 
 $$
-A_j=S\frac{D_jW_j}{\sum_kD_kW_k}.
+P(K=k)=\frac{\binom{J}{k}}{2^J-1}.
 $$
 
-When all current target counts are zero, the normalised multiplier vector supplies the fallback shares. Every approved target remains active, no unapproved target can receive deaths, source deaths are conserved, and single-target rules remain deterministic.
+For equal baseline target counts, the old marginal allocation-share variance is:
+
+$$
+V_J=\frac{1}{J}E\left(\frac{1}{K}\right)-\frac{1}{J^2}.
+$$
+
+The symmetric Dirichlet/Gamma shape is chosen so that:
+
+$$
+\frac{J-1}{J^2(J\alpha_J+1)}=V_J.
+$$
+
+Thus the continuous model retains the former structural variance under a neutral equal-target reference, while removing exact target switching. Single-target rules remain deterministic.
 
 ## 5. Draw order
 
@@ -89,6 +101,44 @@ Completed Stage 04 point boundary
     -> final cause aggregation and reporting
 ```
 
-## 6. Current boundaries
+## 6. Reporting grid and derived measures
 
-S1, an independent NPR variance term, and antenatal HIV prevalence remain fixed because the supplied inputs do not define approved stochastic models for them. The stratified PSU bootstrap uses the supplied PSU and stratum variables; finite-population corrections and the exact variance settings of the original publication software are not imposed. ASRs and YLLs remain point estimates in the current reporting draw profile.
+Each completed draw retains base-age deaths for Male, Female and Person across South Africa, the nine provinces, and the four national population groups. The report maps the complete analysis-cause vector to every supported cause and aggregate within the draw.
+
+The visualization tool derives three measures:
+
+1. deaths for every supported report age group;
+2. crude mortality rates using the fixed population denominator for the selected geography, sex, cause and age; and
+3. all-age age-standardised death rates calculated inside each draw using the same standard-population weights and age-group convention as the deterministic database.
+
+Calculating the ASR inside each draw preserves covariance among age-specific deaths. The report does not combine independently calculated age-specific interval endpoints.
+
+YLLs remain available in the analytical database, but they are not exposed in the visualization tool and are not stored in the full-grid uncertainty reporting files.
+
+## 7. Scalable draw storage and finalisation
+
+The canonical uncertainty data are the individual Parquet files written for each completed draw:
+
+```text
+output/uncertainty/<output-name>/joint/draws/
+output/uncertainty/<output-name>/joint/population_draws/
+output/uncertainty/<output-name>/joint/full_draws/
+output/uncertainty/<output-name>/joint/population_full_draws/
+```
+
+The compact `draws/` and `population_draws/` files support headline comparisons and convergence diagnostics. The wide `full_draws/` and `population_full_draws/` files retain all 20 base-age death counts for Male, Female and Person and are the source for the interactive deaths, crude-rate and ASR intervals.
+
+The pipeline does not combine the draws into one `uncertainty_draws.parquet`. At publication-scale draw counts, that table can exceed Arrow/Parquet serialization limits and is unnecessary for either inference or reporting. After the last draw, the engine:
+
+1. validates that every expected per-draw file exists;
+2. streams the compact death vectors to temporary binary storage;
+3. calculates exact type-8 quantiles, means and standard deviations in bounded row blocks;
+4. calculates convergence and HIV-cause covariance diagnostics without loading all draw rows into memory;
+5. writes an explicit draw-storage manifest; and
+6. removes the temporary binary file after successful finalisation.
+
+The interactive report opens the complete full-grid draw directories as Arrow datasets and retrieves only the selected causes, geographies, sexes, years and age columns. Aggregate-age deaths, crude rates and all-age ASRs are calculated from the selected joint draws, not from separately summarised marginal intervals.
+
+## 8. Current boundaries
+
+S1, an independent NPR variance term, population denominators, and antenatal HIV prevalence remain fixed because the supplied inputs do not define approved stochastic models for them. The stratified PSU bootstrap uses the supplied PSU and stratum variables; finite-population corrections and the exact variance settings of the original publication software are not imposed. Crude-rate and ASR intervals therefore represent mortality-estimation uncertainty conditional on the supplied population denominators.

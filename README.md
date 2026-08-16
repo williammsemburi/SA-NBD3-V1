@@ -1,158 +1,197 @@
 # Third South African National Burden of Disease Study
 
-**Version 1 — Reproducible mortality estimates for South Africa, 1997–2019**
+**Version 1 — Reproducible cause-of-death estimates for South Africa, 1997–2019**
 
-This repository contains the R implementation of the Third South African National Burden of Disease Study (NBD3). It produces annual, internally coherent mortality estimates by cause, province, population group, sex, age, and year. It also calculates years of life lost, propagates uncertainty through the main analytical corrections, and builds an interactive results report.
+This repository contains the analytical code, configuration, tests, documentation, and interactive research report supporting publications from the **Third South African National Burden of Disease Study (NBD3)**. The analysis produces internally coherent annual mortality estimates by cause, geography, population group, sex, age, and year, while propagating uncertainty through the principal corrections applied to the registered cause-of-death data.
 
-The repository is organised for three uses:
-
-- running the complete analysis from raw inputs to the final report;
-- reviewing and teaching the statistical methods step by step; and
-- maintaining a transparent, testable Git codebase for collaboration.
+The repository is intended to support scientific transparency and reproducibility. It documents how the published estimates are generated, provides the exact computational workflow used for the study, and separates restricted source data from code and publication-ready outputs.
 
 ## Study scope
 
-The analysis covers **1997–2019**. It estimates:
+The current analysis covers:
 
-- deaths by detailed and aggregate South African NBD causes;
-- crude mortality rates;
-- age-standardised mortality rates;
-- years of life lost under the supplied YLL schedules;
-- national and provincial estimates;
-- national population-group estimates; and
-- 95% uncertainty intervals for supported deaths and crude-rate outputs.
+- **Years:** 1997–2019
+- **Geography:** South Africa, the nine provinces, and four national population groups
+- **Sex:** male, female, and person
+- **Age:** neonatal, post-neonatal, childhood, adult five-year age groups, and reporting aggregates
+- **Cause hierarchy:** all causes, broad cause groups, disease categories, detailed South African NBD causes, and supported reporting aggregates
+- **Primary mortality measures:** deaths, crude mortality rates, and age-standardised mortality rates
+- **Additional analytical measure:** years of life lost (YLLs), retained in the database but not exposed in the interactive results tool
 
-Years 2020–2022 and the explicit estimation of COVID-19 mortality are outside the scope of this repository.
+The public-facing results report focuses on mortality through 2019. Estimates for the COVID-19 period, comparative risk assessment, and health-district burden are outside the scope of this repository release.
+
+## Scientific objectives
+
+NBD3 is designed to estimate the level, composition, and distribution of mortality in South Africa after addressing known limitations in routine mortality data. The analytical workflow addresses six linked problems:
+
+1. classification and aggregation of registered causes of death;
+2. incomplete registration of deaths;
+3. incomplete or distorted reporting of injury mortality;
+4. misclassification of HIV/AIDS deaths to indicator causes;
+5. incomplete information on specific injury causes; and
+6. ill-defined, intermediate, and otherwise unsuitable underlying causes of death.
+
+The resulting estimates are constructed to remain internally coherent: demographic-cell totals are conserved through cause reallocation, injury and natural-cause envelopes reconcile to completed all-cause mortality, and final cause aggregates are formed within each uncertainty draw.
 
 ## Analytical workflow
 
-The core mortality analysis follows six linked operations.
+### 1. Prepare population and registered mortality data
 
-### 1. Clean and aggregate registered cause-of-death data
+The pipeline reads Statistics South Africa cause-of-death microdata, verifies and standardises certificate fields, applies the project ICD-10-to-NBD mapping, and implements age-, sex-, perinatal-, cancer-, and multiple-cause rules. It then redistributes records with unknown sex, age, or population group and collapses the data to the analytical mortality grid.
 
-The pipeline reads the record-level mortality data, verifies ICD-10 information, applies the South African NBD cause classification and plausibility rules, implements documented exclusions and corrections, and aggregates the records to the analytical grid. Unknown sex, age, and population group are redistributed while preserving the represented number of deaths.
+### 2. Complete the mortality envelope
 
-### 2. Construct the completed mortality envelope
+Registered deaths are reconciled to specified all-cause mortality envelopes using completeness inputs developed for the South African NBD programme. The correction distinguishes African natural deaths from other mortality components. African natural mortality is treated as the residual component required to reconcile registered mortality to the completed envelope. National Population Register information is used to inform changes in reporting completeness after the period covered by the original NBD2 completeness inputs.
 
-African natural deaths are adjusted to the specified all-cause envelope using the established S1, S2, and National Population Register inputs. The completed envelope is the mortality boundary used by all downstream stages.
+For uncertainty, each province receives a mean-one reporting factor. Its log-scale dispersion is estimated from death-weighted variation in annual aggregate completeness values over time after age and sex have been collapsed.
 
 ### 3. Calibrate total injury mortality
 
-IMS 2009 and FAMHIS 2017 are estimated directly from the supplied survey records and weights.
+The injury envelope is estimated from the supplied nationally representative injury mortality surveys rather than from hard-coded totals.
 
-- IMS injury-level eligibility: `Cause_of_death == 1`.
-- FAMHIS injury-level eligibility: a nonblank injury mechanism and no explicit exclusion through `non_nat_undert == 0`.
+- **IMS 2009:** the supplied records and weights reproduce the published-compatible national injury total.
+- **FAMHIS 2017:** the later-cleaned published eligibility definition and supplied weights reproduce the corresponding national injury total.
 
-These rules reproduce weighted national totals of approximately 52,493 injuries in 2009 and 53,288 injuries in 2017 from the supplied analytical files. Published estimates are retained as external audit references rather than substituted into the point calculation.
+Survey-eligible injury records determine the national and provincial injury level and the province–sex–age profile. Stratified primary-sampling-unit bootstrap replicates preserve the joint uncertainty in the national total, provincial totals, demographic profile, and well-specified injury causes.
 
-For each survey year, the weighted survey injury total and province–sex–age profile are compared with the completed routine injury envelope. The IMS correction is applied through 2009, the IMS and FAMHIS corrections are interpolated for 2010–2016, and the FAMHIS correction is applied for 2017–2019. The calibration changes the division between natural and injury deaths while preserving each completed all-cause demographic cell.
+The survey-to-vital-registration calibration factor observed in 2009 is applied through 2009. The 2009 and 2017 factors are interpolated on the log scale for 2010–2016, and the 2017 factor is applied through 2019. Any change in the injury envelope is offset against natural-cause mortality so that the completed all-cause total remains unchanged.
 
-### 4. Estimate HIV/AIDS mortality
+### 4. Correct misclassified HIV/AIDS mortality
 
-The HIV/AIDS model is applied after completeness and injury calibration because both operations affect the remaining natural-cause envelope. The fitted model estimates misclassified HIV/AIDS deaths and reallocates them from the approved donor causes while preserving the demographic-cell total.
+The HIV/AIDS model estimates deaths assigned to causes that act as indicators of underlying HIV infection. It combines antenatal HIV prevalence, counterfactual background mortality, province- and sex-specific temporal trends, and age patterns to identify excess deaths among the indicator causes. Those deaths are transferred to HIV/AIDS while conserving deaths within each demographic cell.
+
+The deterministic estimate uses the fitted model coefficients. Joint uncertainty draws sample the fitted coefficient vectors from their estimated variance-covariance matrices after completeness and injury calibration have been applied.
 
 ### 5. Estimate specific injury causes
 
-The calibrated injury envelope is divided among 15 injury causes using NIMS 2000, IMS 2009, and FAMHIS 2017.
+The completed injury envelope is distributed across 15 injury causes using evidence from:
 
-All eligible injuries contribute to the total injury envelope. Cause fractions use only records that map directly to a common, well-specified injury cause. Generic and unresolved mechanisms therefore contribute to injury completeness but do not determine a specific cause fraction.
+- NIMS 2000;
+- IMS 2009; and
+- FAMHIS 2017.
 
-NIMS supplies the national 2000 composition and IMS supplies the spatial distribution used to expand that composition. IMS supplies the 2009 composition and FAMHIS supplies the 2017 composition. Causes 132, 136, and 138 are harmonised before interpolation to reduce artefacts caused by differences in survey classification. Annual fractions are constructed in hierarchical additive-log-ratio space and transformed back to positive fractions that sum to one.
+All survey-eligible injuries contribute to injury completeness. Cause fractions are based on records that can be assigned to a well-specified common injury cause. Generic and unresolved injuries remain part of the total injury envelope but do not provide direct evidence for a specific cause fraction.
 
-### 6. Redistribute ill-defined and garbage causes
+Cause fractions are represented using a hierarchical additive-log-ratio formulation, interpolated between survey anchors, and transformed back to positive compositions that sum to one. Causes 132, 136, and 138 are harmonised before interpolation to reduce artefacts caused by differences in classification across the surveys. NIMS supplies the national 2000 composition, with IMS information used to support geographic allocation.
 
-The deterministic analysis applies the complete ordered set of expert-approved redistribution rules. Each source is allocated proportionally across its approved targets using the current target distribution, with biological fallback distributions where the target denominator is zero. Redistribution preserves the natural, injury, and all-cause envelopes.
+### 6. Redistribute ill-defined and garbage-coded causes
 
-After these six operations, the pipeline maps analysis causes to the final South African NBD hierarchy, calculates YLLs and rates, constructs aggregate ages and person estimates, and writes the final database.
+The deterministic analysis applies the ordered expert-approved redistribution rules. Each source cause is allocated proportionally across its approved targets, with biological fallback distributions where the observed target denominator is zero.
 
-## Joint uncertainty model
+Redistribution uncertainty is represented using continuous positive multipliers on the same approved target vector. For a multi-target rule, each draw changes the relative weights of the eligible destinations while retaining every approved target and conserving all source deaths. Single-target rules remain deterministic.
 
-The uncertainty analysis reruns the evidence-supported stochastic operations in analytical order. Aggregation occurs within each draw, so covariance among causes, provinces, and population groups is preserved.
+## Joint uncertainty
 
-The four main uncertainty drivers are:
+The uncertainty engine reruns the linked stochastic operations in analytical order. A complete draw contains:
 
-1. **African natural-cause reporting completeness.** Each province receives a mean-one factor. Its log standard deviation is estimated from death-weighted annual aggregate S2 variation across time after age and sex are collapsed.
-2. **Injury level, demographic profile, and cause composition.** IMS mortuaries and FAMHIS forensic pathology service units are resampled within their survey strata. The same survey replicate jointly determines the national injury total, provincial and sex-age profile, and well-specified cause counts. NIMS contributes count-based cause-composition uncertainty.
-3. **HIV/AIDS estimation.** Fitted Stage 05 coefficient vectors are sampled jointly from their estimated variance-covariance matrices, after completeness and injury calibration.
-4. **Redistribution.** Every approved target remains eligible. Multi-target rules receive continuous positive random target multipliers, and the weighted proportional redistribution is rerun. Single-target rules remain deterministic.
+1. province-specific African natural-cause completeness factors;
+2. a stratified IMS survey replicate;
+3. a stratified FAMHIS survey replicate;
+4. NIMS count-based cause-fraction uncertainty;
+5. a multivariate HIV/AIDS coefficient draw; and
+6. continuous redistribution target-weight draws.
 
-The 95% uncertainty intervals are the empirical 2.5th and 97.5th percentiles of the final draw-specific estimates.
+The final cause hierarchy, aggregate ages, person estimates, crude rates, and age-standardised rates are constructed inside each draw. This preserves covariance among causes, ages, sexes, provinces, and population groups.
+
+The interactive tool reports empirical 95% uncertainty intervals for all supported combinations of:
+
+```text
+cause or aggregate × geography × sex × age × year × metric
+```
+
+The supported metrics are:
+
+- deaths;
+- crude mortality rate per 100,000; and
+- all-age age-standardised mortality rate per 100,000.
+
+Population denominators and standard-population weights are treated as fixed. ASRs are recalculated inside each draw rather than being derived from interval endpoints. The neonatal view is deaths-only because the analytical population file does not contain a separate neonatal denominator.
+
+## Data sources
+
+The main analytical inputs are:
+
+| Domain | Source |
+|---|---|
+| Registered mortality | Statistics South Africa cause-of-death microdata, 1997–2019 |
+| Population denominators | South African mid-year population estimates used by the study |
+| Mortality completeness | Child and adult completeness inputs developed for the South African NBD programme |
+| Recent registration change | National Population Register deaths |
+| Injury composition, 2000 | National Injury Mortality Surveillance System (NIMS) |
+| Injury level and causes, 2009 | Injury Mortality Survey (IMS) |
+| Injury level and causes, 2017 | Fatal Injury Mortality Survey (FAMHIS) |
+| HIV model | Provincial antenatal HIV prevalence and registered indicator-cause mortality |
+| Cause hierarchy | South African NBD cause list and analysis-to-report mappings |
+| Standardisation | WHO standard-population factors used by the study |
+
+The raw mortality and survey files are restricted and are not distributed in the public repository. See `docs/INPUTS.md` for the expected filenames, schemas, and supported aliases.
 
 ## Repository structure
 
 ```text
-R/          Numbered analytical modules
-config/     Point-estimate and uncertainty settings
-data/       Raw inputs, bundled lookups, and derived checkpoints
-dev/        Extended diagnostics and full validation tools
-docs/       Methods, inputs, uncertainty, and workshop documentation
-output/     Databases, uncertainty outputs, figures, report data, and tables
-report/     Interactive HTML report and report-specific helpers
-tests/      Focused automated tests
-_targets.R  Deterministic dependency graph
-run_nbd.R   Main project entry point
+R/                  Numbered analytical modules
+config/             Point-estimate and uncertainty settings
+data/lookups/        Version-controlled mappings and analytical lookups
+data/raw/            Restricted source data; excluded from Git
+data/derived/        Cached analytical checkpoints; excluded from Git
+dev/                 Extended diagnostics and release validation
+docs/                Methods, inputs, uncertainty, and report documentation
+output/              Databases, uncertainty draws, tables, figures, and report data
+report/              Shiny-enabled R Markdown research report
+report/R/            Report-data and Highcharter helpers
+tests/               Focused automated tests
+_targets.R           Deterministic dependency graph
+run_nbd.R            Main project entry point
+install_packages.R   Package installation and dependency check
 ```
 
-The R modules follow the analytical narrative:
+The R modules follow the analytical sequence:
 
 | Module | Purpose |
 |---|---|
 | `00_core.R` | Configuration, paths, assertions, constants, and shared utilities |
-| `01_population_cod.R` | Population preparation, ICD verification, COD aggregation, and unknown-demographic redistribution |
+| `01_population_cod.R` | Population preparation, ICD verification, mortality aggregation, and unknown-demographic redistribution |
 | `02_injuries.R` | Injury survey preparation, injury-level calibration, cause fractions, harmonisation, and interpolation |
-| `03_completeness_hiv.R` | Completeness, NPR integration, prevalence preparation, and HIV/AIDS estimation |
-| `04_redistribution.R` | The `redist()` helper and ordered redistribution rules |
-| `05_yll_database.R` | Cause hierarchy, YLLs, rates, aggregate ages, and final database construction |
+| `03_completeness_hiv.R` | Mortality completeness, NPR integration, prevalence preparation, and HIV/AIDS estimation |
+| `04_redistribution.R` | Redistribution helper and ordered expert rules |
+| `05_yll_database.R` | Cause hierarchy, mortality measures, aggregate ages, YLLs, and final database construction |
 | `06_uncertainty.R` | Joint uncertainty propagation |
-| `07_reporting.R` | Conversion of complete draws into reportable uncertainty intervals |
+| `07_reporting.R` | Conversion of complete draws into reportable intervals |
 | `08_pipeline.R` | Stage wrappers and checkpoint writing |
 
-## Required inputs
+## Reproducibility model
 
-Place the restricted analytical files in `data/raw/`. Lookup tables required by the analysis are already included in `data/lookups/`.
+This repository supports three levels of reproducibility:
 
-| Input | Default filename |
-|---|---|
-| Cause-of-death microdata | `COD1997-2019_F1.dta` |
-| Population | `NewPropPopulation.dta` |
-| Population fallback workbook | `New AltMYR.xls` |
-| NIMS 2000 | `NIMS2.xlsx` |
-| IMS 2009 | `IMS raw data for completeness.dta` |
-| FAMHIS 2017 | `FAMHIS_FinalLabelled_Updated&Weighted_04January2023_NBD.dta` |
-| Child completeness | `Completeness25April2014.csv` |
-| Provincial completeness | `Completeness and Province Deaths 27012014.xlsx` |
-| National Population Register | `NPR15_22.dta` |
-| HIV prevalence | `ProvPrevs.csv` |
-| YLL schedules | `NBD YLL.xlsx` |
-| ASR factors | `ASRFactor.dta` |
+| Level | What can be reproduced | Requirements |
+|---|---|---|
+| Public code review | Methods, functions, configuration, tests, and report structure | Public repository only |
+| Authorised analytical reproduction | Point estimates, joint uncertainty, database, and report | Restricted source data plus the repository |
+| Publication-output reproduction | Figures and tables from released aggregate outputs | Publication-specific aggregate data release, where approved |
 
-For the model-comparison sections of the report, place:
-
-```text
-viz.input.Rda
-```
-
-at:
-
-```text
-report/data/legacy/viz.input.Rda
-```
-
-The exact input contract and supported aliases are documented in `docs/INPUTS.md`. Filenames can be changed in `config/config.yml` without editing the analytical functions.
+The deterministic pipeline uses `{targets}` to cache intermediate stages. Uncertainty draws use controlled random seeds and a run signature that prevents incompatible outputs from being mixed. The exact Git commit and tagged release used for each publication should be recorded in the paper, supplementary material, or archived software citation.
 
 ## Installation
 
-From the repository root:
+A current R installation is required. From the repository root:
 
 ```bat
 Rscript install_packages.R
 ```
 
-The installation script checks and installs the packages required by the pipeline and report.
+The uncertainty finalisation step uses `matrixStats` for exact row-wise type-8 quantiles without loading the complete 1,000-draw table into memory; it is installed by `install_packages.R`.
 
-## Running the complete project
+Place the restricted inputs in `data/raw/` and the legacy comparison object at:
 
-Run:
+```text
+report/data/legacy/viz.input.Rda
+```
+
+The default filenames are listed in `docs/INPUTS.md` and can be changed in `config/config.yml` without editing the analytical functions.
+
+## Running the analysis
+
+Run the project from the repository root:
 
 ```bat
 Rscript run_nbd.R
@@ -168,19 +207,7 @@ OPEN_REPORT         <- TRUE
 RUN_FULL_VALIDATION <- FALSE
 ```
 
-A normal complete run performs:
-
-```text
-Input check
-    -> point-estimate analysis
-    -> joint uncertainty
-    -> report-data construction
-    -> interactive HTML report
-```
-
-The `{targets}` cache allows completed deterministic stages to be reused when their inputs and source functions have not changed.
-
-### Run point estimates only
+### Point estimates only
 
 ```r
 RUN_POINT_ESTIMATES <- TRUE
@@ -189,7 +216,7 @@ RUN_REPORT          <- FALSE
 OPEN_REPORT         <- FALSE
 ```
 
-### Run uncertainty and rebuild the report from completed point estimates
+### Uncertainty and report from completed point estimates
 
 ```r
 RUN_POINT_ESTIMATES <- FALSE
@@ -198,7 +225,7 @@ RUN_REPORT          <- TRUE
 OPEN_REPORT         <- TRUE
 ```
 
-### Rebuild the report only
+### Report only
 
 ```r
 RUN_POINT_ESTIMATES <- FALSE
@@ -207,62 +234,71 @@ RUN_REPORT          <- TRUE
 OPEN_REPORT         <- TRUE
 ```
 
-The number of uncertainty draws and the output directory are configured in `config/uncertainty_joint.yml`. A small draw count is useful for checking a new statistical specification before a full run.
+The publication configuration in `config/uncertainty_joint.yml` uses 1,000 joint draws and writes to `output/uncertainty/nbd3_v1_joint_full_ui_1000/`. A smoke test should use a different `output_name`; smoke-test and publication draws must never share one output directory.
 
 ## Main outputs
 
-### Deterministic checkpoints
-
-```text
-data/derived/
-```
-
-The numbered files in this directory correspond to the main analytical stages and allow inspection of intermediate estimates.
-
-### Final database
+### Final analytical database
 
 ```text
 output/database/NBD_database_1997_2019.parquet
 ```
 
-### Uncertainty results
+### Joint uncertainty
 
 ```text
-output/uncertainty/<configured output name>/
+output/uncertainty/<configured-output-name>/
 ```
 
-This directory contains completed draws, draw diagnostics, uncertainty summaries, province outputs, and population-group outputs.
+The complete visualization grid retains cause-specific, base-age, sex-specific, provincial, national, and population-group deaths in one Parquet file per draw. Those per-draw files are the canonical uncertainty data. The pipeline deliberately does not create one monolithic draw table because a 1,000-draw table exceeds common Arrow/Parquet Thrift limits. Compact analytical summaries are calculated in bounded blocks. For the publication application, `dev/build_shiny_ui_cache.R` converts the complete draws into partitioned interval summaries so the live report never scans the raw draw archive.
 
-### Tables and diagnostics
+### Tables, diagnostics, and audit outputs
 
 ```text
 output/tables/
+output/figures/
 ```
 
-Key audit tables include the input status, injury survey reference comparison, completeness diagnostics, point-reconstruction checks, and report-input coverage.
+These directories contain input audits, injury survey reconciliation, completeness diagnostics, point-reconstruction checks, uncertainty diagnostics, and publication-supporting figures and tables.
 
-### Interactive report
-
-The report is generated from:
+### Interactive research report
 
 ```text
 report/nbd3_results_report.Rmd
 ```
 
-It presents:
+The report is organised as a research report with background, data, methods, results, discussion, and a technical appendix. It includes:
 
-- the development of the South African NBD studies;
-- HIV/AIDS methods and model comparisons;
-- injury data sources, methods, and model comparisons;
-- final provincial and population-group estimates;
-- propagated uncertainty; and
-- the assumptions and current boundaries of the analysis.
+- completeness diagnostics by province and year;
+- HIV/AIDS method and model-comparison panels;
+- injury survey, calibration, composition, and model-comparison panels;
+- an explanation of redistribution and uncertainty;
+- one-cause comparisons across South Africa, provinces, and population groups; and
+- multi-cause comparisons within a selected geography or population group.
 
-NBD3-Stata is retained as a working unpublished comparison series. NBD3-R is the reproducible implementation used to generate the final estimates in this repository. NBD2, THEMBISA, and GBD2023 are included where equivalent comparison series are available.
+Interactive charts use animated Highcharts transitions by default. Animation can be disabled for testing, performance, or reduced-motion use with:
 
-## Validation and testing
+```r
+options(nbd3.highcharts.animation = FALSE)
+```
 
-The normal collaborator workflow uses the safeguards embedded in each analytical stage. Extended validation is available when required:
+## Validation and quality assurance
+
+The pipeline contains checks for:
+
+- required inputs and schemas;
+- unique analytical keys;
+- finite and non-negative estimates;
+- preservation of deaths during demographic redistribution;
+- closure of injury cause fractions;
+- reproduction of empirical injury survey totals;
+- conservation of all-cause, natural-cause, and injury envelopes;
+- HIV/AIDS reallocation identities;
+- redistribution source depletion and envelope preservation;
+- consistency of national, provincial, sex, and age aggregations; and
+- point reconstruction by the uncertainty engine.
+
+Focused automated tests are stored in `tests/testthat/`. Extended release checks are available through:
 
 ```r
 RUN_FULL_VALIDATION <- TRUE
@@ -274,33 +310,91 @@ or:
 source("dev/full_validation.R")
 ```
 
-Focused automated tests are stored in `tests/testthat/`.
-
-## Reproducibility and Git
-
-Source code, configuration, lookup tables, tests, and documentation should be committed to Git. Restricted raw data, derived checkpoints, uncertainty draws, report outputs, and local R session files are excluded through `.gitignore`.
-
-Analytical changes should be made in the relevant numbered R module and accompanied by:
-
-- a clear description of the statistical change;
-- an update to the relevant methods documentation;
-- focused tests where practical; and
-- review of point-estimate and uncertainty diagnostics before results are shared.
-
-The repository does not use alternate BAT launchers or multiple competing entry scripts. `run_nbd.R` is the project entry point.
-
-## Documentation
-
-| File | Content |
-|---|---|
-| `docs/ANALYTICAL_SEQUENCE.md` | Concise analytical sequence |
-| `docs/METHODS.md` | Point-estimate methods |
-| `docs/UNCERTAINTY.md` | Joint uncertainty methods |
-| `docs/INJURY_SURVEY_AUDIT.md` | Survey eligibility, weighted totals, and injury survey design checks |
-| `docs/INPUTS.md` | Input files and data contracts |
-| `docs/REPORT.md` | Report structure and runtime-data contract |
-| `docs/WORKSHOP_GUIDE.md` | Suggested sequence for explaining the analysis to collaborators |
-
 ## Data governance
 
-The raw mortality and survey data are restricted and are not distributed through this repository. Collaborators are responsible for using the data under the applicable approvals and data-sharing agreements. Do not commit raw inputs, individual-level data, derived record-level extracts, or any file containing identifiable information to Git.
+The raw mortality and survey data are confidential or access controlled. They must not be committed to Git, attached to public issues, or included in public release archives. The `.gitignore` excludes raw inputs, record-level derived data, analytical caches, uncertainty draws, report outputs, and local R session files.
+
+Users with authorised access remain responsible for complying with the relevant ethics approvals, data-sharing agreements, institutional policies, and disclosure controls. Public releases should contain only code, documentation, non-restricted lookups, and approved aggregate outputs.
+
+## Publication and release practice
+
+For each publication supported by this repository:
+
+1. freeze the analytical configuration and uncertainty draw count;
+2. run the complete validation suite;
+3. record the Git commit SHA in the publication materials;
+4. create a tagged GitHub release corresponding to the submitted or accepted analysis;
+5. archive the tagged release in an approved long-term repository where possible;
+6. publish only disclosure-reviewed aggregate outputs; and
+7. add the final article citation and software archive identifier to this README.
+
+The repository `VERSION` file identifies the analytical release. Only tagged scientific releases form the public version history.
+
+## Citation
+
+When using this repository, cite both:
+
+1. the relevant NBD3 publication; and
+2. the tagged software release used to produce the reported results.
+
+The definitive NBD3 article citation and archival software identifier should be inserted here when the study is published.
+
+### Related South African NBD publications
+
+- Bradshaw D, Groenewald P, Laubscher R, et al. *Initial burden of disease estimates for South Africa, 2000.* South African Medical Journal. 2003;93(9):682–688.
+- Pillay-van Wyk V, Msemburi W, Laubscher R, et al. *Mortality trends and differentials in South Africa from 1997 to 2012: second National Burden of Disease Study.* The Lancet Global Health. 2016;4(9):e642–e653. DOI: 10.1016/S2214-109X(16)30113-9.
+- Matzopoulos R, Prinsloo M, Pillay-van Wyk V, et al. *Injury-related mortality in South Africa: a retrospective descriptive study of postmortem investigations.* Bulletin of the World Health Organization. 2015;93:303–313. DOI: 10.2471/BLT.14.145771.
+- Prinsloo M, Mhlongo S, Roomaney RA, et al. *Injury mortality in South Africa: a 2009 and 2017 comparison to track progress to meeting sustainable development goal targets.* Global Health Action. 2024;17(1):2377828. DOI: 10.1080/16549716.2024.2377828.
+
+## Contributing
+
+Changes should be scientifically motivated, reviewable, and traceable. Modify the relevant numbered module rather than adding fragmented helper scripts. Analytical changes should include updated documentation, focused tests, and review of point-estimate and uncertainty diagnostics. Cause-list changes and redistribution-target changes require substantive expert review.
+
+See `CONTRIBUTING.md` for the repository workflow.
+
+## Licence
+
+The repository currently carries an all-rights-reserved notice while the public software licence is being determined. **An approved software licence must replace the current notice before public release.** Data access and output reuse may remain subject to separate restrictions even after a software licence is selected.
+
+## Questions and issue reporting
+
+Once the repository is public, use GitHub Issues for reproducible code problems, documentation errors, and feature requests. Do not attach restricted data. Scientific interpretation and data-access requests should follow the contact information in the associated NBD3 publication.
+
+## Fast publication application
+
+The public Shiny report is deployed from a query-optimised summary cache, not
+from the 1,000 raw uncertainty draw files. This keeps the publication app small,
+low-memory, and responsive while preserving the complete draws in the
+analytical archive.
+
+After the full-grid uncertainty analysis is complete, run:
+
+```bat
+Rscript dev\build_shiny_ui_cache.R
+```
+
+Then test the report and prepare a minimal shinyapps.io bundle:
+
+```bat
+Rscript dev\prepare_shinyapps_bundle.R
+```
+
+The deployment bundle is written to:
+
+```text
+deployment/shinyapps/
+```
+
+Deploy it with:
+
+```bat
+Rscript dev\deploy_shinyapps.R
+```
+
+The live report uses partitioned Parquet interval summaries, app-level Shiny
+caching, debounced controls, and short Highcharts transitions. Raw-draw queries
+are disabled by default and are available only as an explicit local debugging
+fallback.
+
+See [`docs/SHINY_DEPLOYMENT.md`](docs/SHINY_DEPLOYMENT.md) for cache-building,
+deployment, storage, and performance guidance.
