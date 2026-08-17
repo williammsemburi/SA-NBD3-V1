@@ -188,7 +188,7 @@ hc_nbd_lines <- function(
       animationLimit = 10000L,
       lineWidth = 2.5,
       marker = list(enabled = markers, radius = 3),
-      states = list(inactive = list(opacity = 0.18), hover = list(lineWidthPlus = 1))
+      states = list(inactive = list(opacity = 0.28), hover = list(lineWidthPlus = 1))
     )) |>
     highcharter::hc_legend(layout = "horizontal", align = "center", verticalAlign = "bottom")
 
@@ -234,7 +234,7 @@ hc_nbd_lines <- function(
             band[[x_col]], band[[lower_col]], band[[upper_col]]
           ),
           color = series_colour(name, config, i),
-          fillOpacity = 0.10,
+          fillOpacity = 0.20,
           lineWidth = 0,
           linkedTo = line_id,
           showInLegend = FALSE,

@@ -1,0 +1,11 @@
+# BEGIN SA-NBD3 root deployment exclusions
+^\.git$
+^data/raw$
+^data/derived$
+^_targets$
+^output/database$
+^output/uncertainty$
+^deployment$
+^tests$
+^.*\.log$
+# END SA-NBD3 root deployment exclusions

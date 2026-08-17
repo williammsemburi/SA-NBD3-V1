@@ -44,3 +44,86 @@ Thumbs.db
 
 # Local shinyapps.io deployment bundle
 /deployment/
+
+# BEGIN SA-NBD3 generated analytical state
+
+# Local R and IDE state
+.Rhistory
+.RData
+.Rproj.user/
+Thumbs.db
+.DS_Store
+
+# Restricted inputs and generated analytical state
+data/raw/*
+!data/raw/.gitkeep
+!data/raw/README.md
+data/derived/*
+!data/derived/.gitkeep
+_targets/
+output/database/*
+!output/database/.gitkeep
+output/figures/*
+!output/figures/.gitkeep
+output/report-data/*
+!output/report-data/.gitkeep
+output/tables/*
+!output/tables/.gitkeep
+output/uncertainty/
+
+# Generated report/runtime assets retained locally and in deployment bundles
+report/data/report_state.rds
+report/*.html
+report/*_files/
+report/*_cache/
+deployment/shinyapps/
+output/backups/
+output/tables/git_cleanup_manifest.csv
+
+# Update-delivery artifacts
+*.zip
+*.sha256
+*.patch
+# END SA-NBD3 generated analytical state
+
+# BEGIN SA-NBD3 local analytical state
+
+# Local R, IDE, and operating-system state
+.Rhistory
+.RData
+.Rproj.user/
+Thumbs.db
+.DS_Store
+*.log
+
+# Restricted source data and generated analytical checkpoints
+data/raw/*
+!data/raw/.gitkeep
+!data/raw/README.md
+data/derived/*
+!data/derived/.gitkeep
+!data/derived/README.md
+_targets/
+
+# Generated analysis and report outputs
+output/*
+!output/README.md
+!output/**/.gitkeep
+
+# Deployment/runtime artefacts generated from the report source
+deployment/shinyapps/
+report/data/report_state.rds
+report/data/report_state_manifest.csv
+report/data/report_state_object_sizes.csv
+report/data/model_comparison/
+report/data/legacy/
+report/*.html
+report/*_files/
+report/*_cache/
+**/rsconnect/
+
+# Update-delivery artefacts
+*.zip
+*.sha256
+*.patch
+# END SA-NBD3 local analytical state
